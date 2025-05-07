@@ -1,13 +1,15 @@
-import './App.css'
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Home from './pages/Home';
+import About from './pages/About';
 
 function App() {
   return (
-    <div className="container mt-5">
-      <div className="text-center">
-        <h1 className="display-4">¡Bienvenido a TripSync!</h1>
-        <p className="lead">Tu planificador de viajes favorito 🌍✈️</p>
-      </div>
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/about" element={<About />} />
+      </Routes>
+    </Router>
   );
 }
 
