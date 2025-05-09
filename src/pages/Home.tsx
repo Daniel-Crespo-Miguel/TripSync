@@ -26,10 +26,15 @@ function Home() {
 
       {user ? (
         <div className="mb-4 text-center">
-          <p className="mb-2">Conectado como: <strong>{user.email}</strong></p>
-          <button className="btn btn-danger" onClick={handleLogout}>
-            Cerrar sesión
-          </button>
+          <p className="mb-3">Conectado como: <strong>{user.email}</strong></p>
+          <div className="d-flex justify-content-center gap-3">
+            <button className="btn btn-info" onClick={() => navigate('/dashboard')}>
+              Ir al Panel
+            </button>
+            <button className="btn btn-danger" onClick={handleLogout}>
+              Cerrar sesión
+            </button>
+          </div>
         </div>
       ) : (
         <div className="d-flex gap-3 mb-4">
