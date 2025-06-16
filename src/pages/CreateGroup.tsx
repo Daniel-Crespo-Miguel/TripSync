@@ -24,6 +24,7 @@ function CreateGroup() {
           startDate: Timestamp.fromDate(new Date(startDate)),
           endDate: Timestamp.fromDate(new Date(endDate)),
           createdBy: user.uid,
+          createdByEmail: user.email,
           createdAt: Timestamp.now(),
         });
 

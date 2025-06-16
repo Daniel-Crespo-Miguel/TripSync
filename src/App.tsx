@@ -5,6 +5,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import CreateGroup from './pages/CreateGroup';
+import GroupDetail from './pages/GroupDetail';
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/crear-viaje" element={<CreateGroup />} />
+        <Route path="/grupo/:id" element={<GroupDetail />} />
       </Routes>
     </Router>
   );
