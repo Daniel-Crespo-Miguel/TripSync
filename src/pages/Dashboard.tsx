@@ -10,7 +10,6 @@ interface Grupo {
   destination: string;
   startDate: { seconds: number; nanoseconds: number };
   endDate: { seconds: number; nanoseconds: number };
-  invitados?: string[];
 }
 
 function Dashboard() {
@@ -41,7 +40,6 @@ function Dashboard() {
           destination: doc.data().destination,
           startDate: doc.data().startDate,
           endDate: doc.data().endDate,
-          invitados: doc.data().invitados || [],
         })),
         ...snapshot2.docs.map((doc) => ({
           id: doc.id,
@@ -49,7 +47,6 @@ function Dashboard() {
           destination: doc.data().destination,
           startDate: doc.data().startDate,
           endDate: doc.data().endDate,
-          invitados: doc.data().invitados || [],
         }))
       ];
 
@@ -89,6 +86,14 @@ function Dashboard() {
           ))}
         </ul>
       )}
+
+      {/* Botón para volver al inicio */}
+      <button
+        className="btn btn-secondary mt-4"
+        onClick={() => navigate("/")}
+      >
+        Volver a la Página de Inicio
+      </button>
     </div>
   );
 }
