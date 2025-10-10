@@ -26,6 +26,8 @@ function CreateGroup() {
           createdBy: user.uid,
           createdByEmail: user.email,
           createdAt: Timestamp.now(),
+          invitados: [user.email],
+          gastos: [],
         });
 
         navigate('/dashboard');

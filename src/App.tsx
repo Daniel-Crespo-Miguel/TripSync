@@ -6,6 +6,7 @@ import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import CreateGroup from './pages/CreateGroup';
 import GroupDetail from './pages/GroupDetail';
+import Expenses from './pages/Expenses';
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/crear-viaje" element={<CreateGroup />} />
         <Route path="/grupo/:id" element={<GroupDetail />} />
+        <Route path="/grupo/:id/gastos" element={<Expenses />} />
       </Routes>
     </Router>
   );

@@ -1,54 +1,57 @@
-# React + TypeScript + Vite
+# TripSync
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+**TripSync** es mi proyecto personal: una aplicación web para organizar viajes de manera colaborativa.  
+La idea es que cualquier usuario pueda crear un grupo de viaje, invitar a amigos o familiares, gestionar actividades, gastos y llevar un control sencillo de todo lo que implica un viaje compartido.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Tecnologías que estoy usando
+- [React 18](https://react.dev/) con [Vite](https://vitejs.dev/)
+- [TypeScript](https://www.typescriptlang.org/)
+- [Bootstrap](https://getbootstrap.com/) para el diseño y los estilos
+- [Firebase](https://firebase.google.com/) para autenticación y base de datos
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Lo que ya se puede hacer
+- Crear una cuenta e iniciar sesión con Firebase Auth
+- Crear grupos de viaje
+- Ver en el Dashboard los grupos que has creado o en los que estás invitado
+- Entrar en la página de cada grupo y ver:
+  - Destino, fechas y quién creó el grupo
+  - Lista de invitados
+  - Posibilidad de añadir invitados si eres el creador
+  - Acceder a la sección de gastos compartidos
+- En la sección de gastos:
+  - Añadir gastos y asignarlos a uno o varios participantes
+  - Ver todos los gastos registrados
+  - Calcular automáticamente el balance de gastos entre los participantes
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+---
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Próximas mejoras
+- Votación de actividades y rutas dentro del grupo
+- Integración con Google Maps para sugerencias de rutas y actividades
+- Chat interno para que los participantes puedan comunicarse
+- Recomendaciones de equipaje según el clima del destino
+- Versión móvil usando React Native
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+---
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
-```
+## Estado actual
+El proyecto todavía está en desarrollo y lo estoy usando para mejorar mis habilidades en **React, TypeScript y Firebase**.  
+
+En este momento estoy trabajando en:
+- Página de gastos con cálculo de balance
+- Actualización de gastos y balance en tiempo real
+
+---
+
+## Capturas de pantalla
+Por ahora todavía no hay capturas finales, pero planeo añadir algunas cuando tenga un diseño más completo y funcional.
+
+---
+
+## Sobre mí
+**Daniel Crespo Miguel**  
+[GitHub](https://github.com/Daniel-Crespo-Miguel) | [LinkedIn](#)

@@ -97,9 +97,15 @@ function GroupDetail() {
         </div>
       )}
 
-      {/* Botón para volver al Panel de Usuario */}
       <button className="btn btn-secondary mt-4" onClick={() => navigate('/dashboard')}>
         Volver al Panel de Usuario
+      </button>
+
+      <button
+        className="btn btn-info mt-4"
+        onClick={() => navigate(`/grupo/${id}/gastos`)}
+      >
+        Ver Gastos
       </button>
     </div>
   );
