@@ -13,7 +13,6 @@ interface Grupo {
 }
 
 function Dashboard() {
-  const [userId, setUserId] = useState<string | null>(null);
   const [grupos, setGrupos] = useState<Grupo[]>([]);
   const navigate = useNavigate();
 
@@ -24,33 +23,34 @@ function Dashboard() {
         return;
       }
 
-      setUserId(user.uid);
-
       const gruposRef = collection(db, "grupos");
-      const q = query(gruposRef, where("createdBy", "==", user.uid));
-      const snapshot = await getDocs(q);
 
-      const q2 = query(gruposRef, where("invitados", "array-contains", user.email));
-      const snapshot2 = await getDocs(q2);
+      const qCreated = query(gruposRef, where("createdBy", "==", user.uid));
+      const snapshotCreated = await getDocs(qCreated);
 
-      const data: Grupo[] = [
-        ...snapshot.docs.map((doc) => ({
-          id: doc.id,
-          name: doc.data().name,
-          destination: doc.data().destination,
-          startDate: doc.data().startDate,
-          endDate: doc.data().endDate,
+      const qInvited = query(gruposRef, where("invitados", "array-contains", user.email));
+      const snapshotInvited = await getDocs(qInvited);
+
+      const items: Grupo[] = [
+        ...snapshotCreated.docs.map((d) => ({
+          id: d.id,
+          name: d.data().name,
+          destination: d.data().destination,
+          startDate: d.data().startDate,
+          endDate: d.data().endDate,
         })),
-        ...snapshot2.docs.map((doc) => ({
-          id: doc.id,
-          name: doc.data().name,
-          destination: doc.data().destination,
-          startDate: doc.data().startDate,
-          endDate: doc.data().endDate,
-        }))
+        ...snapshotInvited.docs.map((d) => ({
+          id: d.id,
+          name: d.data().name,
+          destination: d.data().destination,
+          startDate: d.data().startDate,
+          endDate: d.data().endDate,
+        })),
       ];
 
-      setGrupos(data);
+      const unique = Array.from(new Map(items.map((g) => [g.id, g])).values());
+
+      setGrupos(unique);
     });
 
     return () => unsubscribe();
@@ -60,10 +60,7 @@ function Dashboard() {
     <div className="container mt-5">
       <h2>Panel de Usuario</h2>
 
-      <button
-        className="btn btn-success mb-4"
-        onClick={() => navigate("/crear-viaje")}
-      >
+      <button className="btn btn-success mb-4" onClick={() => navigate("/crear-viaje")}>
         Crear nuevo viaje
       </button>
 
@@ -87,11 +84,7 @@ function Dashboard() {
         </ul>
       )}
 
-      {/* Botón para volver al inicio */}
-      <button
-        className="btn btn-secondary mt-4"
-        onClick={() => navigate("/")}
-      >
+      <button className="btn btn-secondary mt-4" onClick={() => navigate("/")}>
         Volver a la Página de Inicio
       </button>
     </div>
