@@ -1,13 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { auth, db } from "../firebase/firebaseConfig";
-import {
-  arrayUnion,
-  doc,
-  getDoc,
-  onSnapshot,
-  updateDoc,
-} from "firebase/firestore";
+import { arrayUnion, doc, getDoc, onSnapshot, updateDoc } from "firebase/firestore";
 
 type Activity = {
   id: string;
@@ -15,15 +9,16 @@ type Activity = {
   description: string;
   date?: string;
   location?: string;
-  createdBy: string;
-  createdAt: string;
-  votes: string[];
+  createdBy: string; 
+  createdAt: string; 
+  votes: string[]; 
 };
 
 type Grupo = {
   name: string;
   invitados: string[];
   activities: Activity[];
+  createdBy: string; 
 };
 
 function Activities() {
@@ -37,7 +32,6 @@ function Activities() {
   const [date, setDate] = useState("");
   const [location, setLocation] = useState("");
 
-  // Carga inicial
   useEffect(() => {
     if (!id) {
       navigate("/");
@@ -58,13 +52,13 @@ function Activities() {
         name: data.name ?? "Grupo",
         invitados: Array.isArray(data.invitados) ? data.invitados : [],
         activities: Array.isArray(data.activities) ? data.activities : [],
+        createdBy: data.createdBy ?? "",
       });
     };
 
     fetchGrupo();
   }, [id, navigate]);
 
-  // Tiempo real
   useEffect(() => {
     if (!id) return;
 
@@ -76,6 +70,7 @@ function Activities() {
         name: data.name ?? "Grupo",
         invitados: Array.isArray(data.invitados) ? data.invitados : [],
         activities: Array.isArray(data.activities) ? data.activities : [],
+        createdBy: data.createdBy ?? "",
       });
     });
 
@@ -83,14 +78,15 @@ function Activities() {
   }, [id]);
 
   const userEmail = auth.currentUser?.email ?? null;
+  const userUid = auth.currentUser?.uid ?? null;
 
   const activitiesSorted = useMemo(() => {
     const list = grupo?.activities ?? [];
     return list.slice().sort((a, b) => {
       const va = a.votes?.length ?? 0;
       const vb = b.votes?.length ?? 0;
-      if (vb !== va) return vb - va; // más votos primero
-      return (b.createdAt ?? "").localeCompare(a.createdAt ?? ""); // más reciente
+      if (vb !== va) return vb - va;
+      return (b.createdAt ?? "").localeCompare(a.createdAt ?? "");
     });
   }, [grupo?.activities]);
 
@@ -161,6 +157,39 @@ function Activities() {
     });
   };
 
+  const handleDeleteActivity = async (activityId: string) => {
+    if (!id) return;
+
+    const email = auth.currentUser?.email;
+    if (!email) {
+      alert("Necesitas iniciar sesión para borrar actividades.");
+      navigate("/login");
+      return;
+    }
+
+    if (!grupo) return;
+
+    const activity = (grupo.activities ?? []).find((a) => a.id === activityId);
+    if (!activity) return;
+
+    const isGroupOwner = userUid && grupo.createdBy && userUid === grupo.createdBy;
+    const isAuthor = activity.createdBy === email;
+
+    if (!isGroupOwner && !isAuthor) {
+      alert("Solo el creador del grupo o el autor puede borrar esta actividad.");
+      return;
+    }
+
+    const ok = confirm("¿Seguro que quieres borrar esta actividad?");
+    if (!ok) return;
+
+    const updated = (grupo.activities ?? []).filter((a) => a.id !== activityId);
+
+    await updateDoc(doc(db, "grupos", id), {
+      activities: updated,
+    });
+  };
+
   if (!grupo) {
     return <div className="container mt-5">Cargando actividades...</div>;
   }
@@ -169,10 +198,7 @@ function Activities() {
     <div className="container mt-5">
       <div className="d-flex justify-content-between align-items-center mb-3">
         <h2 className="m-0">Actividades de {grupo.name}</h2>
-        <button
-          className="btn btn-secondary"
-          onClick={() => navigate(`/grupo/${id}`)}
-        >
+        <button className="btn btn-secondary" onClick={() => navigate(`/grupo/${id}`)}>
           Volver al grupo
         </button>
       </div>
@@ -232,9 +258,11 @@ function Activities() {
         <ul className="list-group">
           {activitiesSorted.map((a) => {
             const votesCount = a.votes?.length ?? 0;
-            const hasVoted = userEmail
-              ? (a.votes ?? []).includes(userEmail)
-              : false;
+            const hasVoted = userEmail ? (a.votes ?? []).includes(userEmail) : false;
+
+            const canDelete =
+              (userUid && grupo.createdBy && userUid === grupo.createdBy) ||
+              (userEmail && a.createdBy === userEmail);
 
             return (
               <li key={a.id} className="list-group-item">
@@ -242,35 +270,37 @@ function Activities() {
                   <div style={{ flex: 1 }}>
                     <div className="d-flex align-items-center gap-2">
                       <strong>{a.title}</strong>
-                      <span className="badge text-bg-secondary">
-                        {votesCount} votos
-                      </span>
+                      <span className="badge text-bg-secondary">{votesCount} votos</span>
                     </div>
 
                     {a.location && <div className="small">📍 {a.location}</div>}
                     {a.date && (
-                      <div className="small">
-                        📅 {new Date(a.date).toLocaleDateString()}
-                      </div>
+                      <div className="small">📅 {new Date(a.date).toLocaleDateString()}</div>
                     )}
-                    {a.description && (
-                      <div className="mt-2">{a.description}</div>
-                    )}
+                    {a.description && <div className="mt-2">{a.description}</div>}
 
-                    <div className="small text-muted mt-2">
-                      Propuesta por: {a.createdBy}
-                    </div>
+                    <div className="small text-muted mt-2">Propuesta por: {a.createdBy}</div>
                   </div>
 
-                  <button
-                    className={`btn ${
-                      hasVoted ? "btn-success" : "btn-outline-success"
-                    }`}
-                    onClick={() => handleToggleVote(a.id)}
-                    type="button"
-                  >
-                    {hasVoted ? "Apuntado ✓" : "¡Me apunto!"}
-                  </button>
+                  <div className="d-flex flex-column gap-2">
+                    <button
+                      className={`btn ${hasVoted ? "btn-success" : "btn-outline-success"}`}
+                      onClick={() => handleToggleVote(a.id)}
+                      type="button"
+                    >
+                      {hasVoted ? "Apuntado ✓" : "¡Me apunto!"}
+                    </button>
+
+                    {canDelete && (
+                      <button
+                        className="btn btn-outline-danger"
+                        onClick={() => handleDeleteActivity(a.id)}
+                        type="button"
+                      >
+                        Borrar
+                      </button>
+                    )}
+                  </div>
                 </div>
               </li>
             );

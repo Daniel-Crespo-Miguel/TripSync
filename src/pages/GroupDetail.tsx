@@ -110,6 +110,12 @@ function GroupDetail() {
       >
         Ver Actividades
       </button>
+      <button
+        className="btn btn-dark mt-4 ms-2"
+        onClick={() => navigate(`/grupo/${id}/itinerario`)}
+      >
+        Ver Itinerario
+      </button>
 
       <button
         className="btn btn-secondary mt-4"
