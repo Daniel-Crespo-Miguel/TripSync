@@ -1,20 +1,20 @@
-import { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { doc, getDoc, updateDoc, arrayUnion } from 'firebase/firestore';
-import { db, auth } from '../firebase/firebaseConfig';
-import { onAuthStateChanged, User } from 'firebase/auth';
+import { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { doc, getDoc, updateDoc, arrayUnion } from "firebase/firestore";
+import { db, auth } from "../firebase/firebaseConfig";
+import { onAuthStateChanged, User } from "firebase/auth";
 
 function GroupDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [grupo, setGrupo] = useState<any>(null);
   const [user, setUser] = useState<User | null>(null);
-  const [nuevoInvitado, setNuevoInvitado] = useState('');
+  const [nuevoInvitado, setNuevoInvitado] = useState("");
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       if (!currentUser) {
-        navigate('/');
+        navigate("/");
         return;
       }
       setUser(currentUser);
@@ -26,13 +26,13 @@ function GroupDetail() {
   useEffect(() => {
     const fetchGrupo = async () => {
       if (!id) return;
-      const docRef = doc(db, 'grupos', id);
+      const docRef = doc(db, "grupos", id);
       const docSnap = await getDoc(docRef);
 
       if (docSnap.exists()) {
         setGrupo(docSnap.data());
       } else {
-        navigate('/');
+        navigate("/");
       }
     };
 
@@ -42,7 +42,7 @@ function GroupDetail() {
   const handleAddInvitado = async () => {
     if (!id || !nuevoInvitado.trim()) return;
 
-    const grupoRef = doc(db, 'grupos', id);
+    const grupoRef = doc(db, "grupos", id);
     await updateDoc(grupoRef, {
       invitados: arrayUnion(nuevoInvitado.trim()),
     });
@@ -52,7 +52,7 @@ function GroupDetail() {
       invitados: [...(prev.invitados || []), nuevoInvitado.trim()],
     }));
 
-    setNuevoInvitado('');
+    setNuevoInvitado("");
   };
 
   if (!grupo || !user) {
@@ -64,9 +64,17 @@ function GroupDetail() {
   return (
     <div className="container mt-5">
       <h2>{grupo.name}</h2>
-      <p><strong>Destino:</strong> {grupo.destination}</p>
-      <p><strong>Fecha:</strong> {new Date(grupo.startDate.seconds * 1000).toLocaleDateString()} a {new Date(grupo.endDate.seconds * 1000).toLocaleDateString()}</p>
-      <p><strong>Creador:</strong> {grupo.createdByEmail || 'Desconocido'}</p>
+      <p>
+        <strong>Destino:</strong> {grupo.destination}
+      </p>
+      <p>
+        <strong>Fecha:</strong>{" "}
+        {new Date(grupo.startDate.seconds * 1000).toLocaleDateString()} a{" "}
+        {new Date(grupo.endDate.seconds * 1000).toLocaleDateString()}
+      </p>
+      <p>
+        <strong>Creador:</strong> {grupo.createdByEmail || "Desconocido"}
+      </p>
 
       <h5>Invitados:</h5>
       <ul>
@@ -96,8 +104,17 @@ function GroupDetail() {
           </div>
         </div>
       )}
+      <button
+        className="btn btn-warning mt-4 ms-2"
+        onClick={() => navigate(`/grupo/${id}/actividades`)}
+      >
+        Ver Actividades
+      </button>
 
-      <button className="btn btn-secondary mt-4" onClick={() => navigate('/dashboard')}>
+      <button
+        className="btn btn-secondary mt-4"
+        onClick={() => navigate("/dashboard")}
+      >
         Volver al Panel de Usuario
       </button>
 
