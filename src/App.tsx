@@ -9,6 +9,7 @@ import GroupDetail from './pages/GroupDetail';
 import Expenses from './pages/Expenses';
 import Activities from "./pages/Activities";
 import Itinerary from "./pages/Itinerary";
+import Chat from "./pages/Chat";
 
 function App() {
   return (
@@ -24,6 +25,8 @@ function App() {
         <Route path="/grupo/:id/gastos" element={<Expenses />} />
         <Route path="/grupo/:id/actividades" element={<Activities />} />
         <Route path="/grupo/:id/itinerario" element={<Itinerary />} />
+        <Route path="/grupo/:id/chat" element={<Chat />} />
+
 
       </Routes>
     </Router>
