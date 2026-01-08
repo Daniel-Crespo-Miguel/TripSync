@@ -129,6 +129,12 @@ function GroupDetail() {
       >
         Volver al Panel de Usuario
       </button>
+      <button
+        className="btn btn-success mt-4 ms-2"
+        onClick={() => navigate(`/grupo/${id}/clima`)}
+      >
+        Ver Clima
+      </button>
 
       <button
         className="btn btn-info mt-4"

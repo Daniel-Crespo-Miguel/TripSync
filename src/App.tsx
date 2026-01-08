@@ -10,6 +10,7 @@ import Expenses from './pages/Expenses';
 import Activities from "./pages/Activities";
 import Itinerary from "./pages/Itinerary";
 import Chat from "./pages/Chat";
+import Weather from "./pages/Weather";
 
 function App() {
   return (
@@ -26,7 +27,7 @@ function App() {
         <Route path="/grupo/:id/actividades" element={<Activities />} />
         <Route path="/grupo/:id/itinerario" element={<Itinerary />} />
         <Route path="/grupo/:id/chat" element={<Chat />} />
-
+        <Route path="/grupo/:id/clima" element={<Weather />} />
 
       </Routes>
     </Router>
