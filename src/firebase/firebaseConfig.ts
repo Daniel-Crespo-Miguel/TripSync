@@ -3,13 +3,14 @@ import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 
 const firebaseConfig = {
-  apiKey: 'AIzaSyC4qHJqTpxNOV6m6w8RsfQ2mw-af-Obk6s',
-  authDomain: 'tripsync-58144.firebaseapp.com',
-  projectId: 'tripsync-58144',
-  storageBucket: 'tripsync-58144.firebasestorage.app',
-  messagingSenderId: '321559664765',
-  appId: '1:321559664765:web:2df15c2347b7d108ac7914',
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
 };
+
 
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
