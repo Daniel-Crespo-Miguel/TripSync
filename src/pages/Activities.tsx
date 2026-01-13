@@ -17,17 +17,27 @@ type Activity = {
 type Grupo = {
   name: string;
   destination?: string;
+  destinationLat?: number;
+  destinationLon?: number;
   invitados: string[];
   activities: Activity[];
-  createdBy: string; // uid del creador
+  createdBy: string; 
+};
+
+type GeoResult = {
+  name: string;
+  latitude: number;
+  longitude: number;
+  country?: string;
+  admin1?: string;
 };
 
 type Poi = {
-  id: string; // estable para key
+  id: string;
   name: string;
-  kind?: string; // categoría simple
-  lat?: number;
-  lon?: number;
+  type: string;
+  lat: number;
+  lon: number;
   website?: string;
   wikipedia?: string;
 };
@@ -44,11 +54,11 @@ function Activities() {
   const [date, setDate] = useState("");
   const [location, setLocation] = useState("");
 
-  // Sugerencias (Open-Meteo geocoding + Overpass OSM)
+  // Sugerencias
   const [suggestLoading, setSuggestLoading] = useState(false);
-  const [suggestError, setSuggestError] = useState<string>("");
+  const [suggestError, setSuggestError] = useState("");
   const [suggestions, setSuggestions] = useState<Poi[]>([]);
-  const [radius, setRadius] = useState(2000); // más estable que 5000
+  const [radius, setRadius] = useState(2000);
   const [limit, setLimit] = useState(20);
 
   useEffect(() => {
@@ -70,6 +80,8 @@ function Activities() {
       setGrupo({
         name: data.name ?? "Grupo",
         destination: data.destination ?? "",
+        destinationLat: typeof data.destinationLat === "number" ? data.destinationLat : undefined,
+        destinationLon: typeof data.destinationLon === "number" ? data.destinationLon : undefined,
         invitados: Array.isArray(data.invitados) ? data.invitados : [],
         activities: Array.isArray(data.activities) ? data.activities : [],
         createdBy: data.createdBy ?? "",
@@ -89,6 +101,8 @@ function Activities() {
       setGrupo({
         name: data.name ?? "Grupo",
         destination: data.destination ?? "",
+        destinationLat: typeof data.destinationLat === "number" ? data.destinationLat : undefined,
+        destinationLon: typeof data.destinationLon === "number" ? data.destinationLon : undefined,
         invitados: Array.isArray(data.invitados) ? data.invitados : [],
         activities: Array.isArray(data.activities) ? data.activities : [],
         createdBy: data.createdBy ?? "",
@@ -111,31 +125,6 @@ function Activities() {
     });
   }, [grupo?.activities]);
 
-  // -------------------------
-  // LINKS (Google Maps / OSM)
-  // -------------------------
-  function googleMapsUrlFromCoords(lat?: number, lon?: number, label?: string) {
-    if (typeof lat === "number" && typeof lon === "number") {
-      const q = label ? encodeURIComponent(label) : `${lat},${lon}`;
-      return `https://www.google.com/maps/search/?api=1&query=${q}&query_place_id=`;
-    }
-    return null;
-  }
-
-  function googleMapsUrlFromQuery(query: string) {
-    return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
-  }
-
-  function osmUrlFromCoords(lat?: number, lon?: number, zoom = 16) {
-    if (typeof lat === "number" && typeof lon === "number") {
-      return `https://www.openstreetmap.org/?mlat=${lat}&mlon=${lon}#map=${zoom}/${lat}/${lon}`;
-    }
-    return null;
-  }
-
-  // -------------------------
-  // CRUD ACTIVITIES (manual)
-  // -------------------------
   const handleAddActivity = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!id) return;
@@ -236,143 +225,140 @@ function Activities() {
     });
   };
 
-  // -------------------------
-  // SUGERENCIAS: Open-Meteo + Overpass (OSM) con fallback
-  // -------------------------
-  async function fetchGeoByDestination(dest: string) {
+ 
+
+  function formatDestinationForSearch(dest: string) {
+    return dest.split(",")[0]?.trim() || dest.trim();
+  }
+
+  async function geocodeByOpenMeteo(dest: string) {
+    const q = formatDestinationForSearch(dest);
+    if (!q) return null;
+
     const url =
       `https://geocoding-api.open-meteo.com/v1/search` +
-      `?name=${encodeURIComponent(dest)}` +
+      `?name=${encodeURIComponent(q)}` +
       `&count=1&language=es&format=json`;
 
     const res = await fetch(url);
-    if (!res.ok) throw new Error("No se pudo geolocalizar el destino (geocoding).");
-
+    if (!res.ok) return null;
     const json = await res.json();
-    const first = json?.results?.[0];
-    if (!first) throw new Error("No se encontró el destino. Prueba con un nombre más específico.");
 
-    return {
-      lat: first.latitude as number,
-      lon: first.longitude as number,
-      name: first.name as string,
-    };
+    const r: GeoResult | undefined = Array.isArray(json?.results) ? json.results[0] : undefined;
+    if (!r || typeof r.latitude !== "number" || typeof r.longitude !== "number") return null;
+
+    return { lat: r.latitude, lon: r.longitude };
   }
 
-  async function fetchPois(lat: number, lon: number) {
-    const endpoints = [
-      "https://overpass-api.de/api/interpreter",
-      "https://overpass.kumi.systems/api/interpreter",
-      "https://overpass.openstreetmap.ru/api/interpreter",
-    ];
+  async function getLatLonForGroup() {
+    const dest = grupo?.destination?.trim() || "";
 
-    // Query ligera
-    const query = `
-[out:json][timeout:20];
-(
-  node(around:${radius},${lat},${lon})["tourism"~"attraction|museum|gallery|viewpoint"];
-  way(around:${radius},${lat},${lon})["tourism"~"attraction|museum|gallery|viewpoint"];
-  relation(around:${radius},${lat},${lon})["tourism"~"attraction|museum|gallery|viewpoint"];
 
-  node(around:${radius},${lat},${lon})["historic"];
-  way(around:${radius},${lat},${lon})["historic"];
-  relation(around:${radius},${lat},${lon})["historic"];
-);
-out center ${limit};
-`.trim();
-
-    const fetchWithTimeout = async (url: string, ms: number) => {
-      const controller = new AbortController();
-      const t = setTimeout(() => controller.abort(), ms);
-      try {
-        const res = await fetch(url, {
-          method: "POST",
-          headers: { "Content-Type": "text/plain" },
-          body: query,
-          signal: controller.signal,
-        });
-        return res;
-      } finally {
-        clearTimeout(t);
-      }
-    };
-
-    let lastErr = "No se pudo contactar con Overpass.";
-
-    for (const ep of endpoints) {
-      try {
-        const res = await fetchWithTimeout(ep, 12000);
-
-        if (!res.ok) {
-          const txt = await res.text().catch(() => "");
-          lastErr = `Overpass falló (${res.status}) en ${ep}: ${txt.slice(0, 180)}`;
-          if (res.status === 429 || res.status === 504 || res.status === 502) continue;
-          throw new Error(lastErr);
-        }
-
-        const json = await res.json();
-        const elements = Array.isArray(json?.elements) ? json.elements : [];
-
-        const pois: Poi[] = elements
-          .map((el: any) => {
-            const tags = el.tags ?? {};
-            const name = tags.name as string | undefined;
-            if (!name) return null;
-
-            const plat = (typeof el.lat === "number" ? el.lat : el?.center?.lat) as
-              | number
-              | undefined;
-            const plon = (typeof el.lon === "number" ? el.lon : el?.center?.lon) as
-              | number
-              | undefined;
-
-            const kind =
-              (tags.tourism as string | undefined) ??
-              (tags.historic as string | undefined) ??
-              (tags.amenity as string | undefined);
-
-            const website =
-              (tags.website as string | undefined) ??
-              (tags["contact:website"] as string | undefined);
-
-            const wikipedia = tags.wikipedia as string | undefined;
-
-            return {
-              id: `${el.type}-${el.id}`,
-              name,
-              kind,
-              lat: plat,
-              lon: plon,
-              website,
-              wikipedia,
-            } as Poi;
-          })
-          .filter(Boolean) as Poi[];
-
-        const unique = Array.from(new Map(pois.map((p) => [p.id, p])).values());
-        return unique.slice(0, limit);
-      } catch (e: any) {
-        lastErr = e?.message ?? lastErr;
-        continue;
-      }
+    if (
+      typeof grupo?.destinationLat === "number" &&
+      typeof grupo?.destinationLon === "number"
+    ) {
+      return { lat: grupo.destinationLat, lon: grupo.destinationLon };
     }
 
-    throw new Error(lastErr);
+    // 🟡 Fallback: geocoding para grupos antiguos
+    const geo = await geocodeByOpenMeteo(dest);
+    return geo;
+  }
+
+  function buildGoogleMapsLink(lat: number, lon: number, name?: string) {
+    const q = name ? encodeURIComponent(name) : `${lat},${lon}`;
+    return `https://www.google.com/maps/search/?api=1&query=${q}`;
+  }
+
+  async function fetchOverpassPois(lat: number, lon: number) {
+    
+    const query = `
+      [out:json][timeout:25];
+      (
+        node(around:${radius},${lat},${lon})["tourism"];
+        node(around:${radius},${lat},${lon})["amenity"="restaurant"];
+        node(around:${radius},${lat},${lon})["amenity"="cafe"];
+        node(around:${radius},${lat},${lon})["amenity"="bar"];
+        node(around:${radius},${lat},${lon})["leisure"="park"];
+        node(around:${radius},${lat},${lon})["historic"];
+        node(around:${radius},${lat},${lon})["man_made"="tower"];
+        node(around:${radius},${lat},${lon})["natural"="peak"];
+        node(around:${radius},${lat},${lon})["viewpoint"];
+      );
+      out body ${Math.max(10, Math.min(limit, 50))};
+    `.trim();
+
+    const url = `https://overpass-api.de/api/interpreter`;
+    const res = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8" },
+      body: `data=${encodeURIComponent(query)}`,
+    });
+
+    if (!res.ok) {
+      const text = await res.text().catch(() => "");
+      throw new Error(`Overpass falló (${res.status}). ${text ? text.slice(0, 180) : ""}`);
+    }
+
+    const json = await res.json();
+
+    const elements = Array.isArray(json?.elements) ? json.elements : [];
+    const pois: Poi[] = elements
+      .map((el: any) => {
+        const tags = el?.tags ?? {};
+        const name = (tags.name || "").trim();
+        if (!name) return null;
+
+        const type =
+          tags.tourism ||
+          tags.amenity ||
+          tags.historic ||
+          tags.leisure ||
+          tags.natural ||
+          tags.man_made ||
+          (tags.viewpoint ? "viewpoint" : "place");
+
+        return {
+          id: String(el.id),
+          name,
+          type: String(type),
+          lat: Number(el.lat),
+          lon: Number(el.lon),
+          website: typeof tags.website === "string" ? tags.website : undefined,
+          wikipedia: typeof tags.wikipedia === "string" ? tags.wikipedia : undefined,
+        } as Poi;
+      })
+      .filter(Boolean);
+
+    
+    const unique = Array.from(
+      new Map(pois.map((p) => [`${p.name}-${p.lat}-${p.lon}`, p])).values()
+    );
+
+    return unique.slice(0, Math.max(5, Math.min(limit, 50)));
   }
 
   const handleSuggest = async () => {
-    if (!grupo?.destination?.trim()) {
-      setSuggestError("Este grupo no tiene destino definido.");
-      return;
-    }
-
     setSuggestLoading(true);
     setSuggestError("");
     setSuggestions([]);
 
     try {
-      const { lat, lon } = await fetchGeoByDestination(grupo.destination.trim());
-      const pois = await fetchPois(lat, lon);
+      if (!grupo?.destination?.trim()) {
+        throw new Error("Este grupo no tiene destino definido.");
+      }
+
+      const coords = await getLatLonForGroup();
+      if (!coords) {
+        throw new Error("No se encontró el destino. Prueba con un nombre más específico.");
+      }
+
+      const pois = await fetchOverpassPois(coords.lat, coords.lon);
+      if (!pois.length) {
+        throw new Error("No se encontraron lugares cercanos con ese radio. Prueba aumentando el radio.");
+      }
+
       setSuggestions(pois);
     } catch (e: any) {
       setSuggestError(e?.message ?? "Error buscando sugerencias.");
@@ -391,19 +377,19 @@ out center ${limit};
       return;
     }
 
-    const gmaps = googleMapsUrlFromCoords(poi.lat, poi.lon, poi.name);
+    const mapsUrl = buildGoogleMapsLink(poi.lat, poi.lon, poi.name);
 
-    const infoLines = [
-      poi.kind ? `Tipo: ${poi.kind}` : "",
+    const descParts = [
+      `Tipo: ${poi.type}`,
       poi.website ? `Web: ${poi.website}` : "",
       poi.wikipedia ? `Wikipedia: ${poi.wikipedia}` : "",
-      gmaps ? `Google Maps: ${gmaps}` : "",
+      `Google Maps: ${mapsUrl}`,
     ].filter(Boolean);
 
     const newActivity: Activity = {
       id: crypto.randomUUID(),
       title: poi.name.trim(),
-      description: infoLines.join("\n"),
+      description: descParts.join(" · "),
       location: grupo?.destination?.trim() || undefined,
       createdBy: email,
       createdAt: new Date().toISOString(),
@@ -414,6 +400,7 @@ out center ${limit};
       activities: arrayUnion(newActivity),
     });
 
+    
     setSuggestions((prev) => prev.filter((p) => p.id !== poi.id));
   };
 
@@ -477,7 +464,7 @@ out center ${limit};
         </button>
       </form>
 
-      {/* --- SUGERENCIAS --- */}
+      {}
       <div className="card p-3 mb-4">
         <div className="d-flex justify-content-between align-items-center gap-3 flex-wrap">
           <div>
@@ -533,52 +520,31 @@ out center ${limit};
 
         {!suggestLoading && suggestions.length > 0 && (
           <div className="mt-3">
-            <div className="small text-muted mb-2">Resultados (OpenStreetMap).</div>
             <ul className="list-group">
               {suggestions.map((p) => {
-                const gmaps = googleMapsUrlFromCoords(p.lat, p.lon, `${p.name} ${grupo.destination ?? ""}`);
-                const osm = osmUrlFromCoords(p.lat, p.lon);
-
+                const mapsUrl = buildGoogleMapsLink(p.lat, p.lon, p.name);
                 return (
                   <li key={p.id} className="list-group-item">
                     <div className="d-flex justify-content-between align-items-start gap-3">
                       <div style={{ flex: 1 }}>
                         <strong>{p.name}</strong>
-                        {p.kind && <div className="small text-muted">Tipo: {p.kind}</div>}
+                        <div className="small text-muted">Tipo: {p.type}</div>
 
-                        {(gmaps || osm || p.website || p.wikipedia) && (
-                          <div className="small text-muted mt-1">
-                            {gmaps && (
-                              <>
-                                <a href={gmaps} target="_blank" rel="noreferrer">
-                                  Ver en Google Maps
-                                </a>
-                                {" · "}
-                              </>
-                            )}
-                            {osm && (
-                              <>
-                                <a href={osm} target="_blank" rel="noreferrer">
-                                  Ver en OpenStreetMap
-                                </a>
-                                {" · "}
-                              </>
-                            )}
-                            {p.website && (
-                              <>
-                                <a href={p.website} target="_blank" rel="noreferrer">
-                                  Web
-                                </a>
-                                {" · "}
-                              </>
-                            )}
-                            {p.wikipedia && (
-                              <span>
-                                Wikipedia: {p.wikipedia}
-                              </span>
-                            )}
+                        <div className="small mt-1">
+                          <a href={mapsUrl} target="_blank" rel="noreferrer">
+                            Ver en Google Maps
+                          </a>
+                        </div>
+
+                        {p.website && (
+                          <div className="small">
+                            <a href={p.website} target="_blank" rel="noreferrer">
+                              Web
+                            </a>
                           </div>
                         )}
+
+                        {p.wikipedia && <div className="small text-muted">Wikipedia: {p.wikipedia}</div>}
                       </div>
 
                       <button
@@ -597,9 +563,7 @@ out center ${limit};
         )}
 
         {!suggestLoading && suggestions.length === 0 && !suggestError && (
-          <div className="text-muted small mt-3">
-            Pulsa “Buscar sugerencias” para ver propuestas.
-          </div>
+          <div className="text-muted small mt-3">Pulsa “Buscar sugerencias” para ver propuestas.</div>
         )}
       </div>
 
@@ -617,8 +581,9 @@ out center ${limit};
               (userUid && grupo.createdBy && userUid === grupo.createdBy) ||
               (userEmail && a.createdBy === userEmail);
 
-            const query = `${a.title} ${a.location || grupo.destination || ""}`.trim();
-            const gmaps = query ? googleMapsUrlFromQuery(query) : null;
+       
+            const mapsMatch = a.description?.match(/Google Maps:\s*(https?:\/\/\S+)/i);
+            const mapsLink = mapsMatch?.[1];
 
             return (
               <li key={a.id} className="list-group-item">
@@ -630,15 +595,12 @@ out center ${limit};
                     </div>
 
                     {a.location && <div className="small">📍 {a.location}</div>}
-                    {a.date && (
-                      <div className="small">📅 {new Date(a.date).toLocaleDateString()}</div>
-                    )}
+                    {a.date && <div className="small">📅 {new Date(a.date).toLocaleDateString()}</div>}
+                    {a.description && <div className="mt-2">{a.description}</div>}
 
-                    {a.description && <div className="mt-2" style={{ whiteSpace: "pre-wrap" }}>{a.description}</div>}
-
-                    {gmaps && (
-                      <div className="small text-muted mt-2">
-                        <a href={gmaps} target="_blank" rel="noreferrer">
+                    {mapsLink && (
+                      <div className="small mt-2">
+                        <a href={mapsLink} target="_blank" rel="noreferrer">
                           Ver en Google Maps
                         </a>
                       </div>
