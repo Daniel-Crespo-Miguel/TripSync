@@ -11,6 +11,7 @@ import Activities from "./pages/Activities";
 import Itinerary from "./pages/Itinerary";
 import Chat from "./pages/Chat";
 import Weather from "./pages/Weather";
+import Transport from './pages/Transport';
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
         <Route path="/grupo/:id/itinerario" element={<Itinerary />} />
         <Route path="/grupo/:id/chat" element={<Chat />} />
         <Route path="/grupo/:id/clima" element={<Weather />} />
+        <Route path="/grupo/:id/Transporte" element={<Transport />} />
 
       </Routes>
     </Router>

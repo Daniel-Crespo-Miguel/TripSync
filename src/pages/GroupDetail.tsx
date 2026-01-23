@@ -142,6 +142,13 @@ function GroupDetail() {
       >
         Ver Gastos
       </button>
+       <button
+        className="btn btn-info mt-4"
+        onClick={() => navigate(`/grupo/${id}/Transporte`)}
+      >
+        Ver Posibilidad de transportes 
+        
+      </button>
     </div>
   );
 }
