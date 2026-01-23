@@ -1,14 +1,20 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { db, auth } from "../firebase/firebaseConfig";
-import { doc, getDoc, updateDoc, arrayUnion, onSnapshot } from "firebase/firestore";
+import {
+  doc,
+  getDoc,
+  updateDoc,
+  arrayUnion,
+  onSnapshot,
+} from "firebase/firestore";
 
 type Expense = {
   description: string;
   amount: number;
-  payer: string; // email
-  assignedTo: string[]; // emails
-  date: string; // ISO
+  payer: string;
+  assignedTo: string[];
+  date: string;
 };
 
 type Grupo = {
@@ -21,7 +27,7 @@ type BalanceRow = {
   user: string;
   paid: number;
   owed: number;
-  net: number; // paid - owed
+  net: number;
 };
 
 type Settlement = {
@@ -36,7 +42,6 @@ function computeBalances(members: string[], expenses: Expense[]): BalanceRow[] {
   const paid: Record<string, number> = {};
   const owed: Record<string, number> = {};
 
-  // init con miembros del grupo
   for (const m of members) {
     paid[m] = 0;
     owed[m] = 0;
@@ -63,7 +68,9 @@ function computeBalances(members: string[], expenses: Expense[]): BalanceRow[] {
     }
   }
 
-  const users = Array.from(new Set([...Object.keys(paid), ...Object.keys(owed)]));
+  const users = Array.from(
+    new Set([...Object.keys(paid), ...Object.keys(owed)]),
+  );
 
   return users
     .map((user) => {
@@ -123,6 +130,9 @@ function Expenses() {
 
   const [gasto, setGasto] = useState("");
   const [amount, setAmount] = useState("");
+
+  const [payer, setPayer] = useState<string>("");
+
   const [assignedTo, setAssignedTo] = useState<string[]>([]);
 
   useEffect(() => {
@@ -151,7 +161,6 @@ function Expenses() {
     fetchGrupo();
   }, [id, navigate]);
 
-  // Tiempo real
   useEffect(() => {
     if (!id) return;
 
@@ -173,15 +182,32 @@ function Expenses() {
   const members = grupo?.invitados ?? [];
   const expenses = grupo?.gastos ?? [];
 
-  const balanceRows = useMemo(() => computeBalances(members, expenses), [members, expenses]);
-  const settlements = useMemo(() => suggestSettlements(balanceRows), [balanceRows]);
+  useEffect(() => {
+    if (!members.length) return;
+
+    const current = auth.currentUser?.email ?? "";
+    if (current && members.includes(current)) {
+      setPayer(current);
+    } else if (!payer) {
+      setPayer(members[0]);
+    }
+  }, [members]);
+
+  const balanceRows = useMemo(
+    () => computeBalances(members, expenses),
+    [members, expenses],
+  );
+  const settlements = useMemo(
+    () => suggestSettlements(balanceRows),
+    [balanceRows],
+  );
 
   const handleAddExpense = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!id) return;
 
-    const payerEmail = auth.currentUser?.email;
-    if (!payerEmail) {
+    const loggedEmail = auth.currentUser?.email;
+    if (!loggedEmail) {
       alert("Necesitas iniciar sesión para añadir gastos.");
       navigate("/login");
       return;
@@ -197,10 +223,22 @@ function Expenses() {
       return;
     }
 
+    const payerEmail = payer?.trim();
+    if (!payerEmail) {
+      alert("Selecciona quién pagó.");
+      return;
+    }
+    if (!members.includes(payerEmail)) {
+      alert("El pagador debe ser un invitado del grupo.");
+      return;
+    }
+
     const assignedFinal = assignedTo.length ? assignedTo : members;
 
     if (!assignedFinal.length) {
-      alert("No hay invitados en el grupo. Añade al menos uno para repartir gastos.");
+      alert(
+        "No hay invitados en el grupo. Añade al menos uno para repartir gastos.",
+      );
       return;
     }
 
@@ -230,7 +268,10 @@ function Expenses() {
     <div className="container mt-5">
       <div className="d-flex justify-content-between align-items-center mb-3">
         <h2 className="m-0">Gastos de {grupo.name}</h2>
-        <button className="btn btn-secondary" onClick={() => navigate(`/grupo/${id}`)}>
+        <button
+          className="btn btn-secondary"
+          onClick={() => navigate(`/grupo/${id}`)}
+        >
           Volver al grupo
         </button>
       </div>
@@ -260,6 +301,24 @@ function Expenses() {
           />
         </div>
 
+        {}
+        <div className="mb-3">
+          <label className="form-label">Pagó</label>
+          <select
+            className="form-control"
+            value={payer}
+            onChange={(e) => setPayer(e.target.value)}
+            required
+            disabled={members.length === 0}
+          >
+            {members.map((email) => (
+              <option key={email} value={email}>
+                {email}
+              </option>
+            ))}
+          </select>
+        </div>
+
         <div className="mb-3">
           <label className="form-label">
             Asignar a{" "}
@@ -272,7 +331,9 @@ function Expenses() {
             multiple
             value={assignedTo}
             onChange={(e) =>
-              setAssignedTo(Array.from(e.target.selectedOptions, (option) => option.value))
+              setAssignedTo(
+                Array.from(e.target.selectedOptions, (option) => option.value),
+              )
             }
           >
             {members.map((email) => (
@@ -306,7 +367,9 @@ function Expenses() {
                     </div>
                     <div className="small text-muted">
                       Pagó: {g.payer} · Repartido entre:{" "}
-                      {(g.assignedTo?.length ? g.assignedTo : members).join(", ")}
+                      {(g.assignedTo?.length ? g.assignedTo : members).join(
+                        ", ",
+                      )}
                     </div>
                   </li>
                 ))}
@@ -342,8 +405,8 @@ function Expenses() {
                             r.net > 0.01
                               ? "text-success fw-bold"
                               : r.net < -0.01
-                              ? "text-danger fw-bold"
-                              : "fw-bold"
+                                ? "text-danger fw-bold"
+                                : "fw-bold"
                           }
                         >
                           {formatMoney(r.net)}
