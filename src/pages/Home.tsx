@@ -1,14 +1,13 @@
-import { useEffect, useState } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { auth } from '../firebase/firebaseConfig';
-import { onAuthStateChanged, signOut, User } from 'firebase/auth';
-import paisaje from '../assets/paisaje.jpg';
+import { onAuthStateChanged, User } from 'firebase/auth';
 
 function Home() {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = React.useState<User | null>(null);
   const navigate = useNavigate();
 
-  useEffect(() => {
+  React.useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
     });
@@ -16,46 +15,131 @@ function Home() {
   }, []);
 
   const handleLogout = async () => {
-    await signOut(auth);
-    navigate('/');
+    try {
+      await auth.signOut();
+      navigate('/');
+    } catch (error) {
+      console.error('Error al cerrar sesión:', error);
+    }
+  };
+
+  const handleStart = () => {
+    if (user) {
+      navigate('/dashboard');
+    } else {
+      navigate('/register');
+    }
   };
 
   return (
-    <div className="container-fluid min-vh-100 d-flex flex-column align-items-center justify-content-start py-5">
-      <h1 className="text-center mb-4">¡Bienvenido a mi página!</h1>
-
-      {user ? (
-        <div className="mb-4 text-center">
-          <p className="mb-3">Conectado como: <strong>{user.email}</strong></p>
-          <div className="d-flex justify-content-center gap-3">
-            <button className="btn btn-info" onClick={() => navigate('/dashboard')}>
-              Ir al Panel
-            </button>
-            <button className="btn btn-danger" onClick={handleLogout}>
-              Cerrar sesión
-            </button>
+    <>
+      {/* Hero Section */}
+      <section className="hero">
+        <div className="hero-container">
+          <div className="hero-content">
+            <div className="hero-text">
+              <h1 className="hero-title">
+                Organiza tus viajes en grupo de forma colaborativa
+              </h1>
+              <p className="hero-subtitle">
+                TripSync te ayuda a planificar, gestionar y disfrutar tus viajes 
+                con amigos o familiares. Todo en un solo lugar, sin complicaciones.
+              </p>
+              <div className="hero-cta">
+                <button 
+                  className="btn btn-primary"
+                  onClick={handleStart}
+                >
+                  {user ? 'Ir a mi panel' : 'Empezar ahora'}
+                </button>
+                <button 
+                  className="btn btn-secondary"
+                  onClick={() => navigate('/login')}
+                >
+                  Iniciar sesión
+                </button>
+              </div>
+            </div>
+            <div className="hero-visual">
+              <div className="hero-placeholder">
+                Ilustración del producto o placeholder visual
+              </div>
+            </div>
           </div>
         </div>
-      ) : (
-        <div className="d-flex gap-3 mb-4">
-          <button className="btn btn-primary" onClick={() => navigate('/login')}>
-            Iniciar sesión
-          </button>
-          <button className="btn btn-secondary" onClick={() => navigate('/register')}>
-            Registrarse
-          </button>
-        </div>
-      )}
+      </section>
 
-      <div className="w-75">
-        <img
-          src={paisaje}
-          alt="Paisaje de bienvenida"
-          className="img-fluid rounded shadow"
-          style={{ maxHeight: '500px', width: '100%', objectFit: 'cover' }}
-        />
-      </div>
-    </div>
+      {/* Sección "Sobre la web" */}
+      <section className="section" id="sobre-web">
+        <h2 className="section-title">¿Qué puedes hacer con TripSync?</h2>
+        <p className="section-subtitle">
+          Una plataforma completa para organizar cada aspecto de tus viajes en grupo, 
+          desde la planificación hasta el regreso a casa.
+        </p>
+        
+        <div className="features-grid">
+          <div className="feature-card">
+            <div className="feature-icon">✈️</div>
+            <h3 className="feature-title">Organización de Grupos</h3>
+            <p className="feature-description">
+              Crea grupos de viaje, invita a amigos o familiares y mantén a todos 
+              informados en un solo lugar. Control total para el organizador y 
+              participación activa para todos los miembros.
+            </p>
+          </div>
+
+          <div className="feature-card">
+            <div className="feature-icon">💰</div>
+            <h3 className="feature-title">Gestión de Gastos</h3>
+            <p className="feature-description">
+              Sistema tipo Tricount para gestionar gastos compartidos. 
+              Registra gastos, asigna participantes y calcula automáticamente 
+              los balances. Olvídate de las cuentas complicadas.
+            </p>
+          </div>
+
+          <div className="feature-card">
+            <div className="feature-icon">🎯</div>
+            <h3 className="feature-title">Actividades y Votaciones</h3>
+            <p className="feature-description">
+              Propón actividades, permite que todos voten o se apunten, 
+              y descubre sugerencias automáticas basadas en tu destino. 
+              Planifica el itinerario de forma democrática y divertida.
+            </p>
+          </div>
+
+          <div className="feature-card">
+            <div className="feature-icon">📅</div>
+            <h3 className="feature-title">Itinerario por Días</h3>
+            <p className="feature-description">
+              Organiza tu viaje día a día con horarios específicos. 
+              Añade actividades, notas y detalles importantes para 
+              cada momento del viaje.
+            </p>
+          </div>
+
+          <div className="feature-card">
+            <div className="feature-icon">🌤️</div>
+            <h3 className="feature-title">Clima del Destino</h3>
+            <p className="feature-description">
+              Previsión meteorológica detallada para tu destino usando 
+              Open-Meteo. Planifica tu equipaje y actividades según 
+              el clima esperado.
+            </p>
+          </div>
+
+          <div className="feature-card">
+            <div className="feature-icon">💬</div>
+            <h3 className="feature-title">Chat en Tiempo Real</h3>
+            <p className="feature-description">
+              Comunicación instantánea entre los miembros del grupo. 
+              Coordina cambios, comparte información y mantente en 
+              contacto durante todo el viaje.
+            </p>
+          </div>
+        </div>
+      </section>
+    </>
   );
 }
 

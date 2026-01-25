@@ -12,26 +12,31 @@ import Itinerary from "./pages/Itinerary";
 import Chat from "./pages/Chat";
 import Weather from "./pages/Weather";
 import Transport from './pages/Transport';
+import Header from './components/Header';
 
 function App() {
   return (
     <Router>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/crear-viaje" element={<CreateGroup />} />
-        <Route path="/grupo/:id" element={<GroupDetail />} />
-        <Route path="/grupo/:id/gastos" element={<Expenses />} />
-        <Route path="/grupo/:id/actividades" element={<Activities />} />
-        <Route path="/grupo/:id/itinerario" element={<Itinerary />} />
-        <Route path="/grupo/:id/chat" element={<Chat />} />
-        <Route path="/grupo/:id/clima" element={<Weather />} />
-        <Route path="/grupo/:id/Transporte" element={<Transport />} />
-
-      </Routes>
+      <div className="app">
+        <Header />
+        <main>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/crear-viaje" element={<CreateGroup />} />
+            <Route path="/grupo/:id" element={<GroupDetail />} />
+            <Route path="/grupo/:id/gastos" element={<Expenses />} />
+            <Route path="/grupo/:id/actividades" element={<Activities />} />
+            <Route path="/grupo/:id/itinerario" element={<Itinerary />} />
+            <Route path="/grupo/:id/chat" element={<Chat />} />
+            <Route path="/grupo/:id/clima" element={<Weather />} />
+            <Route path="/grupo/:id/Transporte" element={<Transport />} />
+          </Routes>
+        </main>
+      </div>
     </Router>
   );
 }
