@@ -142,7 +142,7 @@ function Home() {
       </section>
 
       {/* Nuevo Banner Visual */}
-      <section className="banner-section">
+      <section className="banner-section" id="banner-seccion">
         <div className="banner-container">
           <div className="banner-content">
             <h2 className="banner-title">

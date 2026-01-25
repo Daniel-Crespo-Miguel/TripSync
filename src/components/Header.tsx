@@ -43,10 +43,13 @@ const Header: React.FC = () => {
         <nav className="nav-center">
           <ul className="nav-links">
             <li>
-              <a href="/" className="nav-link active">Home</a>
+              <a href="/" className="nav-link active">Inicio</a>
             </li>
             <li>
               <a href="#sobre-web" className="nav-link">Sobre la web</a>
+            </li>
+            <li>
+              <a href="#banner-seccion" className="nav-link">Qué ofrece</a>
             </li>
           </ul>
         </nav>
