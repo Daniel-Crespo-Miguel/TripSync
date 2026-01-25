@@ -13,6 +13,7 @@ import Chat from "./pages/Chat";
 import Weather from "./pages/Weather";
 import Transport from './pages/Transport';
 import Header from './components/Header';
+import Footer from './components/Footer';
 
 function App() {
   return (
@@ -36,6 +37,7 @@ function App() {
             <Route path="/grupo/:id/Transporte" element={<Transport />} />
           </Routes>
         </main>
+        <Footer />
       </div>
     </Router>
   );
