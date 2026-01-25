@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { auth } from '../firebase/firebaseConfig';
 import { onAuthStateChanged } from 'firebase/auth';
-import logoTripSync from '../assets/Logo.png';
+import whiteLogoTripSync from '../assets/White_Logo.png';
 
 const Footer: React.FC = () => {
   const navigate = useNavigate();
@@ -24,73 +24,62 @@ const Footer: React.FC = () => {
     }
   };
 
+  const handleLogout = async () => {
+    try {
+      await auth.signOut();
+      navigate('/');
+    } catch (error) {
+      console.error('Error al cerrar sesión:', error);
+    }
+  };
+
   return (
     <footer className="footer">
       <div className="footer-container">
         <div className="footer-row">
           {/* Columna 1 - Marca */}
           <div className="footer-column">
-            <div className="footer-logo">
-              <img src={logoTripSync} alt="TripSync Logo" className="footer-logo-image" />
+            <div className="footer-brand">
+              <img src={whiteLogoTripSync} alt="TripSync Logo" className="footer-logo-image" />
             </div>
-            <p className="footer-description">
-              TripSync es una plataforma para organizar viajes en grupo de forma sencilla, colaborativa y sin estrés.
-            </p>
           </div>
 
-          {/* Columna 2 - Funcionalidades */}
+          {/* Columna 2 - Acciones de usuario */}
           <div className="footer-column">
-            <h3 className="footer-title">Funcionalidades</h3>
-            <ul className="footer-links">
-              <li>
-                <button 
-                  className="footer-link"
-                  onClick={() => handleFeatureClick('/dashboard')}
-                >
-                  Grupos de viaje
-                </button>
-              </li>
-              <li>
-                <button 
-                  className="footer-link"
-                  onClick={() => handleFeatureClick('/dashboard')}
-                >
-                  Gastos compartidos
-                </button>
-              </li>
-              <li>
-                <button 
-                  className="footer-link"
-                  onClick={() => handleFeatureClick('/dashboard')}
-                >
-                  Actividades
-                </button>
-              </li>
-              <li>
-                <button 
-                  className="footer-link"
-                  onClick={() => handleFeatureClick('/dashboard')}
-                >
-                  Itinerario
-                </button>
-              </li>
-              <li>
-                <button 
-                  className="footer-link"
-                  onClick={() => handleFeatureClick('/dashboard')}
-                >
-                  Clima
-                </button>
-              </li>
-              <li>
-                <button 
-                  className="footer-link"
-                  onClick={() => handleFeatureClick('/dashboard')}
-                >
-                  Chat
-                </button>
-              </li>
-            </ul>
+            <h3 className="footer-title">Acciones</h3>
+            <div className="footer-actions">
+              {user ? (
+                <>
+                  <button 
+                    className="footer-link"
+                    onClick={() => navigate('/dashboard')}
+                  >
+                    Ir al panel
+                  </button>
+                  <button 
+                    className="footer-link"
+                    onClick={handleLogout}
+                  >
+                    Cerrar sesión
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button 
+                    className="footer-link"
+                    onClick={() => navigate('/login')}
+                  >
+                    Iniciar sesión
+                  </button>
+                  <button 
+                    className="footer-link"
+                    onClick={() => navigate('/register')}
+                  >
+                    Registrarse
+                  </button>
+                </>
+              )}
+            </div>
           </div>
 
           {/* Columna 3 - Contacto / Sociales */}
@@ -99,15 +88,15 @@ const Footer: React.FC = () => {
             <div className="footer-contact">
               <div className="footer-contact-item">
                 <span className="footer-icon">📧</span>
-                <span>daniel.crespo@example.com</span>
+                <span>crespiinx@gmail.com</span>
               </div>
               <div className="footer-contact-item">
                 <span className="footer-icon">📱</span>
-                <span>+34 600 000 000</span>
+                <span>605454422</span>
               </div>
               <div className="footer-contact-item">
                 <a 
-                  href="https://linkedin.com/in/daniel-crespo-miguel" 
+                  href="https://www.linkedin.com/in/daniel-crespo-miguel90" 
                   className="footer-social-link"
                   target="_blank"
                   rel="noopener noreferrer"
