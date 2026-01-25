@@ -2,6 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { auth } from '../firebase/firebaseConfig';
 import { onAuthStateChanged, User } from 'firebase/auth';
+import bannerHome from '../assets/Banner_Home.png';
 
 function Home() {
   const [user, setUser] = React.useState<User | null>(null);
@@ -79,7 +80,7 @@ function Home() {
         
         <div className="features-grid">
           <div className="feature-card">
-            <div className="feature-icon">✈️</div>
+            <div className="feature-icon-center">✈️</div>
             <h3 className="feature-title">Organización de Grupos</h3>
             <p className="feature-description">
               Crea grupos de viaje, invita a amigos o familiares y mantén a todos 
@@ -89,7 +90,7 @@ function Home() {
           </div>
 
           <div className="feature-card">
-            <div className="feature-icon">💰</div>
+            <div className="feature-icon-center">💰</div>
             <h3 className="feature-title">Gestión de Gastos</h3>
             <p className="feature-description">
               Sistema tipo Tricount para gestionar gastos compartidos. 
@@ -99,7 +100,7 @@ function Home() {
           </div>
 
           <div className="feature-card">
-            <div className="feature-icon">🎯</div>
+            <div className="feature-icon-center">🎯</div>
             <h3 className="feature-title">Actividades y Votaciones</h3>
             <p className="feature-description">
               Propón actividades, permite que todos voten o se apunten, 
@@ -109,7 +110,7 @@ function Home() {
           </div>
 
           <div className="feature-card">
-            <div className="feature-icon">📅</div>
+            <div className="feature-icon-center">📅</div>
             <h3 className="feature-title">Itinerario por Días</h3>
             <p className="feature-description">
               Organiza tu viaje día a día con horarios específicos. 
@@ -119,7 +120,7 @@ function Home() {
           </div>
 
           <div className="feature-card">
-            <div className="feature-icon">🌤️</div>
+            <div className="feature-icon-center">🌤️</div>
             <h3 className="feature-title">Clima del Destino</h3>
             <p className="feature-description">
               Previsión meteorológica detallada para tu destino usando 
@@ -129,13 +130,34 @@ function Home() {
           </div>
 
           <div className="feature-card">
-            <div className="feature-icon">💬</div>
+            <div className="feature-icon-center">💬</div>
             <h3 className="feature-title">Chat en Tiempo Real</h3>
             <p className="feature-description">
               Comunicación instantánea entre los miembros del grupo. 
               Coordina cambios, comparte información y mantente en 
               contacto durante todo el viaje.
             </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Nuevo Banner Visual */}
+      <section className="banner-section">
+        <div className="banner-container">
+          <div className="banner-content">
+            <h2 className="banner-title">
+              Viaja sin preocupaciones, disfruta sin complicaciones
+            </h2>
+            <p className="banner-subtitle">
+              Deja que TripSync se encargue de la organización mientras tú te centras 
+              en crear recuerdos inolvidables con las personas que más te importan.
+            </p>
+            <button 
+              className="btn btn-primary banner-cta"
+              onClick={handleStart}
+            >
+              Empieza a planificar tu viaje
+            </button>
           </div>
         </div>
       </section>

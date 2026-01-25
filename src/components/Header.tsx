@@ -2,6 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { auth } from '../firebase/firebaseConfig';
 import { onAuthStateChanged } from 'firebase/auth';
+import logoTripSync from '../assets/Logo.png';
 
 const Header: React.FC = () => {
   const navigate = useNavigate();
@@ -27,14 +28,19 @@ const Header: React.FC = () => {
   return (
     <header className="header">
       <div className="header-container">
+        {/* Logo a la izquierda */}
         <div className="logo-container">
-          <div className="logo">
-            TS
-          </div>
-          <div className="logo-text">TripSync</div>
+          <img 
+            src={logoTripSync} 
+            alt="TripSync Logo" 
+            className="logo-image"
+            onClick={() => navigate('/')}
+            style={{ cursor: 'pointer' }}
+          />
         </div>
         
-        <nav>
+        {/* Navegación en el centro */}
+        <nav className="nav-center">
           <ul className="nav-links">
             <li>
               <a href="/" className="nav-link active">Home</a>
@@ -42,12 +48,10 @@ const Header: React.FC = () => {
             <li>
               <a href="#sobre-web" className="nav-link">Sobre la web</a>
             </li>
-            <li>
-              <a href="/about" className="nav-link">Sobre mí</a>
-            </li>
           </ul>
         </nav>
 
+        {/* Acciones de usuario a la derecha */}
         <div className="user-actions">
           {user ? (
             <>
