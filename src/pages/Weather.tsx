@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { auth, db } from "../firebase/firebaseConfig";
 import { doc, getDoc, onSnapshot } from "firebase/firestore";
+import "../styles/weather.css";
 
 type Grupo = {
   name: string;
@@ -147,6 +148,7 @@ function Weather() {
 
   const [rows, setRows] = useState<Row[]>([]);
   const [units, setUnits] = useState<DailyUnits | null>(null);
+  const [showTechnical, setShowTechnical] = useState(false);
 
   // --- Cargar grupo ---
   useEffect(() => {
@@ -277,82 +279,225 @@ function Weather() {
     }
   }, []);
 
-  if (!grupo) return <div className="container mt-5">Cargando clima...</div>;
+  if (!grupo) return <div className="weather-loading">Cargando clima...</div>;
 
   const startLabel = startEnd ? startEnd.start.toLocaleDateString() : "—";
   const endLabel = startEnd ? startEnd.end.toLocaleDateString() : "—";
 
+  // Cálculos para el resumen general
+  const tempMin = rows.length > 0 ? Math.min(...rows.map(r => r.tmin ?? Infinity)) : null;
+  const tempMax = rows.length > 0 ? Math.max(...rows.map(r => r.tmax ?? -Infinity)) : null;
+  const daysWithRain = rows.filter(r => (r.prcp ?? 0) > 0).length;
+  const windiestDay = rows.reduce((prev, current) => {
+    return (current.wind ?? 0) > (prev.wind ?? 0) ? current : prev;
+  }, rows[0] || null);
+
+  // Función para obtener icono de clima
+  const getWeatherIcon = (code?: number) => {
+    if (code === 0) return "☀️";
+    if (code === 1 || code === 2) return "🌤️";
+    if (code === 3) return "☁️";
+    if (code === 45 || code === 48) return "🌫️";
+    if (code === 51 || code === 53 || code === 55 || code === 61 || code === 63 || code === 65) return "🌧️";
+    if (code === 71 || code === 73 || code === 75) return "❄️";
+    if (code === 95 || code === 96 || code === 99) return "⛈️";
+    return "🌤️";
+  };
+
+  // Función para obtener clase de icono según clima
+  const getWeatherIconClass = (code?: number) => {
+    if (code === 0) return "weather-icon-sun";
+    if (code === 1 || code === 2 || code === 3) return "weather-icon-cloud";
+    if (code === 45 || code === 48) return "weather-icon-cloud";
+    if (code === 51 || code === 53 || code === 55 || code === 61 || code === 63 || code === 65) return "weather-icon-rain";
+    if (code === 71 || code === 73 || code === 75) return "weather-icon-snow";
+    if (code === 95 || code === 96 || code === 99) return "weather-icon-storm";
+    return "weather-icon-cloud";
+  };
+
   return (
-    <div className="container mt-5">
-      <div className="d-flex justify-content-between align-items-center mb-3">
-        <div>
-          <h2 className="m-0">Clima — {grupo.name}</h2>
-          <div className="mt-2">
-            <div>
-              <strong>Destino:</strong> {grupo.destination || "—"}
+    <div className="weather-page">
+      {/* Cabecera de la página */}
+      <div className="weather-header">
+        <div className="weather-title-section">
+          <h1 className="weather-title">Clima</h1>
+          <p className="weather-subtitle">Previsión meteorológica para tu viaje</p>
+        </div>
+        <div className="weather-actions">
+          <button 
+            className="btn btn-secondary" 
+            onClick={() => navigate(`/grupo/${id}`)}
+            style={{
+              padding: '0.75rem 1.5rem',
+              borderRadius: '8px',
+              border: '1px solid #E5E7EB',
+              backgroundColor: 'white',
+              color: 'var(--text-primary)',
+              fontSize: '0.875rem',
+              fontWeight: '600',
+              cursor: 'pointer',
+              transition: 'all 0.3s ease'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = 'var(--primary-color)';
+              e.currentTarget.style.color = 'white';
+              e.currentTarget.style.borderColor = 'var(--primary-color)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = 'white';
+              e.currentTarget.style.color = 'var(--text-primary)';
+              e.currentTarget.style.borderColor = '#E5E7EB';
+            }}
+          >
+            Volver al grupo
+          </button>
+        </div>
+      </div>
+
+      {/* Información del viaje */}
+      <div className="weather-trip-info">
+        <div className="trip-info-grid">
+          <div className="trip-info-item">
+            <span className="trip-info-label">Destino</span>
+            <span className="trip-info-value">{grupo.destination || "—"}</span>
+          </div>
+          <div className="trip-info-item">
+            <span className="trip-info-label">Fechas del viaje</span>
+            <span className="trip-info-value">{startLabel} — {endLabel}</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Resumen general del clima */}
+      {rows.length > 0 && (
+        <div className="weather-summary">
+          <h2 className="summary-title">Resumen general del viaje</h2>
+          <div className="summary-grid">
+            <div className="summary-card">
+              <div className="summary-icon">🌡️</div>
+              <div className="summary-label">Rango térmico</div>
+              <div className="summary-value">
+                {tempMin != null ? Math.round(tempMin) : "—"}° / {tempMax != null ? Math.round(tempMax) : "—"}°
+              </div>
             </div>
-            <div>
-              <strong>Fechas del viaje:</strong> {startLabel} — {endLabel}
+            
+            <div className="summary-card">
+              <div className="summary-icon">🌧️</div>
+              <div className="summary-label">Días con lluvia</div>
+              <div className="summary-value">{daysWithRain}</div>
+            </div>
+            
+            <div className="summary-card">
+              <div className="summary-icon">💨</div>
+              <div className="summary-label">Día más ventoso</div>
+              <div className="summary-value">
+                {windiestDay ? `${Math.round(windiestDay.wind ?? 0)} km/h` : "—"}
+              </div>
+            </div>
+            
+            <div className="summary-card">
+              <div className="summary-icon">📅</div>
+              <div className="summary-label">Total de días</div>
+              <div className="summary-value">{rows.length}</div>
             </div>
           </div>
         </div>
+      )}
 
-        <button className="btn btn-secondary" onClick={() => navigate(`/grupo/${id}`)}>
-          Volver al grupo
-        </button>
-      </div>
+      {/* Sección principal de pronóstico */}
+      <div className="weather-main">
+        <h2 className="forecast-title">Previsión diaria</h2>
 
-      {error && <div className="alert alert-warning">{error}</div>}
-
-      <div className="card p-3">
-        <h5 className="mb-3">Previsión diaria</h5>
-
-        {loadingWeather ? (
-          <div className="text-muted">Cargando previsión...</div>
-        ) : rows.length === 0 ? (
-          <div className="text-muted">Sin datos de previsión.</div>
-        ) : (
-          <div className="table-responsive">
-            <table className="table table-striped align-middle">
-              <thead>
-                <tr>
-                  <th>Día</th>
-                  <th>Tiempo</th>
-                  <th>Mín</th>
-                  <th>Máx</th>
-                  <th>Precip.</th>
-                  <th>Viento</th>
-                </tr>
-              </thead>
-              <tbody>
-                {rows.map((r) => (
-                  <tr key={r.day}>
-                    <td>{new Date(r.day).toLocaleDateString()}</td>
-                    <td className="text-capitalize">{weatherCodeToText(r.code)}</td>
-                    <td>
-                      {r.tmin != null ? Math.round(r.tmin) : "—"}{" "}
-                      {units?.temperature_2m_min ?? "°C"}
-                    </td>
-                    <td>
-                      {r.tmax != null ? Math.round(r.tmax) : "—"}{" "}
-                      {units?.temperature_2m_max ?? "°C"}
-                    </td>
-                    <td>
-                      {r.prcp != null ? r.prcp : "—"}{" "}
-                      {units?.precipitation_sum ?? "mm"}
-                    </td>
-                    <td>
-                      {r.wind != null ? r.wind : "—"}{" "}
-                      {units?.wind_speed_10m_max ?? "km/h"}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+        {error && (
+          <div className="weather-error">
+            {error}
           </div>
         )}
 
-        <div className="small text-muted mt-2">Datos de Open-Meteo (sin API key).</div>
+        {loadingWeather ? (
+          <div className="weather-loading">Cargando previsión...</div>
+        ) : rows.length === 0 ? (
+          <div className="weather-empty">
+            <div className="empty-icon">🌤️</div>
+            <h5 className="empty-title">Sin datos de previsión</h5>
+            <p className="empty-subtitle">No hay datos meteorológicos para las fechas del viaje</p>
+          </div>
+        ) : (
+          <>
+            <div className="forecast-grid">
+              {rows.map((r) => (
+                <div key={r.day} className="forecast-card">
+                  <div className="forecast-day">
+                    <div className="forecast-date">{new Date(r.day).toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'short' })}</div>
+                    <div className={`forecast-weather-icon ${getWeatherIconClass(r.code)}`}>
+                      {getWeatherIcon(r.code)}
+                    </div>
+                  </div>
+                  
+                  <div className="forecast-weather-text">{weatherCodeToText(r.code)}</div>
+                  
+                  <div className="forecast-temps">
+                    <div className="temp-min">
+                      {r.tmin != null ? `${Math.round(r.tmin)}°` : "—"}
+                    </div>
+                    <div className="temp-max">
+                      {r.tmax != null ? `${Math.round(r.tmax)}°` : "—"}
+                    </div>
+                  </div>
+                  
+                  <div className="forecast-details">
+                    <div className="forecast-detail-item">
+                      <span>Precip.</span>
+                      <span>{r.prcp != null ? `${r.prcp} mm` : "—"}</span>
+                    </div>
+                    <div className="forecast-detail-item">
+                      <span>Viento</span>
+                      <span>{r.wind != null ? `${r.wind} km/h` : "—"}</span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Botón de detalles técnicos */}
+            <div className="details-toggle">
+              <button 
+                className="btn-details"
+                onClick={() => setShowTechnical(!showTechnical)}
+              >
+                {showTechnical ? "Ocultar" : "Ver"} detalles técnicos
+                <span>{showTechnical ? "↑" : "↓"}</span>
+              </button>
+            </div>
+
+            {/* Sección de detalles técnicos */}
+            <div className={`technical-details ${showTechnical ? 'show' : ''}`}>
+              <h3 className="technical-title">Detalles técnicos (Open-Meteo)</h3>
+              <div className="technical-grid">
+                <div className="technical-card">
+                  <div className="technical-label">Unidad de temperatura</div>
+                  <div className="technical-value">{units?.temperature_2m_min ?? "°C"}</div>
+                </div>
+                <div className="technical-card">
+                  <div className="technical-label">Unidad de precipitación</div>
+                  <div className="technical-value">{units?.precipitation_sum ?? "mm"}</div>
+                </div>
+                <div className="technical-card">
+                  <div className="technical-label">Unidad de viento</div>
+                  <div className="technical-value">{units?.wind_speed_10m_max ?? "km/h"}</div>
+                </div>
+                <div className="technical-card">
+                  <div className="technical-label">Fuente de datos</div>
+                  <div className="technical-value">Open-Meteo</div>
+                </div>
+              </div>
+            </div>
+          </>
+        )}
+
+        <div className="weather-footer">
+          Datos proporcionados por Open-Meteo. Sin necesidad de API key.
+        </div>
       </div>
     </div>
   );
