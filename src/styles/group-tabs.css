@@ -33,6 +33,7 @@
 
 .group-title-section {
   margin-bottom: 1.5rem;
+  text-align: center;
 }
 
 .group-title {
@@ -41,11 +42,13 @@
   margin: 0 0 0.5rem 0;
   line-height: 1.2;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  text-align: center;
 }
 
 .group-meta {
   font-size: 1rem;
   opacity: 0.9;
+  text-align: center;
 }
 
 .group-creator {
