@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { db, auth } from "../firebase/firebaseConfig";
 import { collection, addDoc, Timestamp } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
+import "../styles/create-group.css";
 
 type GeoResult = {
   name: string;
@@ -201,93 +202,138 @@ function CreateGroup() {
   };
 
   return (
-    <div className="container mt-5">
-      <h2>Crear nuevo grupo de viaje</h2>
+    <div className="create-group-container">
+      <div className="create-group-header">
+        <h1 className="create-group-title">Crear nuevo viaje</h1>
+        <p className="create-group-subtitle">
+          Define los datos básicos del viaje para empezar a organizarlo
+        </p>
+      </div>
 
-      {formError && <div className="alert alert-danger">{formError}</div>}
+      <div className="create-group-card">
+        {formError && <div className="form-error">{formError}</div>}
 
-      <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          className="form-control mb-3"
-          placeholder="Nombre del grupo"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          required
-        />
+        <form onSubmit={handleSubmit} className="create-group-form">
+          {/* Bloque 1 - Información del viaje */}
+          <div className="form-block">
+            <div className="form-block-header">
+              <h3 className="form-block-title">Información del viaje</h3>
+            </div>
+            
+            <div className="form-group">
+              <label htmlFor="name" className="form-label">
+                Nombre del grupo
+              </label>
+              <input
+                id="name"
+                type="text"
+                className="form-input"
+                placeholder="Ej: Viaje a Roma 2024"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+              />
+            </div>
 
-        <div className="mb-3">
-          <label className="form-label">Destino</label>
-          <input
-            type="text"
-            className="form-control"
-            placeholder="Escribe una ciudad (ej: Roma, Madrid, Lisboa)"
-            value={destinationInput}
-            onChange={(e) => setDestinationInput(e.target.value)}
-            required
-          />
+            <div className="form-group">
+              <label htmlFor="destination" className="form-label">
+                Destino
+              </label>
+              <input
+                id="destination"
+                type="text"
+                className="form-input"
+                placeholder="Escribe una ciudad (ej: Roma, Madrid, Lisboa)"
+                value={destinationInput}
+                onChange={(e) => setDestinationInput(e.target.value)}
+                required
+              />
+              <div className="form-hint">
+                Selecciona un destino de la lista para evitar errores en clima/sugerencias.
+              </div>
 
-          <div className="small text-muted mt-1">
-            Selecciona un destino de la lista para evitar errores en clima/sugerencias.
+              {searching && <div className="form-loading">Buscando destinos...</div>}
+              {destError && <div className="form-error-small">{destError}</div>}
+
+              {!searching && suggestions.length > 0 && (
+                <div className="suggestions-list">
+                  {suggestions.map((r) => {
+                    const key = `${r.name}-${r.latitude}-${r.longitude}`;
+                    return (
+                      <button
+                        key={key}
+                        type="button"
+                        className="suggestion-item"
+                        onClick={() => handlePickDestination(r)}
+                      >
+                        {formatPlaceLabel(r)}
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+
+              {selectedDestination && (
+                <div className="destination-selected">
+                  Destino seleccionado: <strong>{selectedDestinationLabel}</strong>
+                </div>
+              )}
+            </div>
           </div>
 
-          {searching && <div className="small text-muted mt-2">Buscando destinos...</div>}
-          {destError && <div className="small text-danger mt-2">{destError}</div>}
+          {/* Separador sutil */}
+          <div className="form-divider"></div>
 
-          {!searching && suggestions.length > 0 && (
-            <div className="list-group mt-2">
-              {suggestions.map((r) => {
-                const key = `${r.name}-${r.latitude}-${r.longitude}`;
-                return (
-                  <button
-                    key={key}
-                    type="button"
-                    className="list-group-item list-group-item-action"
-                    onClick={() => handlePickDestination(r)}
-                  >
-                    {formatPlaceLabel(r)}
-                  </button>
-                );
-              })}
+          {/* Bloque 2 - Fechas */}
+          <div className="form-block">
+            <div className="form-block-header">
+              <h3 className="form-block-title">Fechas</h3>
             </div>
-          )}
+            
+            <div className="form-row">
+              <div className="form-group">
+                <label htmlFor="startDate" className="form-label">
+                  Fecha de inicio
+                </label>
+                <input
+                  id="startDate"
+                  type="date"
+                  className="form-input"
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                  min={minDate}
+                  required
+                />
+                <div className="form-hint">
+                  No se permiten fechas en el pasado.
+                </div>
+              </div>
 
-          {selectedDestination && (
-            <div className="alert alert-success mt-3 mb-0 py-2">
-              Destino seleccionado: <strong>{selectedDestinationLabel}</strong>
+              <div className="form-group">
+                <label htmlFor="endDate" className="form-label">
+                  Fecha de fin
+                </label>
+                <input
+                  id="endDate"
+                  type="date"
+                  className="form-input"
+                  value={endDate}
+                  onChange={(e) => setEndDate(e.target.value)}
+                  min={startDate || minDate}
+                  required
+                />
+              </div>
             </div>
-          )}
-        </div>
+          </div>
 
-        <div className="mb-3">
-          <label className="form-label">Fecha de inicio</label>
-          <input
-            type="date"
-            className="form-control"
-            value={startDate}
-            onChange={(e) => setStartDate(e.target.value)}
-            min={minDate}
-            required
-          />
-          <div className="small text-muted mt-1">No se permiten fechas en el pasado.</div>
-        </div>
-
-        <div className="mb-3">
-          <label className="form-label">Fecha de fin</label>
-          <input
-            type="date"
-            className="form-control"
-            value={endDate}
-            onChange={(e) => setEndDate(e.target.value)}
-            min={startDate || minDate}
-            required
-          />
-        </div>
-
-        <button className="btn btn-success" type="submit">
-          Crear viaje
-        </button>
-      </form>
+          {/* Botones de acción */}
+          <div className="form-actions">
+            <button className="btn-primary" type="submit">
+              Crear viaje
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }
