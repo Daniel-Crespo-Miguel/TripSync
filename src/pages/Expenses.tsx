@@ -8,6 +8,7 @@ import {
   arrayUnion,
   onSnapshot,
 } from "firebase/firestore";
+import "../styles/expenses.css";
 
 type Expense = {
   description: string;
@@ -202,6 +203,13 @@ function Expenses() {
     [balanceRows],
   );
 
+  // Cálculos para las tarjetas de resumen
+  const totalGasto = expenses.reduce((sum, e) => sum + (Number(e.amount) || 0), 0);
+  const currentUser = auth.currentUser?.email ?? "";
+  const currentUserBalance = balanceRows.find(r => r.user === currentUser);
+  const currentUserPaid = currentUserBalance?.paid || 0;
+  const currentUserNet = currentUserBalance?.net || 0;
+
   const handleAddExpense = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!id) return;
@@ -265,172 +273,260 @@ function Expenses() {
   }
 
   return (
-    <div className="container mt-5">
-      <div className="d-flex justify-content-between align-items-center mb-3">
-        <h2 className="m-0">Gastos de {grupo.name}</h2>
-        <button
-          className="btn btn-secondary"
-          onClick={() => navigate(`/grupo/${id}`)}
-        >
-          Volver al grupo
-        </button>
+    <div className="expenses-page">
+      {/* Cabecera de la página */}
+      <div className="expenses-header">
+        <h1 className="expenses-title">Gastos compartidos</h1>
+        <div className="expenses-actions">
+          <button 
+            className="btn btn-secondary" 
+            onClick={() => navigate(`/grupo/${id}`)}
+            style={{
+              padding: '0.75rem 1.5rem',
+              borderRadius: '8px',
+              border: '1px solid #E5E7EB',
+              backgroundColor: 'white',
+              color: 'var(--text-primary)',
+              fontSize: '0.875rem',
+              fontWeight: '600',
+              cursor: 'pointer',
+              transition: 'all 0.3s ease'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = 'var(--primary-color)';
+              e.currentTarget.style.color = 'white';
+              e.currentTarget.style.borderColor = 'var(--primary-color)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = 'white';
+              e.currentTarget.style.color = 'var(--text-primary)';
+              e.currentTarget.style.borderColor = '#E5E7EB';
+            }}
+          >
+            Volver al grupo
+          </button>
+        </div>
       </div>
 
-      <form onSubmit={handleAddExpense} className="card p-3 mb-4">
-        <div className="mb-3">
-          <label className="form-label">Descripción del gasto</label>
-          <input
-            type="text"
-            className="form-control"
-            value={gasto}
-            onChange={(e) => setGasto(e.target.value)}
-            required
-          />
+      {/* Resumen superior - Cards de resumen */}
+      <div className="summary-cards">
+        <div className="summary-card">
+          <div className="summary-icon">💰</div>
+          <div className="summary-label">Gasto total</div>
+          <div className="summary-value">{formatMoney(totalGasto)}</div>
+        </div>
+        
+        <div className="summary-card">
+          <div className="summary-icon">👤</div>
+          <div className="summary-label">Has pagado</div>
+          <div className="summary-value">{formatMoney(currentUserPaid)}</div>
+        </div>
+        
+        <div className="summary-card">
+          <div className="summary-icon">⚖️</div>
+          <div className="summary-label">Balance personal</div>
+          <div className={`summary-value ${currentUserNet > 0.01 ? 'balance-positive' : currentUserNet < -0.01 ? 'balance-negative' : ''}`}>
+            {formatMoney(currentUserNet)}
+          </div>
+        </div>
+        
+        <div className="summary-card">
+          <div className="summary-icon">👥</div>
+          <div className="summary-label">Participantes</div>
+          <div className="summary-value">{members.length}</div>
+        </div>
+      </div>
+
+      {/* Formulario de añadir gasto */}
+      <form onSubmit={handleAddExpense} className="expenses-form-card">
+        <div className="form-header">
+          <h3 className="form-title">Añadir gasto</h3>
+          <p className="form-subtitle">Registra un nuevo gasto del grupo</p>
+        </div>
+        
+        <div className="form-grid">
+          <div className="form-group">
+            <label className="form-label">Descripción del gasto</label>
+            <input
+              type="text"
+              className="form-input"
+              value={gasto}
+              onChange={(e) => setGasto(e.target.value)}
+              required
+              placeholder="Ej: Cena en restaurante"
+            />
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">Monto</label>
+            <input
+              type="number"
+              className="form-input"
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+              step="0.01"
+              min="0"
+              required
+              placeholder="0.00"
+            />
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">Pagó</label>
+            <select
+              className="form-select"
+              value={payer}
+              onChange={(e) => setPayer(e.target.value)}
+              required
+              disabled={members.length === 0}
+            >
+              {members.map((email) => (
+                <option key={email} value={email}>
+                  {email}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="form-group form-group-full">
+            <label className="form-label">
+              Asignar a{" "}
+              <small className="text-muted">
+                (si no seleccionas nadie, se reparte entre todos)
+              </small>
+            </label>
+            <select
+              className="form-select"
+              multiple
+              value={assignedTo}
+              onChange={(e) =>
+                setAssignedTo(
+                  Array.from(e.target.selectedOptions, (option) => option.value),
+                )
+              }
+            >
+              {members.map((email) => (
+                <option key={email} value={email}>
+                  {email}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
 
-        <div className="mb-3">
-          <label className="form-label">Monto</label>
-          <input
-            type="number"
-            className="form-control"
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-            step="0.01"
-            min="0"
-            required
-          />
+        <div className="form-actions">
+          <button className="btn-add-expense" type="submit">
+            + Añadir gasto
+          </button>
         </div>
-
-        {}
-        <div className="mb-3">
-          <label className="form-label">Pagó</label>
-          <select
-            className="form-control"
-            value={payer}
-            onChange={(e) => setPayer(e.target.value)}
-            required
-            disabled={members.length === 0}
-          >
-            {members.map((email) => (
-              <option key={email} value={email}>
-                {email}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div className="mb-3">
-          <label className="form-label">
-            Asignar a{" "}
-            <small className="text-muted">
-              (si no seleccionas nadie, se reparte entre todos)
-            </small>
-          </label>
-          <select
-            className="form-control"
-            multiple
-            value={assignedTo}
-            onChange={(e) =>
-              setAssignedTo(
-                Array.from(e.target.selectedOptions, (option) => option.value),
-              )
-            }
-          >
-            {members.map((email) => (
-              <option key={email} value={email}>
-                {email}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <button type="submit" className="btn btn-primary">
-          Añadir Gasto
-        </button>
       </form>
 
-      <div className="row g-3">
-        <div className="col-12 col-lg-6">
-          <h3>Lista de gastos</h3>
+      {/* Contenedor principal de contenido */}
+      <div className="expenses-main">
+        {/* Lista de gastos */}
+        <div className="expenses-list-section">
+          <h2 className="expenses-list-title">Lista de gastos</h2>
+          
           {expenses.length === 0 ? (
-            <p>No hay gastos aún.</p>
+            <div className="expenses-empty">
+              <div className="empty-icon">💰</div>
+              <h5 className="empty-title">No hay gastos aún</h5>
+              <p className="empty-subtitle">Empieza añadiendo un gasto 👇</p>
+            </div>
           ) : (
-            <ul className="list-group">
-              {expenses
-                .slice()
-                .sort((a, b) => (a.date < b.date ? 1 : -1))
-                .map((g) => (
-                  <li key={g.date} className="list-group-item">
-                    <div className="d-flex justify-content-between">
-                      <strong>{g.description}</strong>
-                      <span>{formatMoney(Number(g.amount) || 0)}</span>
-                    </div>
-                    <div className="small text-muted">
-                      Pagó: {g.payer} · Repartido entre:{" "}
-                      {(g.assignedTo?.length ? g.assignedTo : members).join(
-                        ", ",
-                      )}
-                    </div>
-                  </li>
-                ))}
-            </ul>
+            expenses
+              .slice()
+              .sort((a, b) => (a.date < b.date ? 1 : -1))
+              .map((g) => (
+                <div key={g.date} className="expense-card">
+                  <div className="expense-header">
+                    <div className="expense-description">{g.description}</div>
+                    <div className="expense-amount">{formatMoney(Number(g.amount) || 0)}</div>
+                  </div>
+                  
+                  <div className="expense-details">
+                    <strong>Pagó:</strong> {g.payer}
+                  </div>
+                  
+                  <div className="expense-meta">
+                    <span>Repartido entre: {(g.assignedTo?.length ? g.assignedTo : members).join(", ")}</span>
+                    <span>{new Date(g.date).toLocaleDateString()}</span>
+                  </div>
+                </div>
+              ))
           )}
         </div>
 
-        <div className="col-12 col-lg-6">
-          <h3>Balance (tipo Tricount)</h3>
+        {/* Sección de balance */}
+        <div className="balance-section">
+          <h2 className="balance-title">Balance (tipo Tricount)</h2>
 
           {members.length === 0 ? (
-            <p>No hay invitados en el grupo.</p>
-          ) : (
-            <div className="table-responsive">
-              <table className="table table-striped align-middle">
-                <thead>
-                  <tr>
-                    <th>Usuario</th>
-                    <th>Pagado</th>
-                    <th>Le toca</th>
-                    <th>Neto</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {balanceRows.map((r) => (
-                    <tr key={r.user}>
-                      <td>{r.user}</td>
-                      <td>{formatMoney(r.paid)}</td>
-                      <td>{formatMoney(r.owed)}</td>
-                      <td>
-                        <span
-                          className={
-                            r.net > 0.01
-                              ? "text-success fw-bold"
-                              : r.net < -0.01
-                                ? "text-danger fw-bold"
-                                : "fw-bold"
-                          }
-                        >
-                          {formatMoney(r.net)}
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+            <div className="balance-empty">
+              <div className="empty-icon">👥</div>
+              <h5 className="empty-title">No hay invitados en el grupo</h5>
+              <p className="empty-subtitle">Añade invitados para empezar a gestionar gastos</p>
             </div>
-          )}
-
-          <h4 className="mt-4">Para saldar</h4>
-          {settlements.length === 0 ? (
-            <p>Todo cuadrado ✅</p>
           ) : (
-            <ul className="list-group">
-              {settlements.map((s, idx) => (
-                <li key={idx} className="list-group-item">
-                  <strong>{s.from}</strong> paga a <strong>{s.to}</strong> —{" "}
-                  <strong>{formatMoney(s.amount)}</strong>
-                </li>
-              ))}
-            </ul>
+            <>
+              <div className="table-responsive">
+                <table className="balance-table">
+                  <thead>
+                    <tr>
+                      <th>Usuario</th>
+                      <th>Pagado</th>
+                      <th>Le toca</th>
+                      <th>Neto</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {balanceRows.map((r) => (
+                      <tr key={r.user}>
+                        <td>{r.user}</td>
+                        <td className="balance-amount">{formatMoney(r.paid)}</td>
+                        <td className="balance-amount">{formatMoney(r.owed)}</td>
+                        <td className="balance-amount">
+                          <span
+                            className={
+                              r.net > 0.01
+                                ? "balance-positive"
+                                : r.net < -0.01
+                                  ? "balance-negative"
+                                  : ""
+                            }
+                          >
+                            {formatMoney(r.net)}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Sección de liquidación */}
+              <div className="settlement-section">
+                <h3 className="settlement-title">Para saldar</h3>
+                
+                {settlements.length === 0 ? (
+                  <div className="settlement-empty">
+                    <div className="empty-icon">✅</div>
+                    <h5 className="empty-title">Todo cuadrado</h5>
+                    <p className="empty-subtitle">No hay deudas pendientes</p>
+                  </div>
+                ) : (
+                  settlements.map((s, idx) => (
+                    <div key={idx} className="settlement-card">
+                      <div className="settlement-text">
+                        <span className="settlement-highlight">{s.from}</span> paga a{" "}
+                        <span className="settlement-highlight">{s.to}</span> —{" "}
+                        <span className="settlement-amount">{formatMoney(s.amount)}</span>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            </>
           )}
         </div>
       </div>
