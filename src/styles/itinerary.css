@@ -1,0 +1,620 @@
+/* Estilos para la página de Itinerario - TripSync */
+
+/* Variables CSS para mantener coherencia con el proyecto */
+:root {
+  --primary-color: #0B3C5D;
+  --secondary-color: #1ECAD3;
+  --text-primary: #1F2933;
+  --text-secondary: #6B7280;
+  --bg-light: #F9FAFB;
+  --white: #FFFFFF;
+  --success: #10B981;
+  --danger: #EF4444;
+  --warning: #F59E0B;
+}
+
+/* Contenedor principal de la página */
+.itinerary-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  background-color: var(--bg-light);
+  min-height: calc(100vh - 140px);
+}
+
+/* Cabecera de la página */
+.itinerary-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid #E5E7EB;
+}
+
+.itinerary-title-section {
+  flex: 1;
+  text-align: center;
+}
+
+.itinerary-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--primary-color);
+  margin: 0 0 0.5rem 0;
+  line-height: 1.2;
+  text-align: center;
+}
+
+.itinerary-subtitle {
+  font-size: 1.125rem;
+  color: var(--text-secondary);
+  margin: 0;
+  text-align: center;
+}
+
+.itinerary-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* Formulario para añadir actividades */
+.itinerary-form-card {
+  background: var(--white);
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  border: 1px solid #E5E7EB;
+  margin-bottom: 3rem;
+}
+
+.form-header {
+  margin-bottom: 1.5rem;
+}
+
+.form-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--primary-color);
+  margin: 0 0 0.5rem 0;
+}
+
+.form-subtitle {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-group-full {
+  grid-column: 1 / -1;
+}
+
+.form-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.form-input {
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  border: 2px solid #E5E7EB;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  background-color: #fff;
+  font-family: inherit;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(11, 60, 93, 0.1);
+  transform: translateY(-1px);
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.btn-submit {
+  padding: 0.75rem 2rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  color: var(--white);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.btn-submit:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(2, 139, 199, 0.3);
+}
+
+/* Vista principal del itinerario */
+.itinerary-main {
+  background: var(--white);
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  border: 1px solid #E5E7EB;
+}
+
+.itinerary-section-header {
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.section-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--primary-color);
+  margin: 0 0 0.5rem 0;
+}
+
+.section-subtitle {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  margin: 0;
+  text-align: end;
+}
+
+/* Estado vacío */
+.empty-state {
+  text-align: center;
+  padding: 4rem 2rem;
+  border: 2px dashed #E5E7EB;
+  border-radius: 16px;
+}
+
+.empty-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+  opacity: 0.5;
+}
+
+.empty-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin: 0 0 0.5rem 0;
+}
+
+.empty-subtitle {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+/* Contenedor de la timeline */
+.timeline-container {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+/* Día individual */
+.itinerary-day {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.day-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background-color: #F9FAFB;
+  border-radius: 12px;
+  border: 1px solid #E5E7EB;
+}
+
+.day-date {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.date-icon {
+  font-size: 1.5rem;
+}
+
+.date-text {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--primary-color);
+}
+
+.weekday-text {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+/* Timeline */
+.timeline {
+  position: relative;
+  padding-left: 2rem;
+}
+
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 20px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background-color: #E5E7EB;
+  border-radius: 1px;
+}
+
+.timeline-item {
+  position: relative;
+  margin-bottom: 2rem;
+  display: flex;
+  gap: 1.5rem;
+}
+
+.timeline-marker {
+  position: absolute;
+  left: -2.25rem;
+  top: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.timeline-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: var(--primary-color);
+  border: 2px solid var(--white);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 2;
+}
+
+.timeline-line {
+  flex: 1;
+  width: 2px;
+  background-color: #E5E7EB;
+  margin-top: 0.5rem;
+}
+
+.timeline-content {
+  flex: 1;
+}
+
+/* Tarjeta de actividad */
+.activity-card {
+  background: var(--white);
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  border: 1px solid #E5E7EB;
+  transition: all 0.3s ease;
+}
+
+.activity-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.activity-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+
+.activity-time {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.time-badge {
+  background-color: #F3F4F6;
+  color: var(--text-secondary);
+  padding: 0.25rem 0.5rem;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  border: 1px solid #E5E7EB;
+}
+
+.activity-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--primary-color);
+}
+
+.activity-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.action-btn {
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  border: 1px solid #E5E7EB;
+  background-color: white;
+  color: var(--text-primary);
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  border: none;
+}
+
+.edit-btn {
+  background-color: #F3F4F6;
+  color: var(--text-secondary);
+}
+
+.edit-btn:hover {
+  background-color: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
+}
+
+.delete-btn {
+  background-color: #FEE2E2;
+  color: #DC2626;
+  border: 1px solid #fecaca;
+}
+
+.delete-btn:hover {
+  background-color: #EF4444;
+  color: white;
+  border-color: #EF4444;
+}
+
+/* Notas de la actividad */
+.activity-notes {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin-bottom: 1rem;
+  padding: 1rem;
+  background-color: #F9FAFB;
+  border-radius: 8px;
+  border: 1px solid #E5E7EB;
+}
+
+/* Información del creador */
+.activity-meta {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.creator-badge {
+  background-color: #F3F4F6;
+  color: var(--text-secondary);
+  padding: 0.25rem 0.5rem;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border: 1px solid #E5E7EB;
+}
+
+/* Modal de edición (estilos adicionales para el modal) */
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 16px;
+  padding: 2rem;
+  max-width: 500px;
+  width: 90%;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .itinerary-page {
+    padding: 1.5rem;
+  }
+  
+  .form-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+  
+  .timeline::before {
+    left: 15px;
+  }
+  
+  .timeline-item {
+    gap: 1rem;
+  }
+  
+  .timeline-marker {
+    left: -1.75rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .itinerary-page {
+    padding: 1rem;
+  }
+  
+  .itinerary-header {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+  
+  .itinerary-title {
+    font-size: 2rem;
+  }
+  
+  .itinerary-form-card {
+    padding: 1.5rem;
+  }
+  
+  .form-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .form-group-full {
+    grid-column: 1;
+  }
+  
+  .day-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  
+  .timeline::before {
+    left: 10px;
+  }
+  
+  .timeline-item {
+    gap: 0.75rem;
+  }
+  
+  .timeline-marker {
+    left: -1.25rem;
+  }
+  
+  .activity-card {
+    padding: 1rem;
+  }
+  
+  .activity-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  
+  .activity-actions {
+    align-self: flex-end;
+  }
+}
+
+@media (max-width: 480px) {
+  .itinerary-page {
+    padding: 0.75rem;
+  }
+  
+  .itinerary-title {
+    font-size: 1.75rem;
+  }
+  
+  .itinerary-form-card {
+    padding: 1rem;
+  }
+  
+  .form-title {
+    font-size: 1.125rem;
+  }
+  
+  .section-title {
+    font-size: 1.25rem;
+  }
+  
+  .timeline::before {
+    left: 8px;
+  }
+  
+  .timeline-marker {
+    left: -1rem;
+  }
+  
+  .timeline-dot {
+    width: 10px;
+    height: 10px;
+  }
+  
+  .activity-title {
+    font-size: 1rem;
+  }
+}
+
+/* Animaciones */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.itinerary-day {
+  animation: fadeInUp 0.5s ease-out;
+}
+
+/* Mejoras de accesibilidad */
+.form-input:focus {
+  outline: 3px solid var(--secondary-color);
+  outline-offset: 2px;
+}
+
+.action-btn:focus {
+  outline: 2px solid var(--secondary-color);
+  outline-offset: 2px;
+}
+
+/* Mejoras para impresión */
+@media print {
+  .itinerary-page {
+    background-color: white;
+  }
+  
+  .itinerary-form-card, .itinerary-actions {
+    display: none;
+  }
+  
+  .activity-card {
+    box-shadow: none;
+    border: 1px solid #000;
+    break-inside: avoid;
+  }
+  
+  .timeline::before {
+    background-color: #000;
+  }
+  
+  .timeline-dot {
+    background-color: #000;
+  }
+}

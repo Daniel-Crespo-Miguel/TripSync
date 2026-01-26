@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { auth, db } from "../firebase/firebaseConfig";
 import { arrayUnion, doc, getDoc, onSnapshot, updateDoc } from "firebase/firestore";
+import "../styles/itinerary.css";
 
 type ItineraryItem = {
   id: string;
@@ -20,16 +21,247 @@ type Grupo = {
   createdBy: string; 
 };
 
+// Modal para editar actividad
+function EditActivityModal({
+  show,
+  onClose,
+  onSave,
+  item,
+  date,
+  time,
+  title,
+  notes,
+  onDateChange,
+  onTimeChange,
+  onTitleChange,
+  onNotesChange,
+}: {
+  show: boolean;
+  onClose: () => void;
+  onSave: () => void;
+  item: ItineraryItem | null;
+  date: string;
+  time: string;
+  title: string;
+  notes: string;
+  onDateChange: (date: string) => void;
+  onTimeChange: (time: string) => void;
+  onTitleChange: (title: string) => void;
+  onNotesChange: (notes: string) => void;
+}) {
+  if (!show || !item) return null;
+
+  return (
+    <div className="modal-backdrop" style={{
+      position: 'fixed',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      backgroundColor: 'rgba(0, 0, 0, 0.5)',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      zIndex: 1000
+    }}>
+      <div className="modal-content" style={{
+        backgroundColor: 'white',
+        borderRadius: '16px',
+        padding: '2rem',
+        maxWidth: '500px',
+        width: '90%',
+        boxShadow: '0 10px 30px rgba(0, 0, 0, 0.2)'
+      }}>
+        <div className="modal-header" style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginBottom: '1.5rem'
+        }}>
+          <h5 style={{ margin: 0, fontSize: '1.5rem', fontWeight: '700', color: 'var(--primary-color)' }}>
+            Editar actividad
+          </h5>
+          <button 
+            className="btn-close" 
+            onClick={onClose}
+            style={{
+              background: 'none',
+              border: 'none',
+              fontSize: '1.5rem',
+              cursor: 'pointer',
+              color: '#666',
+              padding: '0.25rem',
+              borderRadius: '50%',
+              transition: 'all 0.3s ease'
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.color = 'var(--primary-color)'}
+            onMouseLeave={(e) => e.currentTarget.style.color = '#666'}
+          >
+            ×
+          </button>
+        </div>
+        <div className="modal-body">
+          <div className="mb-4">
+            <label className="form-label" style={{ fontSize: '0.875rem', fontWeight: '600', color: 'var(--text-secondary)' }}>
+              Fecha
+            </label>
+            <input
+              type="date"
+              className="form-control"
+              value={date}
+              onChange={(e) => onDateChange(e.target.value)}
+              style={{
+                borderRadius: '8px',
+                border: '2px solid #E5E7EB',
+                padding: '0.75rem 1rem',
+                fontSize: '1rem',
+                transition: 'all 0.3s ease'
+              }}
+              onFocus={(e) => e.currentTarget.style.borderColor = 'var(--primary-color)'}
+              onBlur={(e) => e.currentTarget.style.borderColor = '#E5E7EB'}
+            />
+          </div>
+          <div className="mb-4">
+            <label className="form-label" style={{ fontSize: '0.875rem', fontWeight: '600', color: 'var(--text-secondary)' }}>
+              Hora (opcional)
+            </label>
+            <input
+              type="time"
+              className="form-control"
+              value={time}
+              onChange={(e) => onTimeChange(e.target.value)}
+              style={{
+                borderRadius: '8px',
+                border: '2px solid #E5E7EB',
+                padding: '0.75rem 1rem',
+                fontSize: '1rem',
+                transition: 'all 0.3s ease'
+              }}
+              onFocus={(e) => e.currentTarget.style.borderColor = 'var(--primary-color)'}
+              onBlur={(e) => e.currentTarget.style.borderColor = '#E5E7EB'}
+            />
+          </div>
+          <div className="mb-4">
+            <label className="form-label" style={{ fontSize: '0.875rem', fontWeight: '600', color: 'var(--text-secondary)' }}>
+              Título
+            </label>
+            <input
+              className="form-control"
+              value={title}
+              onChange={(e) => onTitleChange(e.target.value)}
+              placeholder="Ej: Visitar museo"
+              style={{
+                borderRadius: '8px',
+                border: '2px solid #E5E7EB',
+                padding: '0.75rem 1rem',
+                fontSize: '1rem',
+                transition: 'all 0.3s ease'
+              }}
+              onFocus={(e) => e.currentTarget.style.borderColor = 'var(--primary-color)'}
+              onBlur={(e) => e.currentTarget.style.borderColor = '#E5E7EB'}
+            />
+          </div>
+          <div className="mb-4">
+            <label className="form-label" style={{ fontSize: '0.875rem', fontWeight: '600', color: 'var(--text-secondary)' }}>
+              Notas (opcional)
+            </label>
+            <textarea
+              className="form-control"
+              value={notes}
+              onChange={(e) => onNotesChange(e.target.value)}
+              rows={3}
+              placeholder="Detalles, punto de encuentro, entradas, etc."
+              style={{
+                borderRadius: '8px',
+                border: '2px solid #E5E7EB',
+                padding: '0.75rem 1rem',
+                fontSize: '1rem',
+                transition: 'all 0.3s ease',
+                resize: 'vertical'
+              }}
+              onFocus={(e) => e.currentTarget.style.borderColor = 'var(--primary-color)'}
+              onBlur={(e) => e.currentTarget.style.borderColor = '#E5E7EB'}
+            />
+          </div>
+        </div>
+        <div className="modal-footer" style={{
+          display: 'flex',
+          justifyContent: 'flex-end',
+          gap: '1rem',
+          marginTop: '1.5rem'
+        }}>
+          <button 
+            className="btn btn-secondary" 
+            onClick={onClose}
+            style={{
+              padding: '0.75rem 2rem',
+              borderRadius: '8px',
+              border: '1px solid #E5E7EB',
+              backgroundColor: 'white',
+              color: 'var(--text-primary)',
+              fontSize: '0.875rem',
+              fontWeight: '600',
+              cursor: 'pointer',
+              transition: 'all 0.3s ease'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = 'var(--primary-color)';
+              e.currentTarget.style.color = 'white';
+              e.currentTarget.style.borderColor = 'var(--primary-color)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = 'white';
+              e.currentTarget.style.color = 'var(--text-primary)';
+              e.currentTarget.style.borderColor = '#E5E7EB';
+            }}
+          >
+            Cancelar
+          </button>
+          <button 
+            className="btn btn-primary" 
+            onClick={onSave}
+            style={{
+              padding: '0.75rem 2rem',
+              borderRadius: '8px',
+              border: 'none',
+              backgroundColor: 'linear-gradient(135deg, var(--primary-color), var(--secondary-color))',
+              color: 'white',
+              fontSize: '0.875rem',
+              fontWeight: '600',
+              cursor: 'pointer',
+              transition: 'all 0.3s ease',
+              backgroundImage: 'linear-gradient(135deg, var(--primary-color), var(--secondary-color))'
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
+            onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+          >
+            Guardar cambios
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function Itinerary() {
   const { id } = useParams();
   const navigate = useNavigate();
 
   const [grupo, setGrupo] = useState<Grupo | null>(null);
 
+  // Formulario para añadir nueva actividad
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
   const [title, setTitle] = useState("");
   const [notes, setNotes] = useState("");
+
+  // Modal de edición
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editingItem, setEditingItem] = useState<ItineraryItem | null>(null);
+  const [editDate, setEditDate] = useState("");
+  const [editTime, setEditTime] = useState("");
+  const [editTitle, setEditTitle] = useState("");
+  const [editNotes, setEditNotes] = useState("");
 
   useEffect(() => {
     if (!id) {
@@ -143,6 +375,74 @@ function Itinerary() {
     setNotes("");
   };
 
+  const handleEditItem = (item: ItineraryItem) => {
+    if (!id) return;
+
+    const email = auth.currentUser?.email;
+    if (!email) {
+      alert("Necesitas iniciar sesión para editar items del itinerario.");
+      navigate("/login");
+      return;
+    }
+
+    if (!grupo) return;
+
+    const isGroupOwner = userUid && grupo.createdBy && userUid === grupo.createdBy;
+    const isAuthor = item.createdBy === email;
+
+    if (!isGroupOwner && !isAuthor) {
+      alert("Solo el creador del grupo o el autor puede editar este item.");
+      return;
+    }
+
+    setEditingItem(item);
+    setEditDate(item.date);
+    setEditTime(item.time || "");
+    setEditTitle(item.title);
+    setEditNotes(item.notes || "");
+    setShowEditModal(true);
+  };
+
+  const handleSaveEdit = async () => {
+    if (!id || !editingItem) return;
+
+    const email = auth.currentUser?.email;
+    if (!email) return;
+
+    if (!editDate) {
+      alert("Selecciona una fecha.");
+      return;
+    }
+
+    if (!editTitle.trim()) {
+      alert("Escribe un título.");
+      return;
+    }
+
+    const updatedItem: ItineraryItem = {
+      ...editingItem,
+      date: editDate,
+      time: editTime || undefined,
+      title: editTitle.trim(),
+      notes: editNotes.trim() || undefined,
+    };
+
+    const updated = (grupo?.itinerary || []).map((it) => 
+      it.id === editingItem.id ? updatedItem : it
+    );
+
+    await updateDoc(doc(db, "grupos", id), {
+      itinerary: updated,
+    });
+
+    setShowEditModal(false);
+    setEditingItem(null);
+    setEditDate("");
+    setEditTime("");
+    setEditTitle("");
+    setEditNotes("");
+  };
+
   const handleDeleteItem = async (itemId: string) => {
     if (!id) return;
 
@@ -181,41 +481,77 @@ function Itinerary() {
   }
 
   return (
-    <div className="container mt-5">
-      <div className="d-flex justify-content-between align-items-center mb-3">
-        <h2 className="m-0">Itinerario de {grupo.name}</h2>
-        <button className="btn btn-secondary" onClick={() => navigate(`/grupo/${id}`)}>
-          Volver al grupo
-        </button>
+    <div className="itinerary-page">
+      {/* Cabecera de la página */}
+      <div className="itinerary-header">
+        <div className="itinerary-title-section">
+          <h1 className="itinerary-title">Itinerario del viaje</h1>
+          <p className="itinerary-subtitle">Organiza las actividades por días y horas</p>
+        </div>
+        <div className="itinerary-actions">
+          <button 
+            className="btn btn-secondary" 
+            onClick={() => navigate(`/grupo/${id}`)}
+            style={{
+              padding: '0.75rem 1.5rem',
+              borderRadius: '8px',
+              border: '1px solid #E5E7EB',
+              backgroundColor: 'white',
+              color: 'var(--text-primary)',
+              fontSize: '0.875rem',
+              fontWeight: '600',
+              cursor: 'pointer',
+              transition: 'all 0.3s ease'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = 'var(--primary-color)';
+              e.currentTarget.style.color = 'white';
+              e.currentTarget.style.borderColor = 'var(--primary-color)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = 'white';
+              e.currentTarget.style.color = 'var(--text-primary)';
+              e.currentTarget.style.borderColor = '#E5E7EB';
+            }}
+          >
+            Volver al grupo
+          </button>
+        </div>
       </div>
 
-      <form onSubmit={handleAddItem} className="card p-3 mb-4">
-        <div className="row g-3">
-          <div className="col-12 col-md-4">
+      {/* Formulario para añadir actividad al itinerario */}
+      <form onSubmit={handleAddItem} className="itinerary-form-card">
+        <div className="form-header">
+          <h3 className="form-title">Añadir actividad al día</h3>
+          <p className="form-subtitle">Organiza tu planificación diaria</p>
+        </div>
+        
+        <div className="form-grid">
+          <div className="form-group">
             <label className="form-label">Fecha</label>
             <input
               type="date"
-              className="form-control"
+              className="form-input"
               value={date}
               onChange={(e) => setDate(e.target.value)}
               required
             />
           </div>
 
-          <div className="col-12 col-md-4">
+          <div className="form-group">
             <label className="form-label">Hora (opcional)</label>
             <input
               type="time"
-              className="form-control"
+              className="form-input"
               value={time}
               onChange={(e) => setTime(e.target.value)}
             />
           </div>
 
-          <div className="col-12 col-md-4">
+          <div className="form-group">
             <label className="form-label">Título</label>
             <input
-              className="form-control"
+              className="form-input"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               required
@@ -223,75 +559,143 @@ function Itinerary() {
             />
           </div>
 
-          <div className="col-12">
+          <div className="form-group form-group-full">
             <label className="form-label">Notas (opcional)</label>
             <textarea
-              className="form-control"
+              className="form-input"
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              rows={3}
+              rows={2}
               placeholder="Detalles, punto de encuentro, entradas, etc."
             />
           </div>
         </div>
 
-        <button className="btn btn-primary mt-3" type="submit">
-          Añadir al itinerario
-        </button>
+        <div className="form-actions">
+          <button className="btn-submit" type="submit">
+            Añadir al itinerario
+          </button>
+        </div>
       </form>
 
-      <h3>Plan por días</h3>
+      {/* Vista principal: Itinerario por días */}
+      <div className="itinerary-main">
+        <div className="itinerary-section-header">
+          <h2 className="section-title">Plan por días</h2>
+          <p className="section-subtitle">
+            Este es el plan definitivo del viaje organizado por días y horas
+          </p>
+        </div>
 
-      {itemsSorted.length === 0 ? (
-        <p>No hay items aún.</p>
-      ) : (
-        <div className="d-flex flex-column gap-3">
-          {grouped.map(([day, items]) => (
-            <div key={day} className="card p-3">
-              <h5 className="mb-3">{new Date(day).toLocaleDateString()}</h5>
+        {itemsSorted.length === 0 ? (
+          <div className="empty-state">
+            <div className="empty-icon">📅</div>
+            <h5 className="empty-title">Aún no hay actividades en el itinerario</h5>
+            <p className="empty-subtitle">Empieza añadiendo una actividad 👇</p>
+          </div>
+        ) : (
+          <div className="timeline-container">
+            {grouped.map(([day, items]) => (
+              <div key={day} className="itinerary-day">
+                <div className="day-header">
+                  <div className="day-date">
+                    <span className="date-icon">📅</span>
+                    <span className="date-text">{new Date(day).toLocaleDateString()}</span>
+                  </div>
+                  <span className="weekday-text">
+                    {new Date(day).toLocaleDateString('es-ES', { weekday: 'long' })}
+                  </span>
+                </div>
 
-              <ul className="list-group">
-                {items.map((it) => {
-                  const canDelete =
-                    (userUid && grupo.createdBy && userUid === grupo.createdBy) ||
-                    (userEmail && it.createdBy === userEmail);
+                <div className="timeline">
+                  {items.map((it) => {
+                    const canEdit =
+                      (userUid && grupo.createdBy && userUid === grupo.createdBy) ||
+                      (userEmail && it.createdBy === userEmail);
+                    const canDelete = canEdit;
 
-                  return (
-                    <li key={it.id} className="list-group-item">
-                      <div className="d-flex justify-content-between align-items-start gap-3">
-                        <div style={{ flex: 1 }}>
-                          <div className="d-flex align-items-center gap-2">
-                            {it.time && (
-                              <span className="badge text-bg-secondary">{it.time}</span>
+                    return (
+                      <div key={it.id} className="timeline-item">
+                        <div className="timeline-marker">
+                          <div className="timeline-dot"></div>
+                          <div className="timeline-line"></div>
+                        </div>
+                        <div className="timeline-content">
+                          <div className="activity-card">
+                            <div className="activity-header">
+                              <div className="activity-time">
+                                {it.time && (
+                                  <span className="time-badge">⏰ {it.time}</span>
+                                )}
+                                <span className="activity-title">{it.title}</span>
+                              </div>
+                              <div className="activity-actions">
+                                {canEdit && (
+                                  <button
+                                    className="action-btn edit-btn"
+                                    onClick={() => handleEditItem(it)}
+                                    title="Editar"
+                                  >
+                                    Editar
+                                  </button>
+                                )}
+                                {canDelete && (
+                                  <button
+                                    className="action-btn delete-btn"
+                                    onClick={() => handleDeleteItem(it.id)}
+                                    title="Eliminar del itinerario"
+                                  >
+                                    Eliminar
+                                  </button>
+                                )}
+                              </div>
+                            </div>
+                            
+                            {it.notes && (
+                              <div className="activity-notes">
+                                {it.notes}
+                              </div>
                             )}
-                            <strong>{it.title}</strong>
-                          </div>
 
-                          {it.notes && <div className="mt-2">{it.notes}</div>}
-
-                          <div className="small text-muted mt-2">
-                            Añadido por: {it.createdBy}
+                            <div className="activity-meta">
+                              <span className="creator-badge">
+                                Añadido por: {it.createdBy.split('@')[0]}
+                              </span>
+                            </div>
                           </div>
                         </div>
-
-                        {canDelete && (
-                          <button
-                            className="btn btn-outline-danger"
-                            type="button"
-                            onClick={() => handleDeleteItem(it.id)}
-                          >
-                            Borrar
-                          </button>
-                        )}
                       </div>
-                    </li>
-                  );
-                })}
-              </ul>
-            </div>
-          ))}
-        </div>
-      )}
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Modal para editar actividad */}
+      <EditActivityModal
+        show={showEditModal}
+        onClose={() => {
+          setShowEditModal(false);
+          setEditingItem(null);
+          setEditDate("");
+          setEditTime("");
+          setEditTitle("");
+          setEditNotes("");
+        }}
+        onSave={handleSaveEdit}
+        item={editingItem}
+        date={editDate}
+        time={editTime}
+        title={editTitle}
+        notes={editNotes}
+        onDateChange={setEditDate}
+        onTimeChange={setEditTime}
+        onTitleChange={setEditTitle}
+        onNotesChange={setEditNotes}
+      />
     </div>
   );
 }
