@@ -1,154 +1,102 @@
-import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { doc, getDoc, updateDoc, arrayUnion } from "firebase/firestore";
-import { db, auth } from "../firebase/firebaseConfig";
-import { onAuthStateChanged, User } from "firebase/auth";
+import { useState } from "react";
+import { useGroup } from "../contexts/GroupContext";
 
 function GroupDetail() {
-  const { id } = useParams();
-  const navigate = useNavigate();
-  const [grupo, setGrupo] = useState<any>(null);
-  const [user, setUser] = useState<User | null>(null);
+  const { grupo, user, handleAddInvitado } = useGroup();
   const [nuevoInvitado, setNuevoInvitado] = useState("");
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      if (!currentUser) {
-        navigate("/");
-        return;
-      }
-      setUser(currentUser);
-    });
-
-    return () => unsubscribe();
-  }, [navigate]);
-
-  useEffect(() => {
-    const fetchGrupo = async () => {
-      if (!id) return;
-      const docRef = doc(db, "grupos", id);
-      const docSnap = await getDoc(docRef);
-
-      if (docSnap.exists()) {
-        setGrupo(docSnap.data());
-      } else {
-        navigate("/");
-      }
-    };
-
-    fetchGrupo();
-  }, [id, navigate]);
-
-  const handleAddInvitado = async () => {
-    if (!id || !nuevoInvitado.trim()) return;
-
-    const grupoRef = doc(db, "grupos", id);
-    await updateDoc(grupoRef, {
-      invitados: arrayUnion(nuevoInvitado.trim()),
-    });
-
-    setGrupo((prev: any) => ({
-      ...prev,
-      invitados: [...(prev.invitados || []), nuevoInvitado.trim()],
-    }));
-
-    setNuevoInvitado("");
-  };
-
   if (!grupo || !user) {
-    return <div className="container mt-5">Cargando grupo...</div>;
+    return (
+      <div className="overview-content">
+        <div className="loading-spinner">Cargando información del grupo...</div>
+      </div>
+    );
   }
 
   const esCreador = grupo.createdBy === user.uid;
+  const fechaInicio = new Date(grupo.startDate.seconds * 1000).toLocaleDateString();
+  const fechaFin = new Date(grupo.endDate.seconds * 1000).toLocaleDateString();
+
+  const handleAddInvitadoLocal = async () => {
+    if (!nuevoInvitado.trim()) return;
+
+    try {
+      await handleAddInvitado(nuevoInvitado.trim());
+      setNuevoInvitado("");
+    } catch (error) {
+      console.error("Error adding invitado:", error);
+    }
+  };
 
   return (
-    <div className="container mt-5">
-      <h2>{grupo.name}</h2>
-      <p>
-        <strong>Destino:</strong> {grupo.destination}
-      </p>
-      <p>
-        <strong>Fecha:</strong>{" "}
-        {new Date(grupo.startDate.seconds * 1000).toLocaleDateString()} a{" "}
-        {new Date(grupo.endDate.seconds * 1000).toLocaleDateString()}
-      </p>
-      <p>
-        <strong>Creador:</strong> {grupo.createdByEmail || "Desconocido"}
-      </p>
-
-      <h5>Invitados:</h5>
-      <ul>
-        {grupo.invitados && grupo.invitados.length > 0 ? (
-          grupo.invitados.map((email: string, index: number) => (
-            <li key={index}>{email}</li>
-          ))
-        ) : (
-          <li>No hay invitados.</li>
-        )}
-      </ul>
-
-      {esCreador && (
-        <div className="mt-4">
-          <h6>Añadir nuevo invitado</h6>
-          <div className="d-flex gap-2">
-            <input
-              type="email"
-              className="form-control"
-              placeholder="Correo del invitado"
-              value={nuevoInvitado}
-              onChange={(e) => setNuevoInvitado(e.target.value)}
-            />
-            <button className="btn btn-primary" onClick={handleAddInvitado}>
-              Añadir
-            </button>
+    <div className="overview-content">
+      {/* Información del viaje */}
+      <div className="section-card">
+        <h3 className="section-title">Información del viaje</h3>
+        <div className="info-grid">
+          <div className="info-item">
+            <span className="info-label">Nombre del viaje:</span>
+            <span className="info-value">{grupo.name}</span>
+          </div>
+          <div className="info-item">
+            <span className="info-label">Destino:</span>
+            <span className="info-value">{grupo.destination}</span>
+          </div>
+          <div className="info-item">
+            <span className="info-label">Fecha de inicio:</span>
+            <span className="info-value">{fechaInicio}</span>
+          </div>
+          <div className="info-item">
+            <span className="info-label">Fecha de fin:</span>
+            <span className="info-value">{fechaFin}</span>
+          </div>
+          <div className="info-item">
+            <span className="info-label">Creador:</span>
+            <span className="info-value">{grupo.createdByEmail}</span>
+          </div>
+          <div className="info-item">
+            <span className="info-label">Participantes:</span>
+            <span className="info-value">{grupo.invitados.length} viajeros</span>
           </div>
         </div>
-      )}
-      <button
-        className="btn btn-warning mt-4 ms-2"
-        onClick={() => navigate(`/grupo/${id}/actividades`)}
-      >
-        Ver Actividades
-      </button>
-      <button
-        className="btn btn-dark mt-4 ms-2"
-        onClick={() => navigate(`/grupo/${id}/itinerario`)}
-      >
-        Ver Itinerario
-      </button>
-      <button
-        className="btn btn-primary mt-4 ms-2"
-        onClick={() => navigate(`/grupo/${id}/chat`)}
-      >
-        Chat
-      </button>
+      </div>
 
-      <button
-        className="btn btn-secondary mt-4"
-        onClick={() => navigate("/dashboard")}
-      >
-        Volver al Panel de Usuario
-      </button>
-      <button
-        className="btn btn-success mt-4 ms-2"
-        onClick={() => navigate(`/grupo/${id}/clima`)}
-      >
-        Ver Clima
-      </button>
+      {/* Separador */}
+      <div className="section-divider"></div>
 
-      <button
-        className="btn btn-info mt-4"
-        onClick={() => navigate(`/grupo/${id}/gastos`)}
-      >
-        Ver Gastos
-      </button>
-       <button
-        className="btn btn-info mt-4"
-        onClick={() => navigate(`/grupo/${id}/Transporte`)}
-      >
-        Ver Posibilidad de transportes 
-        
-      </button>
+      {/* Invitados */}
+      <div className="section-card">
+        <h3 className="section-title">Invitados</h3>
+        <div className="invitados-list">
+          {grupo.invitados && grupo.invitados.length > 0 ? (
+            grupo.invitados.map((email, index) => (
+              <div key={index} className="invitado-item">
+                <span className="invitado-email">{email}</span>
+              </div>
+            ))
+          ) : (
+            <div className="no-invitados">No hay invitados.</div>
+          )}
+        </div>
+
+        {esCreador && (
+          <div className="add-invitado-section">
+            <h4 className="add-invitado-title">Añadir nuevo invitado</h4>
+            <div className="add-invitado-form">
+              <input
+                type="email"
+                className="form-input"
+                placeholder="Correo del invitado"
+                value={nuevoInvitado}
+                onChange={(e) => setNuevoInvitado(e.target.value)}
+              />
+              <button className="btn-primary" onClick={handleAddInvitadoLocal}>
+                Añadir invitado
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

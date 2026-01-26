@@ -12,6 +12,8 @@ import Itinerary from "./pages/Itinerary";
 import Chat from "./pages/Chat";
 import Weather from "./pages/Weather";
 import Transport from './pages/Transport';
+import GroupTabs from './components/GroupTabs';
+import { GroupProvider } from './contexts/GroupContext';
 import Header from './components/Header';
 import Footer from './components/Footer';
 
@@ -28,13 +30,21 @@ function App() {
             <Route path="/register" element={<Register />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/crear-viaje" element={<CreateGroup />} />
-            <Route path="/grupo/:id" element={<GroupDetail />} />
-            <Route path="/grupo/:id/gastos" element={<Expenses />} />
-            <Route path="/grupo/:id/actividades" element={<Activities />} />
-            <Route path="/grupo/:id/itinerario" element={<Itinerary />} />
-            <Route path="/grupo/:id/chat" element={<Chat />} />
-            <Route path="/grupo/:id/clima" element={<Weather />} />
-            <Route path="/grupo/:id/Transporte" element={<Transport />} />
+            
+            {/* Rutas del grupo con GroupTabs como layout */}
+            <Route path="/grupo/:id" element={
+              <GroupProvider>
+                <GroupTabs />
+              </GroupProvider>
+            }>
+              <Route index element={<GroupDetail />} />
+              <Route path="itinerario" element={<Itinerary />} />
+              <Route path="actividades" element={<Activities />} />
+              <Route path="gastos" element={<Expenses />} />
+              <Route path="chat" element={<Chat />} />
+              <Route path="clima" element={<Weather />} />
+              <Route path="transporte" element={<Transport />} />
+            </Route>
           </Routes>
         </main>
         <Footer />
