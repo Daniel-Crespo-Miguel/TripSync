@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { auth, db } from "../firebase/firebaseConfig";
 import { onAuthStateChanged } from "firebase/auth";
 import { collection, query, where, getDocs } from "firebase/firestore";
+import "../styles/dashboard.css";
 
 interface Grupo {
   id: string;
@@ -50,43 +51,112 @@ function Dashboard() {
 
       const unique = Array.from(new Map(items.map((g) => [g.id, g])).values());
 
-      setGrupos(unique);
+      // Ordenar por fecha de inicio (más cercano primero)
+      const sorted = unique.sort((a, b) => {
+        const dateA = new Date(a.startDate.seconds * 1000);
+        const dateB = new Date(b.startDate.seconds * 1000);
+        return dateA.getTime() - dateB.getTime();
+      });
+
+      setGrupos(sorted);
     });
 
     return () => unsubscribe();
   }, [navigate]);
 
+  const getEstadoViaje = (grupo: Grupo) => {
+    const hoy = new Date();
+    const inicio = new Date(grupo.startDate.seconds * 1000);
+    const fin = new Date(grupo.endDate.seconds * 1000);
+
+    if (hoy < inicio) return { label: "Próximo", color: "#10B981" };
+    if (hoy >= inicio && hoy <= fin) return { label: "En curso", color: "#F59E0B" };
+    return { label: "Finalizado", color: "#6B7280" };
+  };
+
+  const formatDate = (dateObj: { seconds: number; nanoseconds: number }) => {
+    const date = new Date(dateObj.seconds * 1000);
+    return date.toLocaleDateString('es-ES', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
+    });
+  };
+
   return (
-    <div className="container mt-5">
-      <h2>Panel de Usuario</h2>
+    <div className="dashboard-container">
+      <div className="dashboard-header">
+        <div className="dashboard-title-section">
+          <h1 className="dashboard-title">Mis viajes</h1>
+          <p className="dashboard-subtitle">
+            Gestiona y accede a todos tus viajes desde un solo lugar
+          </p>
+        </div>
+        <button 
+          className="btn-create-trip"
+          onClick={() => navigate("/crear-viaje")}
+        >
+          + Crear viaje
+        </button>
+      </div>
 
-      <button className="btn btn-success mb-4" onClick={() => navigate("/crear-viaje")}>
-        Crear nuevo viaje
-      </button>
+      <div className="dashboard-content">
+        {grupos.length === 0 ? (
+          <div className="empty-state">
+            <div className="empty-state-content">
+              <h3>Aún no has creado ningún viaje</h3>
+              <p>Empieza creando el primero y comienza a organizar tus próximas aventuras</p>
+              <button 
+                className="btn-create-trip-empty"
+                onClick={() => navigate("/crear-viaje")}
+              >
+                Crear viaje
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div className="trips-grid">
+            {grupos.map((grupo) => {
+              const estado = getEstadoViaje(grupo);
+              return (
+                <div 
+                  key={grupo.id}
+                  className="trip-card"
+                  onClick={() => navigate(`/grupo/${grupo.id}`)}
+                >
+                  <div className="trip-card-content">
+                    <div className="trip-header">
+                      <h3 className="trip-name">{grupo.name}</h3>
+                      <span 
+                        className="trip-status-badge"
+                        style={{ backgroundColor: estado.color }}
+                      >
+                        {estado.label}
+                      </span>
+                    </div>
+                    
+                    <div className="trip-destination">
+                      <span className="destination-text">{grupo.destination}</span>
+                    </div>
 
-      <h4>Mis grupos de viaje</h4>
-      {grupos.length === 0 ? (
-        <p>No tienes grupos creados ni en los que estás invitado.</p>
-      ) : (
-        <ul className="list-group">
-          {grupos.map((grupo) => (
-            <li
-              key={grupo.id}
-              className="list-group-item"
-              style={{ cursor: "pointer" }}
-              onClick={() => navigate(`/grupo/${grupo.id}`)}
-            >
-              <strong>{grupo.name}</strong> - {grupo.destination} (
-              {new Date(grupo.startDate.seconds * 1000).toLocaleDateString()} a{" "}
-              {new Date(grupo.endDate.seconds * 1000).toLocaleDateString()})
-            </li>
-          ))}
-        </ul>
-      )}
+                    <div className="trip-dates">
+                      <span className="dates-label">Fechas:</span>
+                      <span className="dates-value">
+                        {formatDate(grupo.startDate)} - {formatDate(grupo.endDate)}
+                      </span>
+                    </div>
 
-      <button className="btn btn-secondary mt-4" onClick={() => navigate("/")}>
-        Volver a la Página de Inicio
-      </button>
+                    <div className="trip-actions">
+                      <span className="action-text">Ver detalles</span>
+                      <span className="action-arrow">→</span>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
