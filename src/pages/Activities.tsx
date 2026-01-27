@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { auth, db } from "../firebase/firebaseConfig";
 import { arrayUnion, doc, getDoc, onSnapshot, updateDoc } from "firebase/firestore";
+import "../styles/activities.css";
 
 type Activity = {
   id: string;
@@ -648,11 +649,13 @@ function Activities() {
   }
 
   return (
-    <div className="container mt-5">
-      <div className="text-center mb-5">
-        <h1 className="m-0">Actividades</h1>
-        <p className="text-muted mb-0">Propuestas del grupo. Vota y decide qué hacer durante el viaje.</p>
-        <div className="mt-4" style={{ display: 'flex', justifyContent: 'center', gap: '1rem', flexWrap: 'wrap' }}>
+    <div className="activities-page">
+      <div className="activities-header">
+        <div className="activities-title-section">
+          <h1 className="activities-title">Actividades</h1>
+          <p className="activities-subtitle">Propuestas del grupo. Vota y decide qué hacer durante el viaje.</p>
+        </div>
+        <div className="activities-actions">
           <button className="btn btn-primary" onClick={() => navigate(`/grupo/${id}`)}>
             Volver al grupo
           </button>
@@ -666,7 +669,7 @@ function Activities() {
         </div>
       </div>
 
-      <form onSubmit={handleAddActivity} className="card p-4 mb-5">
+      <form onSubmit={handleAddActivity} className="activities-form-card">
         <div className="mb-3">
           <label className="form-label">Título</label>
           <input
@@ -714,8 +717,8 @@ function Activities() {
       </form>
 
       {/* Sección de sugerencias con filtros visuales */}
-      <div className="card p-4 mb-5">
-        <div className="row g-3 mb-3">
+      <div className="suggestions-section">
+        <div className="suggestions-grid">
           <div className="col-12">
             <h5 className="mb-1">Sugerir actividades</h5>
             <div className="text-muted small mb-2">
@@ -727,118 +730,106 @@ function Activities() {
           </div>
 
           {/* Filtros de categorías */}
-          <div className="col-12">
-            <div className="row">
-              <div className="col-md-6">
-                <div className="card border">
-                  <div className="card-header bg-light">
-                    <strong>Qué hacer</strong>
+          <div className="filters-section">
+            <div className="filters-grid">
+              <div className="filter-card">
+                <div className="filter-title">Qué hacer</div>
+                <div className="d-flex flex-column gap-2">
+                  <div className="form-check">
+                    <input
+                      className="form-check-input"
+                      type="checkbox"
+                      checked={categoryFilters.find(f => f.key === "museos")?.checked || false}
+                      onChange={(e) => {
+                        setCategoryFilters(prev => prev.map(f => 
+                          f.key === "museos" ? { ...f, checked: e.target.checked } : f
+                        ));
+                      }}
+                    />
+                    <label className="form-check-label">
+                      Museos, turismo, monumentos
+                    </label>
                   </div>
-                  <div className="card-body">
-                    <div className="d-flex flex-column gap-2">
-                      <div className="form-check">
-                        <input
-                          className="form-check-input"
-                          type="checkbox"
-                          checked={categoryFilters.find(f => f.key === "museos")?.checked || false}
-                          onChange={(e) => {
-                            setCategoryFilters(prev => prev.map(f => 
-                              f.key === "museos" ? { ...f, checked: e.target.checked } : f
-                            ));
-                          }}
-                        />
-                        <label className="form-check-label">
-                          Museos, turismo, monumentos
-                        </label>
-                      </div>
-                      <div className="form-check">
-                        <input
-                          className="form-check-input"
-                          type="checkbox"
-                          checked={categoryFilters.find(f => f.key === "parques")?.checked || false}
-                          onChange={(e) => {
-                            setCategoryFilters(prev => prev.map(f => 
-                              f.key === "parques" ? { ...f, checked: e.target.checked } : f
-                            ));
-                          }}
-                        />
-                        <label className="form-check-label">
-                          Parques, zoológicos
-                        </label>
-                      </div>
-                      <div className="form-check">
-                        <input
-                          className="form-check-input"
-                          type="checkbox"
-                          checked={categoryFilters.find(f => f.key === "miradores")?.checked || false}
-                          onChange={(e) => {
-                            setCategoryFilters(prev => prev.map(f => 
-                              f.key === "miradores" ? { ...f, checked: e.target.checked } : f
-                            ));
-                          }}
-                        />
-                        <label className="form-check-label">
-                          Miradores, miradores
-                        </label>
-                      </div>
-                    </div>
+                  <div className="form-check">
+                    <input
+                      className="form-check-input"
+                      type="checkbox"
+                      checked={categoryFilters.find(f => f.key === "parques")?.checked || false}
+                      onChange={(e) => {
+                        setCategoryFilters(prev => prev.map(f => 
+                          f.key === "parques" ? { ...f, checked: e.target.checked } : f
+                        ));
+                      }}
+                    />
+                    <label className="form-check-label">
+                      Parques, zoológicos
+                    </label>
+                  </div>
+                  <div className="form-check">
+                    <input
+                      className="form-check-input"
+                      type="checkbox"
+                      checked={categoryFilters.find(f => f.key === "miradores")?.checked || false}
+                      onChange={(e) => {
+                        setCategoryFilters(prev => prev.map(f => 
+                          f.key === "miradores" ? { ...f, checked: e.target.checked } : f
+                        ));
+                      }}
+                    />
+                    <label className="form-check-label">
+                      Miradores, miradores
+                    </label>
                   </div>
                 </div>
               </div>
 
-              <div className="col-md-6">
-                <div className="card border">
-                  <div className="card-header bg-light">
-                    <strong>Comer</strong>
+              <div className="filter-card">
+                <div className="filter-title">Comer</div>
+                <div className="d-flex flex-column gap-2">
+                  <div className="form-check">
+                    <input
+                      className="form-check-input"
+                      type="checkbox"
+                      checked={categoryFilters.find(f => f.key === "restaurantes")?.checked || false}
+                      onChange={(e) => {
+                        setCategoryFilters(prev => prev.map(f => 
+                          f.key === "restaurantes" ? { ...f, checked: e.target.checked } : f
+                        ));
+                      }}
+                    />
+                    <label className="form-check-label">
+                      Restaurantes
+                    </label>
                   </div>
-                  <div className="card-body">
-                    <div className="d-flex flex-column gap-2">
-                      <div className="form-check">
-                        <input
-                          className="form-check-input"
-                          type="checkbox"
-                          checked={categoryFilters.find(f => f.key === "restaurantes")?.checked || false}
-                          onChange={(e) => {
-                            setCategoryFilters(prev => prev.map(f => 
-                              f.key === "restaurantes" ? { ...f, checked: e.target.checked } : f
-                            ));
-                          }}
-                        />
-                        <label className="form-check-label">
-                          Restaurantes
-                        </label>
-                      </div>
-                      <div className="form-check">
-                        <input
-                          className="form-check-input"
-                          type="checkbox"
-                          checked={categoryFilters.find(f => f.key === "cafeterias")?.checked || false}
-                          onChange={(e) => {
-                            setCategoryFilters(prev => prev.map(f => 
-                              f.key === "cafeterias" ? { ...f, checked: e.target.checked } : f
-                            ));
-                          }}
-                        />
-                        <label className="form-check-label">
-                          Cafeterías
-                        </label>
-                      </div>
-                      <div className="form-check">
-                        <input
-                          className="form-check-input"
-                          type="checkbox"
-                          checked={categoryFilters.find(f => f.key === "bares")?.checked || false}
-                          onChange={(e) => {
-                            setCategoryFilters(prev => prev.map(f => 
-                              f.key === "bares" ? { ...f, checked: e.target.checked } : f
-                            ));
-                          }}
-                        />
-                        <label className="form-check-label">
-                          Bares
-                        </label>
-                      </div>
-                    </div>
+                  <div className="form-check">
+                    <input
+                      className="form-check-input"
+                      type="checkbox"
+                      checked={categoryFilters.find(f => f.key === "cafeterias")?.checked || false}
+                      onChange={(e) => {
+                        setCategoryFilters(prev => prev.map(f => 
+                          f.key === "cafeterias" ? { ...f, checked: e.target.checked } : f
+                        ));
+                      }}
+                    />
+                    <label className="form-check-label">
+                      Cafeterías
+                    </label>
+                  </div>
+                  <div className="form-check">
+                    <input
+                      className="form-check-input"
+                      type="checkbox"
+                      checked={categoryFilters.find(f => f.key === "bares")?.checked || false}
+                      onChange={(e) => {
+                        setCategoryFilters(prev => prev.map(f => 
+                          f.key === "bares" ? { ...f, checked: e.target.checked } : f
+                        ));
+                      }}
+                    />
+                    <label className="form-check-label">
+                      Bares
+                    </label>
                   </div>
                 </div>
               </div>
@@ -846,107 +837,105 @@ function Activities() {
           </div>
 
           {/* Controles de búsqueda */}
-          <div className="col-md-3">
-            <label className="form-label small mb-1">Radio (m)</label>
-            <input
-              type="number"
-              className="form-control"
-              value={radius}
-              min={500}
-              step={500}
-              onChange={(e) => setRadius(Number(e.target.value))}
-            />
-          </div>
+          <div className="search-controls">
+            <div className="search-control">
+              <label className="search-label">Radio (m)</label>
+              <input
+                type="number"
+                className="search-input"
+                value={radius}
+                min={500}
+                step={500}
+                onChange={(e) => setRadius(Number(e.target.value))}
+              />
+            </div>
 
-          <div className="col-md-3">
-            <label className="form-label small mb-1">Límite</label>
-            <input
-              type="number"
-              className="form-control"
-              value={limit}
-              min={5}
-              max={50}
-              step={5}
-              onChange={(e) => setLimit(Number(e.target.value))}
-            />
-          </div>
+            <div className="search-control">
+              <label className="search-label">Límite</label>
+              <input
+                type="number"
+                className="search-input"
+                value={limit}
+                min={5}
+                max={50}
+                step={5}
+                onChange={(e) => setLimit(Number(e.target.value))}
+              />
+            </div>
 
-          <div className="col-md-6 d-flex align-items-end">
-            <button
-              className="btn btn-primary w-100"
-              type="button"
-              onClick={handleSuggest}
-              disabled={suggestLoading}
-            >
-              {suggestLoading ? "Buscando..." : "Buscar sugerencias"}
-            </button>
-          </div>
-        </div>
-
-        {/* Botón para ocultar/mostrar sugerencias */}
-        <div className="mt-3">
-          <button
-            className="btn btn-outline-secondary w-100"
-            onClick={() => setShowSuggestions(!showSuggestions)}
-            type="button"
-          >
-            {showSuggestions ? "Ocultar sugerencias" : "Mostrar sugerencias"}
-          </button>
-        </div>
-
-        {suggestError && <div className="alert alert-warning mt-3 mb-0">{suggestError}</div>}
-
-        {showSuggestions && !suggestLoading && suggestions.length > 0 && (
-          <div className="mt-3">
-            <div className="row g-3">
-              {suggestions.map((p) => {
-                const mapsUrl = buildGoogleMapsLink(p.lat, p.lon, p.name);
-                return (
-                  <div key={p.id} className="col-12 col-md-6 col-lg-4">
-                    <div className="card h-100 border">
-                      <div className="card-body">
-                        <h6 className="card-title">{p.name}</h6>
-                        <p className="card-text small text-muted mb-2">Tipo: {p.type}</p>
-                        
-                        <div className="d-flex flex-column gap-2">
-                          <a href={mapsUrl} target="_blank" rel="noreferrer" className="btn btn-outline-primary btn-sm">
-                            Ver en Google Maps
-                          </a>
-                          
-                          {p.website && (
-                            <a href={p.website} target="_blank" rel="noreferrer" className="btn btn-outline-secondary btn-sm">
-                              Web
-                            </a>
-                          )}
-                          
-                          {p.wikipedia && (
-                            <a href={p.wikipedia} target="_blank" rel="noreferrer" className="btn btn-outline-info btn-sm">
-                              Wikipedia
-                            </a>
-                          )}
-                        </div>
-
-                        <div className="mt-3">
-                          <button
-                            className="btn btn-success w-100"
-                            type="button"
-                            onClick={() => handleAddSuggestion(p)}
-                          >
-                            Añadir actividad
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
+            <div className="search-control">
+              <button
+                className="search-btn"
+                type="button"
+                onClick={handleSuggest}
+                disabled={suggestLoading}
+              >
+                {suggestLoading ? "Buscando..." : "Buscar sugerencias"}
+              </button>
             </div>
           </div>
-        )}
 
-        {showSuggestions && !suggestLoading && suggestions.length === 0 && !suggestError && (
-          <div className="text-muted small mt-3">Pulsa “Buscar sugerencias” para ver propuestas.</div>
-        )}
+          {/* Botón para ocultar/mostrar sugerencias */}
+          <div className="mt-3">
+            <button
+              className="btn btn-outline-secondary w-100"
+              onClick={() => setShowSuggestions(!showSuggestions)}
+              type="button"
+            >
+              {showSuggestions ? "Ocultar sugerencias" : "Mostrar sugerencias"}
+            </button>
+          </div>
+
+          {suggestError && <div className="alert alert-warning mt-3 mb-0">{suggestError}</div>}
+
+          {showSuggestions && !suggestLoading && suggestions.length > 0 && (
+            <div className="mt-3">
+              <div className="suggestions-grid">
+                {suggestions.map((p) => {
+                  const mapsUrl = buildGoogleMapsLink(p.lat, p.lon, p.name);
+                  return (
+                    <div key={p.id} className="suggestion-card">
+                      <h6 className="suggestion-title">{p.name}</h6>
+                      <p className="suggestion-type">Tipo: {p.type}</p>
+                      
+                      <div className="suggestion-actions">
+                        <a href={mapsUrl} target="_blank" rel="noreferrer" className="suggestion-btn">
+                          Ver en Google Maps
+                        </a>
+                        
+                        {p.website && (
+                          <a href={p.website} target="_blank" rel="noreferrer" className="suggestion-btn">
+                            Web
+                          </a>
+                        )}
+                        
+                        {p.wikipedia && (
+                          <a href={p.wikipedia} target="_blank" rel="noreferrer" className="suggestion-btn">
+                            Wikipedia
+                          </a>
+                        )}
+                      </div>
+
+                      <div className="mt-3">
+                        <button
+                          className="btn btn-success w-100"
+                          type="button"
+                          onClick={() => handleAddSuggestion(p)}
+                        >
+                          Añadir actividad
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {showSuggestions && !suggestLoading && suggestions.length === 0 && !suggestError && (
+            <div className="text-muted small mt-3">Pulsa "Buscar sugerencias" para ver propuestas.</div>
+          )}
+        </div>
       </div>
 
       <div className="card p-5 mb-5">

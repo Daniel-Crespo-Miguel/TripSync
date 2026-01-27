@@ -12,6 +12,7 @@ import {
   limit,
 } from "firebase/firestore";
 import { auth, db } from "../firebase/firebaseConfig";
+import "../styles/chat.css";
 
 type Message = {
   id: string;
@@ -105,7 +106,7 @@ function Chat() {
   };
 
   return (
-    <div className="chat-container">
+    <div className="chat-page">
       <div className="chat-header">
         <h2 className="chat-title">Chat del grupo</h2>
         <button className="btn-back" onClick={() => navigate(`/grupo/${id}`)}>
