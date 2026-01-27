@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { auth, db } from "../firebase/firebaseConfig";
 import { doc, getDoc, onSnapshot } from "firebase/firestore";
@@ -23,12 +23,110 @@ function isValidISODate(s: string) {
   return /^\d{4}-\d{2}-\d{2}$/.test(s);
 }
 
+interface TransportOption {
+  id: string;
+  name: string;
+  icon: string;
+  duration: string;
+  comfort: "baja" | "media" | "alta";
+  cost: "€" | "€€" | "€€€";
+  description: string;
+  actions: {
+    label: string;
+    url: (params: { origin: string; destination: string; departDate: string; returnDate: string }) => string;
+  }[];
+}
+
+const transportOptions: TransportOption[] = [
+  {
+    id: "avion",
+    name: "Avión",
+    icon: "✈️",
+    duration: "El más rápido",
+    comfort: "media",
+    cost: "€€",
+    description: "Ideal para distancias largas o cuando el tiempo es limitado.",
+    actions: [
+      {
+        label: "Ver precios en Google Flights",
+        url: (p) => {
+          const base = `https://www.google.com/travel/flights?q=Flights%20to%20${encodeURIComponent(p.destination)}%20from%20${encodeURIComponent(p.origin)}`;
+          const dates = p.departDate ? ` on ${encodeURIComponent(p.departDate)} through ${encodeURIComponent(p.returnDate || p.departDate)}` : '';
+          return `${base}${dates}`;
+        },
+      },
+      {
+        label: "Ver rutas en Rome2Rio",
+        url: (p) => `https://www.rome2rio.com/es/s/${encodeURIComponent(p.origin)}/${encodeURIComponent(p.destination)}`,
+      },
+    ],
+  },
+  {
+    id: "tren",
+    name: "Tren",
+    icon: "🚆",
+    duration: "Rápido y equilibrado",
+    comfort: "alta",
+    cost: "€€",
+    description: "Cómodo y ecológico, con buenas conexiones en muchas rutas.",
+    actions: [
+      {
+        label: "Ver trenes en Trainline",
+        url: () => "https://www.thetrainline.com/es",
+      },
+      {
+        label: "Ver opciones en Omio",
+        url: () => "https://www.omio.es/",
+      },
+    ],
+  },
+  {
+    id: "bus",
+    name: "Autobús",
+    icon: "🚌",
+    duration: "El más lento",
+    comfort: "baja",
+    cost: "€",
+    description: "La opción más económica, aunque más lenta.",
+    actions: [
+      {
+        label: "Ver rutas en Rome2Rio",
+        url: (p) => `https://www.rome2rio.com/es/s/${encodeURIComponent(p.origin)}/${encodeURIComponent(p.destination)}`,
+      },
+      {
+        label: "Ver opciones en Omio",
+        url: () => "https://www.omio.es/",
+      },
+    ],
+  },
+  {
+    id: "coche",
+    name: "Coche",
+    icon: "🚗",
+    duration: "Intermedio",
+    comfort: "alta",
+    cost: "€€€",
+    description: "Flexibilidad total, ideal para grupos o con equipaje.",
+    actions: [
+      {
+        label: "Ver rutas en Google Maps",
+        url: (p) => `https://www.google.com/maps/dir/${encodeURIComponent(p.origin)}/${encodeURIComponent(p.destination)}`,
+      },
+      {
+        label: "Ver opciones en Rome2Rio",
+        url: (p) => `https://www.rome2rio.com/es/s/${encodeURIComponent(p.origin)}/${encodeURIComponent(p.destination)}`,
+      },
+    ],
+  },
+];
+
 function Transport() {
   const { id } = useParams();
   const navigate = useNavigate();
 
   const [grupo, setGrupo] = useState<Grupo | null>(null);
 
+  // Estados directos (sin lógica de formulario)
   const [origin, setOrigin] = useState("");
   const [destination, setDestination] = useState("");
   const [departDate, setDepartDate] = useState("");
@@ -70,6 +168,7 @@ function Transport() {
       const d1 = toISODate(g.startDate as any);
       const d2 = toISODate(g.endDate as any);
 
+      // Inicializar estados directos con los datos del grupo
       setDestination(String(g.destination ?? ""));
       setDepartDate(d1);
       setReturnDate(d2);
@@ -91,6 +190,7 @@ function Transport() {
       const d1 = toISODate(g.startDate as any);
       const d2 = toISODate(g.endDate as any);
 
+      // Actualizar estados directos
       setDestination((prev) => (prev ? prev : String(g.destination ?? "")));
       setDepartDate((prev) => (prev ? prev : d1));
       setReturnDate((prev) => (prev ? prev : d2));
@@ -114,57 +214,10 @@ function Transport() {
     };
   }, [origin, destination, departDate, returnDate]);
 
-  const links = useMemo(() => {
-    const { o, d, dep, ret } = normalized;
+  // Validar datos obligatorios para enlaces
+  const hasRequiredData = !!normalized.o && !!normalized.d;
 
-    const qO = encodeURIComponent(o || "");
-    const qD = encodeURIComponent(d || "");
-    const qDep = encodeURIComponent(dep || "");
-    const qRet = encodeURIComponent(ret || "");
 
-    const googleFlights = (() => {
-      if (!d) return "";
-      if (o && dep && ret) {
-        return `https://www.google.com/travel/flights?q=Flights%20to%20${qD}%20from%20${qO}%20on%20${qDep}%20through%20${qRet}`;
-      }
-      if (o && dep) {
-        return `https://www.google.com/travel/flights?q=Flights%20to%20${qD}%20from%20${qO}%20on%20${qDep}`;
-      }
-      return `https://www.google.com/travel/flights?q=Flights%20to%20${qD}%20from%20${qO}`;
-    })();
-
-    const rome2rio = (() => {
-      if (!d) return "";
-      if (o) return `https://www.rome2rio.com/es/s/${qO}/${qD}`;
-      return `https://www.rome2rio.com/es/s//${qD}`;
-    })();
-
-    const omio = (() => {
-      if (!d) return "";
-      const base = "https://www.omio.es/";
-      if (!o) return base;
-      return base;
-    })();
-
-    const trainline = (() => {
-      return "https://www.thetrainline.com/es";
-    })();
-
-    const googleMapsDestination = (() => {
-      if (!d) return "";
-      return `https://www.google.com/maps/search/?api=1&query=${qD}`;
-    })();
-
-    return {
-      googleFlights,
-      rome2rio,
-      omio,
-      trainline,
-      googleMapsDestination,
-    };
-  }, [normalized]);
-
-  const canSearch = !!normalized.d;
 
   if (!grupo) {
     return <div className="container mt-5">Cargando...</div>;
@@ -172,7 +225,7 @@ function Transport() {
 
   return (
     <div className="container mt-5">
-      <div className="d-flex justify-content-between align-items-center mb-3">
+      <div className="d-flex justify-content-between align-items-center mb-4">
         <h2 className="m-0">Transporte — {grupo.name}</h2>
         <button
           className="btn btn-secondary"
@@ -182,13 +235,14 @@ function Transport() {
         </button>
       </div>
 
-      <div className="card p-3 mb-4">
-        <h5 className="mb-3">Buscar opciones de ida y vuelta</h5>
-
+      {/* Bloque superior - Contexto del viaje */}
+      <div className="card p-4 mb-4">
+        <h5 className="mb-3">Contexto del viaje</h5>
+        
         <div className="row g-3">
           <div className="col-12 col-md-6">
-            <label className="form-label">
-              Origen (ciudad / aeropuerto / estación)
+            <label className="form-label fw-semibold">
+              Origen (editable)
             </label>
             <input
               className="form-control"
@@ -199,7 +253,7 @@ function Transport() {
           </div>
 
           <div className="col-12 col-md-6">
-            <label className="form-label">Destino</label>
+            <label className="form-label fw-semibold">Destino</label>
             <input
               className="form-control"
               value={destination}
@@ -213,7 +267,7 @@ function Transport() {
           </div>
 
           <div className="col-12 col-md-6">
-            <label className="form-label">Fecha de ida</label>
+            <label className="form-label fw-semibold">Fecha de ida</label>
             <input
               type="date"
               className="form-control"
@@ -223,7 +277,7 @@ function Transport() {
           </div>
 
           <div className="col-12 col-md-6">
-            <label className="form-label">Fecha de vuelta</label>
+            <label className="form-label fw-semibold">Fecha de vuelta</label>
             <input
               type="date"
               className="form-control"
@@ -233,84 +287,81 @@ function Transport() {
           </div>
         </div>
 
-        {!canSearch && (
-          <div className="alert alert-warning mt-3 mb-0">
-            Escribe un destino para generar enlaces.
-          </div>
-        )}
+        <div className="alert alert-info mt-3 mb-0">
+          <small className="text-muted">
+            <strong>Nota:</strong> Las opciones mostradas son orientativas. Los precios finales se consultan en plataformas externas.
+          </small>
+        </div>
       </div>
 
-      <div className="card p-3">
-        <h5 className="mb-3">Enlaces rápidos</h5>
+      {/* Bloque principal - Comparativa de medios de transporte */}
+      <div className="card p-4">
+        <h5 className="mb-4">Comparativa de medios de transporte</h5>
+        
+        <div className="row g-4">
+          {transportOptions.map((option) => {
+            return (
+              <div key={option.id} className="col-12 col-md-6 col-lg-3">
+                <div className="card h-100 border-0 shadow-sm">
+                  <div className="card-body text-center">
+                    <div className="mb-3">
+                      <span className="transport-icon" style={{ fontSize: '2.5rem' }}>
+                        {option.icon}
+                      </span>
+                    </div>
+                    
+                    <h6 className="card-title fw-bold mb-3">{option.name}</h6>
+                    
+                    <div className="mb-3 text-start">
+                      <div className="d-flex justify-content-between mb-2">
+                        <span className="text-muted">Duración:</span>
+                        <span className="fw-semibold">{option.duration}</span>
+                      </div>
+                      
+                      <div className="d-flex justify-content-between mb-2">
+                        <span className="text-muted">Comodidad:</span>
+                        <span className={`badge ${option.comfort === 'alta' ? 'bg-success' : option.comfort === 'media' ? 'bg-warning' : 'bg-secondary'}`}>
+                          {option.comfort}
+                        </span>
+                      </div>
+                      
+                      <div className="d-flex justify-content-between mb-3">
+                        <span className="text-muted">Coste estimado:</span>
+                        <span className="fw-semibold">{option.cost}</span>
+                      </div>
+                      
+                      <p className="card-text text-muted small">{option.description}</p>
+                    </div>
 
-        <div className="row g-3">
-          <div className="col-12 col-lg-6">
-            <div className="list-group">
-              <a
-                className={`list-group-item list-group-item-action ${!canSearch ? "disabled" : ""}`}
-                href={links.googleFlights || "#"}
-                target="_blank"
-                rel="noreferrer"
-              >
-                Google Flights (vuelos)
-              </a>
-
-              <a
-                className={`list-group-item list-group-item-action ${!canSearch ? "disabled" : ""}`}
-                href={links.rome2rio || "#"}
-                target="_blank"
-                rel="noreferrer"
-              >
-                Rome2rio (rutas combinadas)
-              </a>
-
-              <a
-                className="list-group-item list-group-item-action"
-                href={links.trainline}
-                target="_blank"
-                rel="noreferrer"
-              >
-                Trainline (tren)
-              </a>
-
-              <a
-                className="list-group-item list-group-item-action"
-                href={links.omio}
-                target="_blank"
-                rel="noreferrer"
-              >
-                Omio (tren / bus / vuelos)
-              </a>
-            </div>
-          </div>
-
-          <div className="col-12 col-lg-6">
-            <div className="card p-3 h-100">
-              <div className="mb-2">
-                <strong>Destino actual:</strong>{" "}
-                {normalized.d ? normalized.d : "—"}
+                    <div className="transport-actions">
+                      {option.actions.map((action, index) => (
+                        <a
+                          key={index}
+                          className={`btn btn-outline-primary btn-sm w-100 mb-2 ${!hasRequiredData ? 'disabled' : ''}`}
+                          href={hasRequiredData ? action.url({
+                            origin: normalized.o,
+                            destination: normalized.d,
+                            departDate: normalized.dep,
+                            returnDate: normalized.ret
+                          }) : undefined}
+                          target="_blank"
+                          rel="noreferrer"
+                          onClick={(e) => {
+                            if (!hasRequiredData) {
+                              e.preventDefault();
+                              alert('Introduce origen y destino para buscar precios y rutas.');
+                            }
+                          }}
+                        >
+                          {action.label}
+                        </a>
+                      ))}
+                    </div>
+                  </div>
+                </div>
               </div>
-
-              <div className="mb-2">
-                <strong>Fechas:</strong> {normalized.dep ? normalized.dep : "—"}{" "}
-                {normalized.ret ? `→ ${normalized.ret}` : ""}
-              </div>
-
-              <a
-                className={`btn btn-outline-primary ${!canSearch ? "disabled" : ""}`}
-                href={links.googleMapsDestination || "#"}
-                target="_blank"
-                rel="noreferrer"
-              >
-                Ver destino en Google Maps
-              </a>
-
-              <div className="small text-muted mt-3">
-                Los resultados se abren en webs externas para ver precios en
-                tiempo real.
-              </div>
-            </div>
-          </div>
+            );
+          })}
         </div>
       </div>
     </div>
