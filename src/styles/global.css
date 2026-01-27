@@ -1,3 +1,6 @@
+/* Tipografía Inter */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
 /* Identidad visual de TripSync */
 
 /* Colores */
@@ -13,9 +16,6 @@
   --danger: #EF4444;
   --warning: #F59E0B;
 }
-
-/* Tipografía Inter */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 * {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -167,10 +167,16 @@ body {
 /* Home Hero */
 .hero {
   min-height: 80vh;
-  background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+  background-image: url('../assets/Imagen_Hero.png');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
   color: var(--white);
   position: relative;
   overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .hero::before {
@@ -180,8 +186,20 @@ body {
   left: 0;
   right: 0;
   bottom: 0;
+  background: linear-gradient(135deg, rgba(11, 60, 93, 0.8), rgba(30, 202, 211, 0.6));
+  z-index: 1;
+}
+
+.hero::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
   pointer-events: none;
+  z-index: 2;
 }
 
 .hero-container {
@@ -189,15 +207,17 @@ body {
   margin: 0 auto;
   padding: 4rem 2rem;
   position: relative;
-  z-index: 2;
+  z-index: 3;
 }
 
 .hero-content {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 4rem;
+  display: flex;
+  flex-direction: column;
   align-items: center;
+  justify-content: center;
+  text-align: center;
   min-height: 60vh;
+  width: 100%;
 }
 
 .hero-text {

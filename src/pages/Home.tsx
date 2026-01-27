@@ -33,26 +33,25 @@ function Home() {
   };
 
   return (
-    <>
+    <div>
       {/* Hero Section */}
       <section className="hero">
         <div className="hero-container">
           <div className="hero-content">
             <div className="hero-text">
               <h1 className="hero-title">
-                Organiza tus viajes en grupo de forma colaborativa
+                Organizar viajes en grupo no debería ser un caos
               </h1>
               <p className="hero-subtitle">
-                TripSync te ayuda a planificar, gestionar y disfrutar tus viajes
-                con amigos o familiares. Todo en un solo lugar, sin
-                complicaciones.
+                Centraliza decisiones, gastos y planificación en un solo lugar. 
+                Deja de perder tiempo en mensajes y hojas de cálculo.
               </p>
               <div className="hero-cta">
                 <button
-                  className="btn btn-secondary"
+                  className="btn btn-primary"
                   onClick={handleStart}
                 >
-                  {user ? "Ir a mi panel" : "Empezar ahora"}
+                  {user ? "Empezar a organizar" : "Empezar a organizar"}
                 </button>
                 <button
                   className="btn btn-secondary"
@@ -61,21 +60,6 @@ function Home() {
                   Iniciar sesión
                 </button>
               </div>
-            </div>
-            <div className="hero-visual">
-              <img
-                src="../src/assets/Imagen_Hero.png"
-                alt="TripSync - Organiza tus viajes en grupo"
-                className="hero-image"
-                style={{
-                  maxWidth: "85%",
-                  maxHeight: "85%",
-                  objectFit: "contain",
-                  borderRadius: "12px",
-                  boxShadow:
-                    "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
-                }}
-              />
             </div>
           </div>
         </div>
@@ -173,7 +157,7 @@ function Home() {
           </div>
         </div>
       </section>
-    </>
+    </div>
   );
 }
 
