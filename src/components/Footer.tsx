@@ -16,14 +16,6 @@ const Footer: React.FC = () => {
     return () => unsubscribe();
   }, []);
 
-  const handleFeatureClick = (path: string) => {
-    if (!user) {
-      navigate('/login');
-    } else {
-      navigate(path);
-    }
-  };
-
   const handleLogout = async () => {
     try {
       await auth.signOut();
@@ -40,49 +32,42 @@ const Footer: React.FC = () => {
           {/* Columna 1 - Marca */}
           <div className="footer-column">
             <div className="footer-brand">
-              <img src={whiteLogoTripSync} alt="TripSync Logo" className="footer-logo-image" />
+              <div className="footer-brand-logo">
+                <img src={whiteLogoTripSync} alt="TripSync Logo" className="footer-logo-image" />
+                <span className="footer-brand-name">TripSync</span>
+              </div>
+              <p className="footer-brand-description">
+                Organiza viajes en grupo sin complicaciones
+              </p>
             </div>
           </div>
 
-          {/* Columna 2 - Acciones de usuario */}
+          {/* Columna 2 - Navegación */}
           <div className="footer-column">
-            <h3 className="footer-title">Acciones</h3>
-            <div className="footer-actions">
-              {user ? (
-                <>
-                  <button 
-                    className="footer-link"
-                    onClick={() => navigate('/dashboard')}
-                  >
-                    Ir al panel
-                  </button>
-                  <button 
-                    className="footer-link"
-                    onClick={handleLogout}
-                  >
-                    Cerrar sesión
-                  </button>
-                </>
-              ) : (
-                <>
-                  <button 
-                    className="footer-link"
-                    onClick={() => navigate('/login')}
-                  >
-                    Iniciar sesión
-                  </button>
-                  <button 
-                    className="footer-link"
-                    onClick={() => navigate('/register')}
-                  >
-                    Registrarse
-                  </button>
-                </>
-              )}
+            <h3 className="footer-title">Navegación</h3>
+            <div className="footer-navigation">
+              <button 
+                className="footer-link"
+                onClick={() => navigate('/')}
+              >
+                Inicio
+              </button>
+              <button 
+                className="footer-link"
+                onClick={() => navigate('/about')}
+              >
+                Sobre la web
+              </button>
+              <button 
+                className="footer-link"
+                onClick={() => navigate('/')}
+              >
+                Qué ofrece
+              </button>
             </div>
           </div>
 
-          {/* Columna 3 - Contacto / Sociales */}
+          {/* Columna 3 - Contacto */}
           <div className="footer-column">
             <h3 className="footer-title">Contacto</h3>
             <div className="footer-contact">
