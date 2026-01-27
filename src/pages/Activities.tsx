@@ -652,8 +652,8 @@ function Activities() {
       <div className="text-center mb-5">
         <h1 className="m-0">Actividades</h1>
         <p className="text-muted mb-0">Propuestas del grupo. Vota y decide qué hacer durante el viaje.</p>
-        <div className="mt-4">
-          <button className="btn btn-primary me-2" onClick={() => navigate(`/grupo/${id}`)}>
+        <div className="mt-4" style={{ display: 'flex', justifyContent: 'center', gap: '1rem', flexWrap: 'wrap' }}>
+          <button className="btn btn-primary" onClick={() => navigate(`/grupo/${id}`)}>
             Volver al grupo
           </button>
           <button className="btn btn-success" onClick={() => {
