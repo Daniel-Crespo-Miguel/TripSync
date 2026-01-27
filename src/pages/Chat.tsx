@@ -105,39 +105,48 @@ function Chat() {
   };
 
   return (
-    <div className="container mt-5 d-flex flex-column" style={{ height: "80vh" }}>
-      <div className="d-flex justify-content-between align-items-center mb-3">
-        <h2 className="m-0">Chat del grupo</h2>
-        <button className="btn btn-secondary" onClick={() => navigate(`/grupo/${id}`)}>
-          Volver al grupo
+    <div className="chat-container">
+      <div className="chat-header">
+        <h2 className="chat-title">Chat del grupo</h2>
+        <button className="btn-back" onClick={() => navigate(`/grupo/${id}`)}>
+          ← Volver al grupo
         </button>
       </div>
 
-      <div className="border rounded p-3 flex-grow-1 overflow-auto mb-3 bg-light">
+      <div className="chat-messages">
         {loading ? (
-          <p>Cargando mensajes...</p>
+          <div className="loading-message">Cargando mensajes...</div>
         ) : messages.length === 0 ? (
-          <p>No hay mensajes aún.</p>
+          <div className="empty-messages">No hay mensajes aún.</div>
         ) : (
           messages.map((m) => (
-            <div key={m.id} className="mb-2">
-              <strong>{m.createdBy}</strong>: {m.text}
+            <div key={m.id} className="message-bubble">
+              <div className="message-header">
+                <span className="message-author">{m.createdBy}</span>
+                <span className="message-time">
+                  {m.createdAt?.toDate().toLocaleTimeString()}
+                </span>
+              </div>
+              <div className="message-text">{m.text}</div>
             </div>
           ))
         )}
         <div ref={bottomRef} />
       </div>
 
-      <form onSubmit={handleSend} className="d-flex gap-2">
-        <input
-          className="form-control"
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          placeholder="Escribe un mensaje..."
-        />
-        <button className="btn btn-primary" type="submit">
-          Enviar
-        </button>
+      <form onSubmit={handleSend} className="chat-input-form">
+        <div className="input-container">
+          <input
+            className="chat-input"
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            placeholder="Escribe un mensaje..."
+            maxLength={500}
+          />
+          <button className="send-button" type="submit" disabled={!text.trim()}>
+            Enviar
+          </button>
+        </div>
       </form>
     </div>
   );

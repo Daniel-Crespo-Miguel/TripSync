@@ -390,6 +390,16 @@
 }
 
 /* Responsive Design */
+@media (max-width: 1200px) {
+  .expenses-page {
+    padding: 1.5rem;
+  }
+  
+  .summary-cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
 @media (max-width: 1024px) {
   .expenses-page {
     padding: 1.5rem;
@@ -420,7 +430,7 @@
   }
   
   .expenses-title {
-    font-size: 2rem;
+    font-size: 1.75rem;
   }
   
   .summary-cards {
@@ -456,6 +466,19 @@
   .balance-table th, .balance-table td {
     padding: 0.5rem;
   }
+  
+  .form-label {
+    font-size: 0.75rem;
+  }
+  
+  .form-input, .form-select {
+    font-size: 0.875rem;
+    padding: 0.625rem 0.875rem;
+  }
+  
+  .btn-add-expense {
+    width: 100%;
+  }
 }
 
 @media (max-width: 480px) {
@@ -464,7 +487,7 @@
   }
   
   .expenses-title {
-    font-size: 1.75rem;
+    font-size: 1.5rem;
   }
   
   .expenses-form-card {
@@ -480,7 +503,7 @@
   }
   
   .expense-description {
-    font-size: 1rem;
+    font-size: 0.875rem;
   }
   
   .expense-amount {
@@ -492,7 +515,20 @@
   }
   
   .settlement-text {
-    font-size: 0.875rem;
+    font-size: 0.8125rem;
+  }
+  
+  .summary-value {
+    font-size: 1.5rem;
+  }
+  
+  .summary-label {
+    font-size: 0.75rem;
+  }
+  
+  .balance-table th, .balance-table td {
+    padding: 0.375rem 0.25rem;
+    font-size: 0.75rem;
   }
 }
 

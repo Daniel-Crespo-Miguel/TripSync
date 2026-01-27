@@ -254,6 +254,18 @@
 }
 
 /* Responsive Design */
+@media (max-width: 1200px) {
+  .create-group-container {
+    max-width: 650px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .create-group-container {
+    max-width: 600px;
+  }
+}
+
 @media (max-width: 768px) {
   .create-group-container {
     padding: 1.5rem 1rem;
@@ -278,6 +290,8 @@
   
   .form-actions {
     justify-content: center;
+    flex-direction: column;
+    gap: 0.75rem;
   }
   
   .btn-primary, .btn-secondary {
@@ -287,7 +301,7 @@
 
 @media (max-width: 480px) {
   .create-group-container {
-    padding: 1rem 0.5rem;
+    padding: 1rem 0.75rem;
   }
   
   .create-group-title {
@@ -295,7 +309,7 @@
   }
   
   .create-group-card {
-    padding: 1rem 0.75rem;
+    padding: 1.25rem 0.75rem;
   }
   
   .form-block-title {
@@ -313,6 +327,21 @@
   
   .form-hint, .form-loading, .form-error-small {
     font-size: 0.75rem;
+  }
+  
+  .form-error {
+    font-size: 0.8125rem;
+    padding: 0.75rem 0.625rem;
+  }
+  
+  .suggestion-item {
+    font-size: 0.8125rem;
+    padding: 0.625rem 0.75rem;
+  }
+  
+  .destination-selected {
+    font-size: 0.8125rem;
+    padding: 0.625rem 0.75rem;
   }
 }
 

@@ -359,6 +359,17 @@
 }
 
 /* Responsive Design */
+@media (max-width: 1200px) {
+  .group-title {
+    font-size: 2rem;
+  }
+  
+  .group-info-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+}
+
 @media (max-width: 1024px) {
   .group-title {
     font-size: 2rem;
@@ -412,6 +423,18 @@
   .actions-bar {
     padding: 1.5rem 0 2rem 0;
   }
+  
+  .info-label {
+    font-size: 0.75rem;
+  }
+  
+  .info-value {
+    font-size: 0.875rem;
+  }
+  
+  .group-creator {
+    font-size: 0.875rem;
+  }
 }
 
 @media (max-width: 480px) {
@@ -424,15 +447,15 @@
   }
   
   .group-info-card {
-    padding: 1rem;
+    padding: 0.75rem;
   }
   
   .info-label {
-    font-size: 0.75rem;
+    font-size: 0.7rem;
   }
   
   .info-value {
-    font-size: 1rem;
+    font-size: 0.875rem;
   }
   
   .tab-item {
@@ -445,20 +468,24 @@
   }
   
   .info-item {
-    padding: 0.75rem;
+    padding: 0.625rem;
   }
   
   .info-label {
-    font-size: 0.7rem;
+    font-size: 0.6875rem;
   }
   
   .info-value {
-    font-size: 0.875rem;
+    font-size: 0.8125rem;
   }
   
   .btn-primary, .btn-secondary {
     font-size: 0.75rem;
     padding: 0.5rem 1rem;
+  }
+  
+  .group-meta {
+    font-size: 0.8125rem;
   }
 }
 
