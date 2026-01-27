@@ -186,7 +186,7 @@ body {
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(135deg, rgba(11, 60, 93, 0.8), rgba(30, 202, 211, 0.6));
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.5));
   z-index: 1;
 }
 
@@ -259,7 +259,7 @@ body {
 
 .hero-cta .btn-primary {
   background-color: var(--white);
-  color: var(--primary-color);
+  color: #ffffff;
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
 }
 
@@ -400,11 +400,12 @@ body {
 .banner-section::before {
   content: '';
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(135deg, rgba(11, 60, 93, 0.8), rgba(30, 202, 211, 0.6));
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0.75),
+    rgba(0, 0, 0, 0.9)
+  );
   z-index: 1;
 }
 
