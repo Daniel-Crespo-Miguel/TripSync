@@ -1,8 +1,8 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import { auth } from '../firebase/firebaseConfig';
-import { onAuthStateChanged, User } from 'firebase/auth';
-import bannerHome from '../assets/Banner_Home.png';
+import React from "react";
+import { useNavigate } from "react-router-dom";
+import { auth } from "../firebase/firebaseConfig";
+import { onAuthStateChanged, User } from "firebase/auth";
+import bannerHome from "../assets/Banner_Home.png";
 
 function Home() {
   const [user, setUser] = React.useState<User | null>(null);
@@ -18,17 +18,17 @@ function Home() {
   const handleLogout = async () => {
     try {
       await auth.signOut();
-      navigate('/');
+      navigate("/");
     } catch (error) {
-      console.error('Error al cerrar sesión:', error);
+      console.error("Error al cerrar sesión:", error);
     }
   };
 
   const handleStart = () => {
     if (user) {
-      navigate('/dashboard');
+      navigate("/dashboard");
     } else {
-      navigate('/register');
+      navigate("/register");
     }
   };
 
@@ -43,28 +43,39 @@ function Home() {
                 Organiza tus viajes en grupo de forma colaborativa
               </h1>
               <p className="hero-subtitle">
-                TripSync te ayuda a planificar, gestionar y disfrutar tus viajes 
-                con amigos o familiares. Todo en un solo lugar, sin complicaciones.
+                TripSync te ayuda a planificar, gestionar y disfrutar tus viajes
+                con amigos o familiares. Todo en un solo lugar, sin
+                complicaciones.
               </p>
               <div className="hero-cta">
-                <button 
-                  className="btn btn-primary"
+                <button
+                  className="btn btn-secondary"
                   onClick={handleStart}
                 >
-                  {user ? 'Ir a mi panel' : 'Empezar ahora'}
+                  {user ? "Ir a mi panel" : "Empezar ahora"}
                 </button>
-                <button 
+                <button
                   className="btn btn-secondary"
-                  onClick={() => navigate('/login')}
+                  onClick={() => navigate("/login")}
                 >
                   Iniciar sesión
                 </button>
               </div>
             </div>
             <div className="hero-visual">
-              <div className="hero-placeholder">
-                Ilustración del producto o placeholder visual
-              </div>
+              <img
+                src="../src/assets/Imagen_Hero.png"
+                alt="TripSync - Organiza tus viajes en grupo"
+                className="hero-image"
+                style={{
+                  maxWidth: "85%",
+                  maxHeight: "85%",
+                  objectFit: "contain",
+                  borderRadius: "12px",
+                  boxShadow:
+                    "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
+                }}
+              />
             </div>
           </div>
         </div>
@@ -74,18 +85,18 @@ function Home() {
       <section className="section" id="sobre-web">
         <h2 className="section-title">¿Qué puedes hacer con TripSync?</h2>
         <p className="section-subtitle">
-          Una plataforma completa para organizar cada aspecto de tus viajes en grupo, 
-          desde la planificación hasta el regreso a casa.
+          Una plataforma completa para organizar cada aspecto de tus viajes en
+          grupo, desde la planificación hasta el regreso a casa.
         </p>
-        
+
         <div className="features-grid">
           <div className="feature-card">
             <div className="feature-icon-center">✈️</div>
             <h3 className="feature-title">Organización de Grupos</h3>
             <p className="feature-description">
-              Crea grupos de viaje, invita a amigos o familiares y mantén a todos 
-              informados en un solo lugar. Control total para el organizador y 
-              participación activa para todos los miembros.
+              Crea grupos de viaje, invita a amigos o familiares y mantén a
+              todos informados en un solo lugar. Control total para el
+              organizador y participación activa para todos los miembros.
             </p>
           </div>
 
@@ -93,9 +104,9 @@ function Home() {
             <div className="feature-icon-center">💰</div>
             <h3 className="feature-title">Gestión de Gastos</h3>
             <p className="feature-description">
-              Sistema tipo Tricount para gestionar gastos compartidos. 
-              Registra gastos, asigna participantes y calcula automáticamente 
-              los balances. Olvídate de las cuentas complicadas.
+              Sistema tipo Tricount para gestionar gastos compartidos. Registra
+              gastos, asigna participantes y calcula automáticamente los
+              balances. Olvídate de las cuentas complicadas.
             </p>
           </div>
 
@@ -103,9 +114,9 @@ function Home() {
             <div className="feature-icon-center">🎯</div>
             <h3 className="feature-title">Actividades y Votaciones</h3>
             <p className="feature-description">
-              Propón actividades, permite que todos voten o se apunten, 
-              y descubre sugerencias automáticas basadas en tu destino. 
-              Planifica el itinerario de forma democrática y divertida.
+              Propón actividades, permite que todos voten o se apunten, y
+              descubre sugerencias automáticas basadas en tu destino. Planifica
+              el itinerario de forma democrática y divertida.
             </p>
           </div>
 
@@ -113,9 +124,9 @@ function Home() {
             <div className="feature-icon-center">📅</div>
             <h3 className="feature-title">Itinerario por Días</h3>
             <p className="feature-description">
-              Organiza tu viaje día a día con horarios específicos. 
-              Añade actividades, notas y detalles importantes para 
-              cada momento del viaje.
+              Organiza tu viaje día a día con horarios específicos. Añade
+              actividades, notas y detalles importantes para cada momento del
+              viaje.
             </p>
           </div>
 
@@ -123,9 +134,9 @@ function Home() {
             <div className="feature-icon-center">🌤️</div>
             <h3 className="feature-title">Clima del Destino</h3>
             <p className="feature-description">
-              Previsión meteorológica detallada para tu destino usando 
-              Open-Meteo. Planifica tu equipaje y actividades según 
-              el clima esperado.
+              Previsión meteorológica detallada para tu destino usando
+              Open-Meteo. Planifica tu equipaje y actividades según el clima
+              esperado.
             </p>
           </div>
 
@@ -133,9 +144,9 @@ function Home() {
             <div className="feature-icon-center">💬</div>
             <h3 className="feature-title">Chat en Tiempo Real</h3>
             <p className="feature-description">
-              Comunicación instantánea entre los miembros del grupo. 
-              Coordina cambios, comparte información y mantente en 
-              contacto durante todo el viaje.
+              Comunicación instantánea entre los miembros del grupo. Coordina
+              cambios, comparte información y mantente en contacto durante todo
+              el viaje.
             </p>
           </div>
         </div>
@@ -149,10 +160,11 @@ function Home() {
               Viaja sin preocupaciones, disfruta sin complicaciones
             </h2>
             <p className="banner-subtitle">
-              Deja que TripSync se encargue de la organización mientras tú te centras 
-              en crear recuerdos inolvidables con las personas que más te importan.
+              Deja que TripSync se encargue de la organización mientras tú te
+              centras en crear recuerdos inolvidables con las personas que más
+              te importan.
             </p>
-            <button 
+            <button
               className="btn btn-primary banner-cta"
               onClick={handleStart}
             >
