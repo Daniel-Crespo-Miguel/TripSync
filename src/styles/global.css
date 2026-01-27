@@ -480,62 +480,98 @@ body {
   margin: 0 auto;
 }
 
-.footer-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+.footer-content {
+  display: flex;
   gap: 2rem;
+  align-items: stretch;
+}
+
+/* Bloque izquierdo - Marca */
+.footer-brand-block {
+  flex: 0 0 30%;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 2rem;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+}
+
+.footer-brand-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  text-align: center;
+}
+
+.footer-logo-large {
+  width: 120px;
+  height: 120px;
+  object-fit: contain;
+  transition: transform 0.3s ease;
+}
+
+.footer-logo-large:hover {
+  transform: scale(1.05);
+}
+
+.footer-brand-name {
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  margin: 0;
+}
+
+.footer-brand-description {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.9);
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* Bloque derecho - Card de contenido */
+.footer-content-card {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 2rem;
+  border-radius: 16px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+}
+
+.footer-columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  align-items: center;
+  justify-items: center;
+  width: 100%;
 }
 
 .footer-column {
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  align-items: flex-start;
+  text-align: left;
 }
 
-/* Columna 1 - Marca */
-.footer-brand {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.footer-brand-logo {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.footer-logo-image {
-  width: 60px;
-  height: 60px;
-  object-fit: contain;
-  transition: transform 0.3s ease;
-}
-
-.footer-logo-image:hover {
-  transform: scale(1.05);
-}
-
-.footer-brand-name {
-  font-size: 1.25rem;
-  font-weight: 700;
-  letter-spacing: 0.5px;
-}
-
-.footer-brand-description {
-  font-size: 0.875rem;
-  color: rgba(255, 255, 255, 0.8);
-  margin: 0;
-  line-height: 1.4;
-}
-
-/* Columna 2 - Navegación */
+/* Títulos y contenido */
 .footer-title {
-  font-size: 1rem;
+  font-size: 0.9rem;
   font-weight: 600;
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
   color: rgba(255, 255, 255, 0.9);
   text-align: left;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .footer-navigation {
@@ -562,15 +598,12 @@ body {
 .footer-link:hover {
   color: var(--secondary-color);
   padding-left: 0.5rem;
-  transform: none;
 }
 
-/* Columna 3 - Contacto / Sociales */
 .footer-contact {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-  align-items: center;
+  gap: 0.75rem;
 }
 
 .footer-contact-item {
@@ -578,7 +611,7 @@ body {
   align-items: center;
   gap: 0.75rem;
   color: rgba(255, 255, 255, 0.8);
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   transition: all 0.3s ease;
 }
 
@@ -588,7 +621,8 @@ body {
 }
 
 .footer-icon {
-  font-size: 1.125rem;
+  font-size: 1rem;
+  opacity: 0.8;
 }
 
 .footer-social-link {
