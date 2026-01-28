@@ -199,6 +199,52 @@
   transition: transform 0.3s ease;
 }
 
+.btn-delete-group {
+  margin-top: 12px;
+  padding: 8px 8px;
+  background-color: #f55858;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  width: 45%;
+  text-align: center;
+}
+
+.btn-delete-group:hover {
+  background-color: #dc2626;
+}
+
+.btn-delete-group:active {
+  transform: translateY(1px);
+}
+
+.btn-leave-group {
+  margin-top: 12px;
+  padding: 8px 8px;
+  background-color: #6366f1;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  width: 45%;
+  text-align: center;
+}
+
+.btn-leave-group:hover {
+  background-color: #4f46e5;
+}
+
+.btn-leave-group:active {
+  transform: translateY(1px);
+}
+
 .trip-card:hover .action-arrow {
   transform: translateX(4px);
 }
