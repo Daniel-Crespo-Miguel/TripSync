@@ -53,12 +53,14 @@ function Home() {
                 >
                   {user ? "Empezar a organizar" : "Empezar a organizar"}
                 </button>
-                <button
-                  className="btn btn-secondary"
-                  onClick={() => navigate("/login")}
-                >
-                  Iniciar sesión
-                </button>
+                {!user && (
+                  <button
+                    className="btn btn-secondary"
+                    onClick={() => navigate("/login")}
+                  >
+                    Iniciar sesión
+                  </button>
+                )}
               </div>
             </div>
           </div>

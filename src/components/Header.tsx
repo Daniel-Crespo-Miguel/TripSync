@@ -1,11 +1,12 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { auth } from '../firebase/firebaseConfig';
 import { onAuthStateChanged } from 'firebase/auth';
 import logoTripSync from '../assets/Logo.png';
 
 const Header: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [user, setUser] = React.useState<any>(null);
 
   React.useEffect(() => {
@@ -22,6 +23,19 @@ const Header: React.FC = () => {
       navigate('/');
     } catch (error) {
       console.error('Error al cerrar sesión:', error);
+    }
+  };
+
+  const handleNavClick = (hash: string) => {
+    if (location.pathname === '/') {
+      // Si estamos en home, hacer scroll suave al hash
+      const element = document.getElementById(hash.replace('#', ''));
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+      }
+    } else {
+      // Si no estamos en home, navegar a home con el hash
+      navigate(`/${hash}`);
     }
   };
 
@@ -43,13 +57,40 @@ const Header: React.FC = () => {
         <nav className="nav-center">
           <ul className="nav-links">
             <li>
-              <a href="/" className="nav-link active">Inicio</a>
+              <a 
+                href="/" 
+                className="nav-link active"
+                onClick={(e) => {
+                  e.preventDefault();
+                  navigate('/');
+                }}
+              >
+                Inicio
+              </a>
             </li>
             <li>
-              <a href="#sobre-web" className="nav-link">Sobre la web</a>
+              <a 
+                href="#sobre-web" 
+                className="nav-link"
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleNavClick('#sobre-web');
+                }}
+              >
+                Sobre la web
+              </a>
             </li>
             <li>
-              <a href="#banner-seccion" className="nav-link">Qué ofrece</a>
+              <a 
+                href="#banner-seccion" 
+                className="nav-link"
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleNavClick('#banner-seccion');
+                }}
+              >
+                Qué ofrece
+              </a>
             </li>
           </ul>
         </nav>
