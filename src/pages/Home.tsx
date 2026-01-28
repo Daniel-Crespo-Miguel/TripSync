@@ -2,7 +2,6 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { auth } from "../firebase/firebaseConfig";
 import { onAuthStateChanged, User } from "firebase/auth";
-import bannerHome from "../assets/Banner_Home.png";
 
 function Home() {
   const [user, setUser] = React.useState<User | null>(null);
@@ -14,15 +13,6 @@ function Home() {
     });
     return () => unsubscribe();
   }, []);
-
-  const handleLogout = async () => {
-    try {
-      await auth.signOut();
-      navigate("/");
-    } catch (error) {
-      console.error("Error al cerrar sesión:", error);
-    }
-  };
 
   const handleStart = () => {
     if (user) {

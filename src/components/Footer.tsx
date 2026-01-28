@@ -1,29 +1,9 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { auth } from '../firebase/firebaseConfig';
-import { onAuthStateChanged } from 'firebase/auth';
 import whiteLogoTripSync from '../assets/White_Logo.png';
 
 const Footer: React.FC = () => {
   const navigate = useNavigate();
-  const [user, setUser] = React.useState<any>(null);
-
-  React.useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser);
-    });
-
-    return () => unsubscribe();
-  }, []);
-
-  const handleLogout = async () => {
-    try {
-      await auth.signOut();
-      navigate('/');
-    } catch (error) {
-      console.error('Error al cerrar sesión:', error);
-    }
-  };
 
   return (
     <footer className="footer">

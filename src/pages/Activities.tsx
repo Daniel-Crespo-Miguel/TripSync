@@ -1,7 +1,13 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { auth, db } from "../firebase/firebaseConfig";
-import { arrayUnion, doc, getDoc, onSnapshot, updateDoc } from "firebase/firestore";
+import {
+  arrayUnion,
+  doc,
+  getDoc,
+  onSnapshot,
+  updateDoc,
+} from "firebase/firestore";
 import "../styles/activities.css";
 
 type Activity = {
@@ -18,12 +24,12 @@ type Activity = {
 
 type ItineraryItem = {
   id: string;
-  date: string; 
-  time?: string; 
+  date: string;
+  time?: string;
   title: string;
   notes?: string;
-  createdBy: string; 
-  createdAt: string; 
+  createdBy: string;
+  createdAt: string;
 };
 
 type Grupo = {
@@ -34,7 +40,7 @@ type Grupo = {
   invitados: string[];
   activities: Activity[];
   itinerary: ItineraryItem[];
-  createdBy: string; 
+  createdBy: string;
 };
 
 type GeoResult = {
@@ -84,42 +90,53 @@ function ItineraryModal({
   if (!show || !activity) return null;
 
   return (
-    <div className="modal-backdrop" style={{
-      position: 'fixed',
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      backgroundColor: 'rgba(0, 0, 0, 0.5)',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      zIndex: 1000
-    }}>
-      <div className="modal-content" style={{
-        backgroundColor: 'white',
-        borderRadius: '8px',
-        padding: '1rem',
-        maxWidth: '500px',
-        width: '90%',
-        boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
-      }}>
-        <div className="modal-header" style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          marginBottom: '1rem'
-        }}>
-          <h5 style={{ margin: 0, fontSize: '1.25rem' }}>Añadir al itinerario</h5>
-          <button 
-            className="btn-close" 
+    <div
+      className="modal-backdrop"
+      style={{
+        position: "fixed",
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: "rgba(0, 0, 0, 0.5)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        zIndex: 1000,
+      }}
+    >
+      <div
+        className="modal-content"
+        style={{
+          backgroundColor: "white",
+          borderRadius: "8px",
+          padding: "1rem",
+          maxWidth: "500px",
+          width: "90%",
+          boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+        }}
+      >
+        <div
+          className="modal-header"
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginBottom: "1rem",
+          }}
+        >
+          <h5 style={{ margin: 0, fontSize: "1.25rem" }}>
+            Añadir al itinerario
+          </h5>
+          <button
+            className="btn-close"
             onClick={onClose}
             style={{
-              background: 'none',
-              border: 'none',
-              fontSize: '1.5rem',
-              cursor: 'pointer',
-              color: '#666'
+              background: "none",
+              border: "none",
+              fontSize: "1.5rem",
+              cursor: "pointer",
+              color: "#666",
             }}
           >
             ×
@@ -148,12 +165,15 @@ function ItineraryModal({
             />
           </div>
         </div>
-        <div className="modal-footer" style={{
-          display: 'flex',
-          justifyContent: 'flex-end',
-          gap: '1rem',
-          marginTop: '1rem'
-        }}>
+        <div
+          className="modal-footer"
+          style={{
+            display: "flex",
+            justifyContent: "flex-end",
+            gap: "1rem",
+            marginTop: "1rem",
+          }}
+        >
           <button className="btn btn-secondary" onClick={onClose}>
             Cancelar
           </button>
@@ -185,13 +205,15 @@ function Activities() {
   const [radius, setRadius] = useState(2000);
   const [limit, setLimit] = useState(20);
   const [showSuggestions, setShowSuggestions] = useState(true);
-  
+
   // Modal para añadir al itinerario
   const [showItineraryModal, setShowItineraryModal] = useState(false);
-  const [selectedActivity, setSelectedActivity] = useState<Activity | null>(null);
+  const [selectedActivity, setSelectedActivity] = useState<Activity | null>(
+    null,
+  );
   const [itineraryDate, setItineraryDate] = useState("");
   const [itineraryTime, setItineraryTime] = useState("");
-  
+
   // Filtros de categorías
   const [categoryFilters, setCategoryFilters] = useState<CategoryFilter[]>([
     { label: "Museos, turismo, monumentos", key: "museos", checked: true },
@@ -221,8 +243,14 @@ function Activities() {
       setGrupo({
         name: data.name ?? "Grupo",
         destination: data.destination ?? "",
-        destinationLat: typeof data.destinationLat === "number" ? data.destinationLat : undefined,
-        destinationLon: typeof data.destinationLon === "number" ? data.destinationLon : undefined,
+        destinationLat:
+          typeof data.destinationLat === "number"
+            ? data.destinationLat
+            : undefined,
+        destinationLon:
+          typeof data.destinationLon === "number"
+            ? data.destinationLon
+            : undefined,
         invitados: Array.isArray(data.invitados) ? data.invitados : [],
         activities: Array.isArray(data.activities) ? data.activities : [],
         itinerary: Array.isArray(data.itinerary) ? data.itinerary : [],
@@ -243,8 +271,14 @@ function Activities() {
       setGrupo({
         name: data.name ?? "Grupo",
         destination: data.destination ?? "",
-        destinationLat: typeof data.destinationLat === "number" ? data.destinationLat : undefined,
-        destinationLon: typeof data.destinationLon === "number" ? data.destinationLon : undefined,
+        destinationLat:
+          typeof data.destinationLat === "number"
+            ? data.destinationLat
+            : undefined,
+        destinationLon:
+          typeof data.destinationLon === "number"
+            ? data.destinationLon
+            : undefined,
         invitados: Array.isArray(data.invitados) ? data.invitados : [],
         activities: Array.isArray(data.activities) ? data.activities : [],
         itinerary: Array.isArray(data.itinerary) ? data.itinerary : [],
@@ -350,11 +384,14 @@ function Activities() {
     const activity = (grupo.activities ?? []).find((a) => a.id === activityId);
     if (!activity) return;
 
-    const isGroupOwner = userUid && grupo.createdBy && userUid === grupo.createdBy;
+    const isGroupOwner =
+      userUid && grupo.createdBy && userUid === grupo.createdBy;
     const isAuthor = activity.createdBy === email;
 
     if (!isGroupOwner && !isAuthor) {
-      alert("Solo el creador del grupo o el autor puede borrar esta actividad.");
+      alert(
+        "Solo el creador del grupo o el autor puede borrar esta actividad.",
+      );
       return;
     }
 
@@ -364,18 +401,20 @@ function Activities() {
     // Si la actividad está en el itinerario, también eliminarla del itinerario
     let updatedItinerary = grupo.itinerary ?? [];
     if (activity.itineraryItemId) {
-      updatedItinerary = updatedItinerary.filter((item) => item.id !== activity.itineraryItemId);
+      updatedItinerary = updatedItinerary.filter(
+        (item) => item.id !== activity.itineraryItemId,
+      );
     }
 
-    const updatedActivities = (grupo.activities ?? []).filter((a) => a.id !== activityId);
+    const updatedActivities = (grupo.activities ?? []).filter(
+      (a) => a.id !== activityId,
+    );
 
     await updateDoc(doc(db, "grupos", id), {
       activities: updatedActivities,
       itinerary: updatedItinerary,
     });
   };
-
- 
 
   function formatDestinationForSearch(dest: string) {
     return dest.split(",")[0]?.trim() || dest.trim();
@@ -394,15 +433,17 @@ function Activities() {
     if (!res.ok) return null;
     const json = await res.json();
 
-    const r: GeoResult | undefined = Array.isArray(json?.results) ? json.results[0] : undefined;
-    if (!r || typeof r.latitude !== "number" || typeof r.longitude !== "number") return null;
+    const r: GeoResult | undefined = Array.isArray(json?.results)
+      ? json.results[0]
+      : undefined;
+    if (!r || typeof r.latitude !== "number" || typeof r.longitude !== "number")
+      return null;
 
     return { lat: r.latitude, lon: r.longitude };
   }
 
   async function getLatLonForGroup() {
     const dest = grupo?.destination?.trim() || "";
-
 
     if (
       typeof grupo?.destinationLat === "number" &&
@@ -423,15 +464,28 @@ function Activities() {
 
   async function fetchOverpassPois(lat: number, lon: number) {
     // Construir la query según los filtros seleccionados
-    const museosChecked = categoryFilters.find(f => f.key === "museos")?.checked || false;
-    const parquesChecked = categoryFilters.find(f => f.key === "parques")?.checked || false;
-    const miradoresChecked = categoryFilters.find(f => f.key === "miradores")?.checked || false;
-    const restaurantesChecked = categoryFilters.find(f => f.key === "restaurantes")?.checked || false;
-    const cafeteriasChecked = categoryFilters.find(f => f.key === "cafeterias")?.checked || false;
-    const baresChecked = categoryFilters.find(f => f.key === "bares")?.checked || false;
+    const museosChecked =
+      categoryFilters.find((f) => f.key === "museos")?.checked || false;
+    const parquesChecked =
+      categoryFilters.find((f) => f.key === "parques")?.checked || false;
+    const miradoresChecked =
+      categoryFilters.find((f) => f.key === "miradores")?.checked || false;
+    const restaurantesChecked =
+      categoryFilters.find((f) => f.key === "restaurantes")?.checked || false;
+    const cafeteriasChecked =
+      categoryFilters.find((f) => f.key === "cafeterias")?.checked || false;
+    const baresChecked =
+      categoryFilters.find((f) => f.key === "bares")?.checked || false;
 
     // Si no hay filtros seleccionados, usar los valores por defecto
-    const useMuseos = museosChecked || (!museosChecked && !parquesChecked && !miradoresChecked && !restaurantesChecked && !cafeteriasChecked && !baresChecked); // Por defecto "Museos" activado
+    const useMuseos =
+      museosChecked ||
+      (!museosChecked &&
+        !parquesChecked &&
+        !miradoresChecked &&
+        !restaurantesChecked &&
+        !cafeteriasChecked &&
+        !baresChecked); // Por defecto "Museos" activado
     const useParques = parquesChecked;
     const useMiradores = miradoresChecked;
     const useRestaurantes = restaurantesChecked;
@@ -473,13 +527,17 @@ function Activities() {
     const url = `https://overpass-api.de/api/interpreter`;
     const res = await fetch(url, {
       method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8" },
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+      },
       body: `data=${encodeURIComponent(query)}`,
     });
 
     if (!res.ok) {
       const text = await res.text().catch(() => "");
-      throw new Error(`Overpass falló (${res.status}). ${text ? text.slice(0, 180) : ""}`);
+      throw new Error(
+        `Overpass falló (${res.status}). ${text ? text.slice(0, 180) : ""}`,
+      );
     }
 
     const json = await res.json();
@@ -507,14 +565,14 @@ function Activities() {
           lat: Number(el.lat),
           lon: Number(el.lon),
           website: typeof tags.website === "string" ? tags.website : undefined,
-          wikipedia: typeof tags.wikipedia === "string" ? tags.wikipedia : undefined,
+          wikipedia:
+            typeof tags.wikipedia === "string" ? tags.wikipedia : undefined,
         } as Poi;
       })
       .filter(Boolean);
 
-    
     const unique = Array.from(
-      new Map(pois.map((p) => [`${p.name}-${p.lat}-${p.lon}`, p])).values()
+      new Map(pois.map((p) => [`${p.name}-${p.lat}-${p.lon}`, p])).values(),
     );
 
     return unique.slice(0, Math.max(5, Math.min(limit, 50)));
@@ -532,12 +590,16 @@ function Activities() {
 
       const coords = await getLatLonForGroup();
       if (!coords) {
-        throw new Error("No se encontró el destino. Prueba con un nombre más específico.");
+        throw new Error(
+          "No se encontró el destino. Prueba con un nombre más específico.",
+        );
       }
 
       const pois = await fetchOverpassPois(coords.lat, coords.lon);
       if (!pois.length) {
-        throw new Error("No se encontraron lugares cercanos con ese radio. Prueba aumentando el radio.");
+        throw new Error(
+          "No se encontraron lugares cercanos con ese radio. Prueba aumentando el radio.",
+        );
       }
 
       setSuggestions(pois);
@@ -581,7 +643,6 @@ function Activities() {
       activities: arrayUnion(newActivity),
     });
 
-    
     setSuggestions((prev) => prev.filter((p) => p.id !== poi.id));
   };
 
@@ -653,17 +714,25 @@ function Activities() {
       <div className="activities-header">
         <div className="activities-title-section">
           <h1 className="activities-title">Actividades</h1>
-          <p className="activities-subtitle">Propuestas del grupo. Vota y decide qué hacer durante el viaje.</p>
+          <p className="activities-subtitle">
+            Propuestas del grupo. Vota y decide qué hacer durante el viaje.
+          </p>
         </div>
         <div className="activities-actions">
-          <button className="btn btn-primary" onClick={() => navigate(`/grupo/${id}`)}>
+          <button
+            className="btn btn-primary"
+            onClick={() => navigate(`/grupo/${id}`)}
+          >
             Volver al grupo
           </button>
-          <button className="btn btn-success" onClick={() => {
-            // Scroll to form
-            const form = document.querySelector('form');
-            form?.scrollIntoView({ behavior: 'smooth' });
-          }}>
+          <button
+            className="btn btn-success"
+            onClick={() => {
+              // Scroll to form
+              const form = document.querySelector("form");
+              form?.scrollIntoView({ behavior: "smooth" });
+            }}
+          >
             + Proponer actividad
           </button>
         </div>
@@ -722,7 +791,8 @@ function Activities() {
           <div className="col-12">
             <h5 className="mb-1">Sugerir actividades</h5>
             <div className="text-muted small mb-2">
-              Busca puntos de interés cerca de: <strong>{grupo.destination || "—"}</strong>
+              Busca puntos de interés cerca de:{" "}
+              <strong>{grupo.destination || "—"}</strong>
             </div>
             <div className="text-muted small mb-3">
               Fuente: OpenStreetMap (Overpass) + enlaces a Google Maps.
@@ -739,11 +809,18 @@ function Activities() {
                     <input
                       className="form-check-input"
                       type="checkbox"
-                      checked={categoryFilters.find(f => f.key === "museos")?.checked || false}
+                      checked={
+                        categoryFilters.find((f) => f.key === "museos")
+                          ?.checked || false
+                      }
                       onChange={(e) => {
-                        setCategoryFilters(prev => prev.map(f => 
-                          f.key === "museos" ? { ...f, checked: e.target.checked } : f
-                        ));
+                        setCategoryFilters((prev) =>
+                          prev.map((f) =>
+                            f.key === "museos"
+                              ? { ...f, checked: e.target.checked }
+                              : f,
+                          ),
+                        );
                       }}
                     />
                     <label className="form-check-label">
@@ -754,11 +831,18 @@ function Activities() {
                     <input
                       className="form-check-input"
                       type="checkbox"
-                      checked={categoryFilters.find(f => f.key === "parques")?.checked || false}
+                      checked={
+                        categoryFilters.find((f) => f.key === "parques")
+                          ?.checked || false
+                      }
                       onChange={(e) => {
-                        setCategoryFilters(prev => prev.map(f => 
-                          f.key === "parques" ? { ...f, checked: e.target.checked } : f
-                        ));
+                        setCategoryFilters((prev) =>
+                          prev.map((f) =>
+                            f.key === "parques"
+                              ? { ...f, checked: e.target.checked }
+                              : f,
+                          ),
+                        );
                       }}
                     />
                     <label className="form-check-label">
@@ -769,11 +853,18 @@ function Activities() {
                     <input
                       className="form-check-input"
                       type="checkbox"
-                      checked={categoryFilters.find(f => f.key === "miradores")?.checked || false}
+                      checked={
+                        categoryFilters.find((f) => f.key === "miradores")
+                          ?.checked || false
+                      }
                       onChange={(e) => {
-                        setCategoryFilters(prev => prev.map(f => 
-                          f.key === "miradores" ? { ...f, checked: e.target.checked } : f
-                        ));
+                        setCategoryFilters((prev) =>
+                          prev.map((f) =>
+                            f.key === "miradores"
+                              ? { ...f, checked: e.target.checked }
+                              : f,
+                          ),
+                        );
                       }}
                     />
                     <label className="form-check-label">
@@ -790,46 +881,61 @@ function Activities() {
                     <input
                       className="form-check-input"
                       type="checkbox"
-                      checked={categoryFilters.find(f => f.key === "restaurantes")?.checked || false}
+                      checked={
+                        categoryFilters.find((f) => f.key === "restaurantes")
+                          ?.checked || false
+                      }
                       onChange={(e) => {
-                        setCategoryFilters(prev => prev.map(f => 
-                          f.key === "restaurantes" ? { ...f, checked: e.target.checked } : f
-                        ));
+                        setCategoryFilters((prev) =>
+                          prev.map((f) =>
+                            f.key === "restaurantes"
+                              ? { ...f, checked: e.target.checked }
+                              : f,
+                          ),
+                        );
                       }}
                     />
-                    <label className="form-check-label">
-                      Restaurantes
-                    </label>
+                    <label className="form-check-label">Restaurantes</label>
                   </div>
                   <div className="form-check">
                     <input
                       className="form-check-input"
                       type="checkbox"
-                      checked={categoryFilters.find(f => f.key === "cafeterias")?.checked || false}
+                      checked={
+                        categoryFilters.find((f) => f.key === "cafeterias")
+                          ?.checked || false
+                      }
                       onChange={(e) => {
-                        setCategoryFilters(prev => prev.map(f => 
-                          f.key === "cafeterias" ? { ...f, checked: e.target.checked } : f
-                        ));
+                        setCategoryFilters((prev) =>
+                          prev.map((f) =>
+                            f.key === "cafeterias"
+                              ? { ...f, checked: e.target.checked }
+                              : f,
+                          ),
+                        );
                       }}
                     />
-                    <label className="form-check-label">
-                      Cafeterías
-                    </label>
+                    <label className="form-check-label">Cafeterías</label>
                   </div>
                   <div className="form-check">
                     <input
                       className="form-check-input"
                       type="checkbox"
-                      checked={categoryFilters.find(f => f.key === "bares")?.checked || false}
+                      checked={
+                        categoryFilters.find((f) => f.key === "bares")
+                          ?.checked || false
+                      }
                       onChange={(e) => {
-                        setCategoryFilters(prev => prev.map(f => 
-                          f.key === "bares" ? { ...f, checked: e.target.checked } : f
-                        ));
+                        setCategoryFilters((prev) =>
+                          prev.map((f) =>
+                            f.key === "bares"
+                              ? { ...f, checked: e.target.checked }
+                              : f,
+                          ),
+                        );
                       }}
                     />
-                    <label className="form-check-label">
-                      Bares
-                    </label>
+                    <label className="form-check-label">Bares</label>
                   </div>
                 </div>
               </div>
@@ -886,7 +992,9 @@ function Activities() {
             </button>
           </div>
 
-          {suggestError && <div className="alert alert-warning mt-3 mb-0">{suggestError}</div>}
+          {suggestError && (
+            <div className="alert alert-warning mt-3 mb-0">{suggestError}</div>
+          )}
 
           {showSuggestions && !suggestLoading && suggestions.length > 0 && (
             <div className="mt-3">
@@ -897,20 +1005,35 @@ function Activities() {
                     <div key={p.id} className="suggestion-card">
                       <h6 className="suggestion-title">{p.name}</h6>
                       <p className="suggestion-type">Tipo: {p.type}</p>
-                      
+
                       <div className="suggestion-actions">
-                        <a href={mapsUrl} target="_blank" rel="noreferrer" className="suggestion-btn">
+                        <a
+                          href={mapsUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="suggestion-btn"
+                        >
                           Ver en Google Maps
                         </a>
-                        
+
                         {p.website && (
-                          <a href={p.website} target="_blank" rel="noreferrer" className="suggestion-btn">
+                          <a
+                            href={p.website}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="suggestion-btn"
+                          >
                             Web
                           </a>
                         )}
-                        
+
                         {p.wikipedia && (
-                          <a href={p.wikipedia} target="_blank" rel="noreferrer" className="suggestion-btn">
+                          <a
+                            href={p.wikipedia}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="suggestion-btn"
+                          >
                             Wikipedia
                           </a>
                         )}
@@ -932,9 +1055,14 @@ function Activities() {
             </div>
           )}
 
-          {showSuggestions && !suggestLoading && suggestions.length === 0 && !suggestError && (
-            <div className="text-muted small mt-3">Pulsa "Buscar sugerencias" para ver propuestas.</div>
-          )}
+          {showSuggestions &&
+            !suggestLoading &&
+            suggestions.length === 0 &&
+            !suggestError && (
+              <div className="text-muted small mt-3">
+                Pulsa "Buscar sugerencias" para ver propuestas.
+              </div>
+            )}
         </div>
       </div>
 
@@ -942,7 +1070,8 @@ function Activities() {
         <div className="mb-3">
           <h2 className="h4 mb-1">Actividades seleccionadas</h2>
           <p className="text-muted mb-0">
-            Vota y añade como itinerarios finales las actividades propuestas por los participantes
+            Vota y añade como itinerarios finales las actividades propuestas por
+            los participantes
           </p>
         </div>
 
@@ -955,82 +1084,107 @@ function Activities() {
           <div className="row g-4">
             {activitiesSorted.map((a) => {
               const votesCount = a.votes?.length ?? 0;
-              const hasVoted = userEmail ? (a.votes ?? []).includes(userEmail) : false;
+              const hasVoted = userEmail
+                ? (a.votes ?? []).includes(userEmail)
+                : false;
               const isInItinerary = !!a.itineraryItemId;
 
               const canDelete = true; // Temporalmente permitir que todos los usuarios puedan borrar
 
-         
-              const mapsMatch = a.description?.match(/Google Maps:\s*(https?:\/\/\S+)/i);
-              const mapsLink = mapsMatch?.[1];
-
-            return (
-              <div key={a.id} className="col-12 col-md-6 col-lg-4">
-                <div className="card h-100 shadow-sm border-0">
-                  <div className="card-body">
-                    <div className="text-center mb-3">
-                      <h5 className="card-title mb-2">{a.title}</h5>
-                      <div className="d-flex justify-content-center flex-wrap gap-2 mb-2">
-                        {a.location && (
-                          <span className="badge bg-light text-dark" style={{ fontSize: '0.85rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%' }}>
-                            📍 {a.location}
-                          </span>
-                        )}
-                        {a.date && (
-                          <span className="badge bg-light text-dark" style={{ fontSize: '0.85rem' }}>
-                            📅 {new Date(a.date).toLocaleDateString()}
-                          </span>
-                        )}
-                      </div>
-                      <div className="small text-muted mb-2">
-                        {a.description?.split(' · ')[0]?.replace(/^Tipo:\s*/, '') || 'No especificado'}
-                      </div>
-                      <span className="badge bg-primary" style={{ fontSize: '0.85rem', display: 'inline-block', margin: '0 auto' }}>{votesCount} personas apuntadas</span>
-                    </div>
-
-                    <div className="small text-muted mb-3 text-center">Propuesta por: {a.createdBy}</div>
-
-                    <div className="d-flex flex-column gap-2">
-                      <div className="d-flex gap-2">
-                        <button
-                          className={`btn ${hasVoted ? "btn-success" : "btn-outline-success"} flex-grow-1`}
-                          onClick={() => handleToggleVote(a.id)}
-                          type="button"
+              return (
+                <div key={a.id} className="col-12 col-md-6 col-lg-4">
+                  <div className="card h-100 shadow-sm border-0">
+                    <div className="card-body">
+                      <div className="text-center mb-3">
+                        <h5 className="card-title mb-2">{a.title}</h5>
+                        <div className="d-flex justify-content-center flex-wrap gap-2 mb-2">
+                          {a.location && (
+                            <span
+                              className="badge bg-light text-dark"
+                              style={{
+                                fontSize: "0.85rem",
+                                whiteSpace: "nowrap",
+                                overflow: "hidden",
+                                textOverflow: "ellipsis",
+                                maxWidth: "100%",
+                              }}
+                            >
+                              📍 {a.location}
+                            </span>
+                          )}
+                          {a.date && (
+                            <span
+                              className="badge bg-light text-dark"
+                              style={{ fontSize: "0.85rem" }}
+                            >
+                              📅 {new Date(a.date).toLocaleDateString()}
+                            </span>
+                          )}
+                        </div>
+                        <div className="small text-muted mb-2">
+                          {a.description
+                            ?.split(" · ")[0]
+                            ?.replace(/^Tipo:\s*/, "") || "No especificado"}
+                        </div>
+                        <span
+                          className="badge bg-primary"
+                          style={{
+                            fontSize: "0.85rem",
+                            display: "inline-block",
+                            margin: "0 auto",
+                          }}
                         >
-                          {hasVoted ? "Apuntado ✓" : "¡Me apunto!"}
-                        </button>
-                        
-                        {!isInItinerary && (
+                          {votesCount} personas apuntadas
+                        </span>
+                      </div>
+
+                      <div className="small text-muted mb-3 text-center">
+                        Propuesta por: {a.createdBy}
+                      </div>
+
+                      <div className="d-flex flex-column gap-2">
+                        <div className="d-flex gap-2">
                           <button
-                            className="btn btn-outline-primary flex-grow-1"
-                            onClick={() => handleAddToItinerary(a)}
+                            className={`btn ${hasVoted ? "btn-success" : "btn-outline-success"} flex-grow-1`}
+                            onClick={() => handleToggleVote(a.id)}
                             type="button"
                           >
-                            Añadir al itinerario
+                            {hasVoted ? "Apuntado ✓" : "¡Me apunto!"}
+                          </button>
+
+                          {!isInItinerary && (
+                            <button
+                              className="btn btn-outline-primary flex-grow-1"
+                              onClick={() => handleAddToItinerary(a)}
+                              type="button"
+                            >
+                              Añadir al itinerario
+                            </button>
+                          )}
+                        </div>
+
+                        {isInItinerary && (
+                          <div className="text-center">
+                            <span className="badge bg-success">
+                              En itinerario ✅
+                            </span>
+                          </div>
+                        )}
+
+                        {canDelete && (
+                          <button
+                            className="btn btn-outline-danger"
+                            onClick={() => handleDeleteActivity(a.id)}
+                            type="button"
+                          >
+                            Borrar
                           </button>
                         )}
                       </div>
-
-                      {isInItinerary && (
-                        <div className="text-center">
-                          <span className="badge bg-success">En itinerario ✅</span>
-                        </div>
-                      )}
-
-                      {canDelete && (
-                        <button
-                          className="btn btn-outline-danger"
-                          onClick={() => handleDeleteActivity(a.id)}
-                          type="button"
-                        >
-                          Borrar
-                        </button>
-                      )}
                     </div>
                   </div>
                 </div>
-              </div>
-            );
+              );
             })}
           </div>
         )}

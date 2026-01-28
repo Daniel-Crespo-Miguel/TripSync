@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../firebase/firebaseConfig';
 import { useNavigate } from 'react-router-dom';
-import bannerLogin from '../assets/Banner_Login.png';
 
 function Login() {
   const [email, setEmail] = useState('');
