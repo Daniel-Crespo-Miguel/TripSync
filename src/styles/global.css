@@ -566,6 +566,17 @@ body {
     font-size: 2rem;
   }
   
+  .section-subtitle {
+    font-size: 1rem;
+    text-align: center !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    margin: 0 auto !important;
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+  
   .features-grid {
     grid-template-columns: 1fr;
     gap: 1.5rem;
@@ -601,10 +612,6 @@ body {
   
   .section-title {
     font-size: 1.875rem;
-  }
-  
-  .section-subtitle {
-    font-size: 0.875rem;
   }
   
   .hero-title {
@@ -1027,7 +1034,7 @@ body {
 /* Estilos para páginas de autenticación (Login y Register) */
 .auth-layout {
   display: flex;
-  height: 90vh;
+  min-height: 90vh;
   width: 100%;
   margin: 0;
   padding: 0;
