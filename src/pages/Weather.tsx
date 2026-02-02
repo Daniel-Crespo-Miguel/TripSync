@@ -93,6 +93,19 @@ function weatherCodeToText(code?: number) {
   return "—";
 }
 
+function parseAllowedRange(reason?: string) {
+  if (!reason) return null;
+  const m = reason.match(/from\s(\d{4}-\d{2}-\d{2})\s+to\s(\d{4}-\d{2}-\d{2})/i);
+  if (!m) return null;
+  return { from: m[1], to: m[2] };
+}
+
+function formatISOToES(iso: string) {
+  const [y, m, d] = iso.split("-");
+  if (!y || !m || !d) return iso;
+  return `${d}/${m}/${y}`;
+}
+
 async function geocodeByOpenMeteo(dest: string) {
   const q = formatDestinationForSearch(dest);
   if (!q) return null;
@@ -123,14 +136,44 @@ async function fetchForecast(lat: number, lon: number, start: string, end: strin
     `&end_date=${encodeURIComponent(end)}`;
 
   const res = await fetch(url);
+  const text = await res.text().catch(() => "");
+
+  // ✅ Si viene 400/500, Open-Meteo muchas veces responde JSON igualmente
   if (!res.ok) {
-    const text = await res.text().catch(() => "");
-    throw new Error(`No se pudo cargar la previsión (${res.status}). ${text ? text.slice(0, 160) : ""}`);
+    let reason: string | undefined;
+
+    try {
+      const maybeJson = JSON.parse(text);
+      reason = maybeJson?.reason;
+    } catch {
+      // no pasa nada si no es JSON
+    }
+
+    const range = parseAllowedRange(reason || text);
+    if (range?.to) {
+      throw new Error(
+        `No hay previsión meteorológica disponible para las fechas seleccionadas. ` +
+        `La previsión solo está disponible hasta el ${formatISOToES(range.to)}.`
+      );
+    }
+
+    // fallback: error técnico si no es rango
+    throw new Error(
+      `No se pudo cargar la previsión (${res.status}).`
+    );
   }
 
-  const json = (await res.json()) as ForecastResponse;
+  // ✅ Si res.ok, parseamos normal
+  const json = (JSON.parse(text) as ForecastResponse) ?? {};
 
   if (json?.error) {
+    const range = parseAllowedRange(json.reason);
+    if (range?.to) {
+      throw new Error(
+        `No hay previsión meteorológica disponible para las fechas seleccionadas. ` +
+        `La previsión solo está disponible hasta el ${formatISOToES(range.to)}.`
+      );
+    }
     throw new Error(json.reason || "Open-Meteo devolvió un error.");
   }
 
