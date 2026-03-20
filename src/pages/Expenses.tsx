@@ -277,61 +277,33 @@ function Expenses() {
       {/* Cabecera de la página */}
       <div className="expenses-header">
         <h1 className="expenses-title">Gastos compartidos</h1>
-        <div className="expenses-actions">
-          <button 
-            className="btn btn-secondary" 
-            onClick={() => navigate(`/grupo/${id}`)}
-            style={{
-              padding: '0.75rem 1.5rem',
-              borderRadius: '8px',
-              border: '1px solid #E5E7EB',
-              backgroundColor: 'white',
-              color: 'var(--text-primary)',
-              fontSize: '0.875rem',
-              fontWeight: '600',
-              cursor: 'pointer',
-              transition: 'all 0.3s ease'
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = 'var(--primary-color)';
-              e.currentTarget.style.color = 'white';
-              e.currentTarget.style.borderColor = 'var(--primary-color)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = 'white';
-              e.currentTarget.style.color = 'var(--text-primary)';
-              e.currentTarget.style.borderColor = '#E5E7EB';
-            }}
-          >
-            Volver al grupo
-          </button>
-        </div>
+        <p className="expenses-subtitle">Lleva la cuenta de lo que gasta cada uno</p>
       </div>
 
       {/* Resumen superior - Cards de resumen */}
       <div className="summary-cards">
         <div className="summary-card">
-          <div className="summary-icon">💰</div>
+          <div className="summary-icon-wrap summary-icon-wrap--blue">💰</div>
           <div className="summary-label">Gasto total</div>
           <div className="summary-value">{formatMoney(totalGasto)}</div>
         </div>
-        
+
         <div className="summary-card">
-          <div className="summary-icon">👤</div>
+          <div className="summary-icon-wrap summary-icon-wrap--purple">👤</div>
           <div className="summary-label">Has pagado</div>
           <div className="summary-value">{formatMoney(currentUserPaid)}</div>
         </div>
-        
+
         <div className="summary-card">
-          <div className="summary-icon">⚖️</div>
+          <div className="summary-icon-wrap summary-icon-wrap--green">⚖️</div>
           <div className="summary-label">Balance personal</div>
           <div className={`summary-value ${currentUserNet > 0.01 ? 'balance-positive' : currentUserNet < -0.01 ? 'balance-negative' : ''}`}>
             {formatMoney(currentUserNet)}
           </div>
         </div>
-        
+
         <div className="summary-card">
-          <div className="summary-icon">👥</div>
+          <div className="summary-icon-wrap summary-icon-wrap--orange">👥</div>
           <div className="summary-label">Participantes</div>
           <div className="summary-value">{members.length}</div>
         </div>

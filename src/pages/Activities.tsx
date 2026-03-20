@@ -732,35 +732,13 @@ function Activities() {
   return (
     <div className="activities-page">
       <div className="activities-header">
-        <div className="activities-title-section">
-          <h1 className="activities-title">Actividades</h1>
-          <p className="activities-subtitle">
-            Propuestas del grupo. Vota y decide qué hacer durante el viaje.
-          </p>
-        </div>
-        <div className="activities-actions">
-          <button
-            className="btn btn-primary"
-            onClick={() => navigate(`/grupo/${id}`)}
-          >
-            Volver al grupo
-          </button>
-          <button
-            className="btn btn-success"
-            onClick={() => {
-              // Scroll to form
-              const form = document.querySelector("form");
-              form?.scrollIntoView({ behavior: "smooth" });
-            }}
-          >
-            + Proponer actividad
-          </button>
-        </div>
+        <h1 className="activities-title">Actividades</h1>
+        <p className="activities-subtitle">Propuestas del grupo. Vota y decide qué hacer durante el viaje.</p>
       </div>
 
       <form onSubmit={handleAddActivity} className="activities-form-card">
         <div className="mb-3">
-          <label className="form-label">Título</label>
+          <label className="act-form-label">Título</label>
           <input
             className="form-control"
             value={title}
@@ -770,7 +748,7 @@ function Activities() {
         </div>
 
         <div className="mb-3">
-          <label className="form-label">Descripción</label>
+          <label className="act-form-label">Descripción</label>
           <textarea
             className="form-control"
             value={description}
@@ -781,7 +759,7 @@ function Activities() {
 
         <div className="row g-3 mb-3">
           <div className="col-12 col-md-6">
-            <label className="form-label">Fecha</label>
+            <label className="act-form-label">Fecha</label>
             <input
               type="date"
               className="form-control"
@@ -792,7 +770,7 @@ function Activities() {
             />
           </div>
           <div className="col-12 col-md-6">
-            <label className="form-label">Ubicación</label>
+            <label className="act-form-label">Ubicación</label>
             <input
               className="form-control"
               value={location}
@@ -802,7 +780,7 @@ function Activities() {
           </div>
         </div>
 
-        <button className="btn btn-primary" type="submit">
+        <button className="btn-add-activity" type="submit">
           Añadir actividad
         </button>
       </form>
@@ -1017,11 +995,11 @@ function Activities() {
           {/* Botón para ocultar/mostrar sugerencias */}
           <div className="mt-3">
             <button
-              className="btn btn-outline-secondary w-100"
+              className="btn-suggest-toggle"
               onClick={() => setShowSuggestions(!showSuggestions)}
               type="button"
             >
-              {showSuggestions ? "Ocultar sugerencias" : "Mostrar sugerencias"}
+              {showSuggestions ? "↑ Ocultar sugerencias" : "↓ Mostrar sugerencias"}
             </button>
           </div>
 
@@ -1099,19 +1077,19 @@ function Activities() {
         </div>
       </div>
 
-      <div className="card p-5 mb-5">
-        <div className="mb-3">
-          <h2 className="h4 mb-1">Actividades seleccionadas</h2>
-          <p className="text-muted mb-0">
-            Vota y añade como itinerarios finales las actividades propuestas por
-            los participantes
+      <div className="activities-selected-section">
+        <div className="activities-selected-header">
+          <h2 className="activities-selected-title">Actividades seleccionadas</h2>
+          <p className="activities-selected-subtitle">
+            Vota y añade como itinerarios finales las actividades propuestas por los participantes
           </p>
         </div>
 
         {activitiesSorted.length === 0 ? (
-          <div className="text-center py-4">
-            <h5 className="text-muted">Aún no hay actividades propuestas</h5>
-            <p className="text-muted">Empieza añadiendo una 👇</p>
+          <div className="activities-empty">
+            <div className="empty-icon">🗺️</div>
+            <h5 className="empty-title">Aún no hay actividades propuestas</h5>
+            <p className="empty-subtitle">Empieza añadiendo una 👇</p>
           </div>
         ) : (
           <div className="row g-4">
@@ -1121,98 +1099,69 @@ function Activities() {
                 ? (a.votes ?? []).includes(userEmail)
                 : false;
               const isInItinerary = !!a.itineraryItemId;
-
-              const canDelete = true; // Temporalmente permitir que todos los usuarios puedan borrar
+              const canDelete = true;
 
               return (
                 <div key={a.id} className="col-12 col-md-6 col-lg-4">
-                  <div className="card h-100 shadow-sm border-0">
-                    <div className="card-body">
-                      <div className="text-center mb-3">
-                        <h5 className="card-title mb-2">{a.title}</h5>
-                        <div className="d-flex justify-content-center flex-wrap gap-2 mb-2">
-                          {a.location && (
-                            <span
-                              className="badge bg-light text-dark"
-                              style={{
-                                fontSize: "0.85rem",
-                                whiteSpace: "nowrap",
-                                overflow: "hidden",
-                                textOverflow: "ellipsis",
-                                maxWidth: "100%",
-                              }}
-                            >
-                              📍 {a.location}
-                            </span>
-                          )}
+                  <div className="act-card">
+                    <div className="act-card-body">
+                      <h5 className="act-card-title">{a.title}</h5>
+
+                      {(a.date || a.location) && (
+                        <div className="act-card-meta">
                           {a.date && (
-                            <span
-                              className="badge bg-light text-dark"
-                              style={{ fontSize: "0.85rem" }}
-                            >
+                            <span className="act-meta-chip">
                               📅 {new Date(a.date).toLocaleDateString()}
                             </span>
                           )}
+                          {a.location && (
+                            <span className="act-meta-chip">
+                              📍 {a.location}
+                            </span>
+                          )}
                         </div>
-                        <div className="small text-muted mb-2">
-                          {a.description
-                            ?.split(" · ")[0]
-                            ?.replace(/^Tipo:\s*/, "") || "No especificado"}
-                        </div>
-                        <span
-                          className="badge bg-primary"
-                          style={{
-                            fontSize: "0.85rem",
-                            display: "inline-block",
-                            margin: "0 auto",
-                          }}
-                        >
-                          {votesCount} personas apuntadas
+                      )}
+
+                      <span className={`act-votes-badge${hasVoted ? " act-votes-badge--voted" : ""}`}>
+                        👥 {votesCount} {votesCount === 1 ? "persona apuntada" : "personas apuntadas"}
+                      </span>
+
+                      <div className="act-card-footer">
+                        <span className="act-proposed-by">
+                          Propuesta por {a.createdBy}
                         </span>
-                      </div>
 
-                      <div className="small text-muted mb-3 text-center">
-                        Propuesta por: {a.createdBy}
-                      </div>
-
-                      <div className="d-flex flex-column gap-2">
-                        <div className="d-flex gap-2">
+                        <div className="act-card-actions">
                           <button
-                            className={`btn ${hasVoted ? "btn-success" : "btn-outline-success"} flex-grow-1`}
+                            className={`act-btn act-btn-vote${hasVoted ? " act-btn-vote--active" : ""}`}
                             onClick={() => handleToggleVote(a.id)}
                             type="button"
                           >
                             {hasVoted ? "Apuntado ✓" : "¡Me apunto!"}
                           </button>
 
-                          {!isInItinerary && (
+                          {!isInItinerary ? (
                             <button
-                              className="btn btn-outline-primary flex-grow-1"
+                              className="act-btn act-btn-outline"
                               onClick={() => handleAddToItinerary(a)}
                               type="button"
                             >
                               Añadir al itinerario
                             </button>
+                          ) : (
+                            <span className="act-in-itinerary-badge">En itinerario ✅</span>
+                          )}
+
+                          {canDelete && (
+                            <button
+                              className="act-btn-delete"
+                              onClick={() => handleDeleteActivity(a.id)}
+                              type="button"
+                            >
+                              Borrar
+                            </button>
                           )}
                         </div>
-
-                        {isInItinerary && (
-                          <div className="text-center">
-                            <span className="badge bg-success">
-                              En itinerario ✅
-                            </span>
-                          </div>
-                        )}
-
-                        {canDelete && (
-                          <button
-                            className="btn btn-outline-danger"
-                            onClick={() => handleDeleteActivity(a.id)}
-                            type="button"
-                          >
-                            Borrar
-                          </button>
-                        )}
                       </div>
                     </div>
                   </div>

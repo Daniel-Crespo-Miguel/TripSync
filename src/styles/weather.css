@@ -33,32 +33,26 @@
 
 /* Cabecera de la página */
 .weather-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
+  text-align: center;
   margin-bottom: 2rem;
   padding-bottom: 1.5rem;
   border-bottom: 1px solid #E5E7EB;
 }
 
-.weather-title-section {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
 .weather-title {
-  font-size: 2.5rem;
+  font-size: 2rem;
   font-weight: 700;
   color: var(--primary-color);
-  margin: 0;
-  line-height: 1.2;
+  margin: 0 0 0.4rem 0;
+  text-align: center;
 }
 
 .weather-subtitle {
-  font-size: 1rem;
+  font-size: 0.9rem;
+  font-weight: 400;
   color: var(--text-secondary);
   margin: 0;
+  text-align: center;
 }
 
 .weather-actions {
@@ -552,7 +546,7 @@
     background-color: white;
   }
   
-  .weather-actions, .btn-details {
+  .btn-details {
     display: none;
   }
   

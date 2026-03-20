@@ -28,27 +28,31 @@ export default function FeedbackForm({ userEmail, userId }: Props) {
     clear();
   };
 
+  const cfg = result
+    ? sentimentConfig[result.sentiment as keyof typeof sentimentConfig]
+    : null;
+
   return (
     <div className="feedback-form">
-      <form onSubmit={handleSubmit}>
-        <div className="mb-3">
-          <label className="form-label fw-semibold">
-            ¿Cómo va el viaje? Cuéntanos tu experiencia
-          </label>
-          <textarea
-            className="form-control feedback-form__textarea"
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-            placeholder="Escribe aquí tu opinión sobre el grupo, el destino, la organización..."
-            disabled={loading}
-            maxLength={1000}
-          />
-          <div className="form-text text-end">{text.length}/1000</div>
-        </div>
+      <div className="feedback-card">
+        <form onSubmit={handleSubmit}>
+          <div className="feedback-field">
+            <label className="feedback-label">
+              ¿Cómo va el viaje? Cuéntanos tu experiencia
+            </label>
+            <textarea
+              className="feedback-textarea"
+              value={text}
+              onChange={(e) => setText(e.target.value)}
+              placeholder="Escribe aquí tu opinión sobre el grupo, el destino, la organización..."
+              disabled={loading}
+              maxLength={1000}
+            />
+            <div className="feedback-char-count">{text.length}/1000</div>
+          </div>
 
-        <div className="d-flex gap-2">
           <button
-            className="btn btn-primary"
+            className="btn-feedback-submit"
             type="submit"
             disabled={loading || !text.trim()}
           >
@@ -61,34 +65,32 @@ export default function FeedbackForm({ userEmail, userId }: Props) {
               "✨ Analizar feedback"
             )}
           </button>
-
-          {(result || error) && (
-            <button
-              className="btn btn-outline-secondary"
-              type="button"
-              onClick={handleClear}
-            >
-              Limpiar
-            </button>
-          )}
-        </div>
-      </form>
+        </form>
+      </div>
 
       {error && (
-        <div className="alert alert-warning mt-3">{error}</div>
+        <div className="feedback-error">{error}</div>
       )}
 
-      {result && (
+      {!result && !error && (
+        <div className="feedback-result-placeholder">
+          <span className="feedback-placeholder-icon">🔍</span>
+          <span className="feedback-placeholder-text">Tu análisis aparecerá aquí</span>
+        </div>
+      )}
+
+      {result && cfg && (
         <div className={`feedback-result feedback-result--${result.sentiment}`}>
-          <div className="feedback-result__header">
-            <span className="feedback-result__icon">
-              {sentimentConfig[result.sentiment as keyof typeof sentimentConfig].icon}
-            </span>
-            <span className="feedback-result__label">
-              {sentimentConfig[result.sentiment as keyof typeof sentimentConfig].label}
-            </span>
+          <div className="feedback-result-emoji">{cfg.icon}</div>
+          <div className={`feedback-result-label feedback-result-label--${result.sentiment}`}>
+            {cfg.label}
           </div>
-          <p className="feedback-result__summary">{result.summary}</p>
+          <p className="feedback-result-summary">{result.summary}</p>
+          {(result || error) && (
+            <button className="feedback-clear-btn" type="button" onClick={handleClear}>
+              Limpiar y escribir de nuevo
+            </button>
+          )}
         </div>
       )}
     </div>

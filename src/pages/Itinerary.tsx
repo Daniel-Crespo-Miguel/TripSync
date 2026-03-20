@@ -503,39 +503,8 @@ function Itinerary() {
     <div className="itinerary-page">
       {/* Cabecera de la página */}
       <div className="itinerary-header">
-        <div className="itinerary-title-section">
-          <h1 className="itinerary-title">Itinerario del viaje</h1>
-          <p className="itinerary-subtitle">Organiza las actividades por días y horas</p>
-        </div>
-        <div className="itinerary-actions">
-          <button 
-            className="btn btn-secondary" 
-            onClick={() => navigate(`/grupo/${id}`)}
-            style={{
-              padding: '0.75rem 1.5rem',
-              borderRadius: '8px',
-              border: '1px solid #E5E7EB',
-              backgroundColor: 'white',
-              color: 'var(--text-primary)',
-              fontSize: '0.875rem',
-              fontWeight: '600',
-              cursor: 'pointer',
-              transition: 'all 0.3s ease'
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = 'var(--primary-color)';
-              e.currentTarget.style.color = 'white';
-              e.currentTarget.style.borderColor = 'var(--primary-color)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = 'white';
-              e.currentTarget.style.color = 'var(--text-primary)';
-              e.currentTarget.style.borderColor = '#E5E7EB';
-            }}
-          >
-            Volver al grupo
-          </button>
-        </div>
+        <h1 className="itinerary-title">Itinerario del viaje</h1>
+        <p className="itinerary-subtitle">Organiza las actividades por días y horas</p>
       </div>
 
       {/* Formulario para añadir actividad al itinerario */}

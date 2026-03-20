@@ -16,13 +16,10 @@ const Footer: React.FC = () => {
   };
 
   const goHomeAndThen = (after: () => void) => {
-    // Si ya estamos en home, ejecuta directamente
     if (location.pathname === "/") {
       after();
       return;
     }
-
-    // Si no, navega a home y espera un tick para que monte el DOM
     navigate("/", { replace: false });
     setTimeout(after, 80);
   };
@@ -40,77 +37,71 @@ const Footer: React.FC = () => {
   return (
     <footer className="footer">
       <div className="footer-container">
-        <div className="footer-content">
-          {/* Bloque izquierdo - Marca */}
-          <div className="footer-brand-block">
-            <div className="footer-brand-content">
-              <img
-                src={whiteLogoTripSync}
-                alt="TripSync Logo"
-                className="footer-logo-large"
-              />
-              <h2 className="footer-brand-name">TripSync</h2>
-              <p className="footer-brand-description">
-                Organiza viajes en grupo sin complicaciones
-              </p>
+        <div className="footer-grid">
+
+          {/* Col 1 — Brand */}
+          <div className="footer-col footer-col--brand">
+            <img
+              src={whiteLogoTripSync}
+              alt="TripSync Logo"
+              className="footer-logo"
+            />
+            <h2 className="footer-brand-name">TripSync</h2>
+            <p className="footer-brand-description">
+              Organiza tus viajes en grupo sin complicaciones.
+            </p>
+          </div>
+
+          {/* Col 2 — Navegación */}
+          <div className="footer-col">
+            <h3 className="footer-title">Navegación</h3>
+            <div className="footer-navigation">
+              <button className="footer-link" onClick={handleHomeClick}>
+                Inicio
+              </button>
+              <button
+                className="footer-link"
+                onClick={(e) => handleSectionClick(e, "sobre-web")}
+              >
+                Sobre la web
+              </button>
+              <button
+                className="footer-link"
+                onClick={(e) => handleSectionClick(e, "banner-seccion")}
+              >
+                Qué ofrece
+              </button>
             </div>
           </div>
 
-          {/* Bloque derecho - Card de contenido */}
-          <div className="footer-content-card">
-            <div className="footer-columns">
-              {/* Columna izquierda - Navegación */}
-              <div className="footer-column">
-                <h3 className="footer-title">Navegación</h3>
-                <div className="footer-navigation">
-                  <button className="footer-link" onClick={handleHomeClick}>
-                    Inicio
-                  </button>
-
-                  <button
-                    className="footer-link"
-                    onClick={(e) => handleSectionClick(e, "sobre-web")}
-                  >
-                    Sobre la web
-                  </button>
-
-                  <button
-                    className="footer-link"
-                    onClick={(e) => handleSectionClick(e, "banner-seccion")}
-                  >
-                    Qué ofrece
-                  </button>
-                </div>
+          {/* Col 3 — Contacto */}
+          <div className="footer-col">
+            <h3 className="footer-title">Contacto</h3>
+            <div className="footer-contact">
+              <div className="footer-contact-item">
+                <span className="footer-icon">📧</span>
+                <span>crespiinx@gmail.com</span>
               </div>
-
-              {/* Columna derecha - Contacto */}
-              <div className="footer-column">
-                <h3 className="footer-title">Contacto</h3>
-                <div className="footer-contact">
-                  <div className="footer-contact-item">
-                    <span className="footer-icon">📧</span>
-                    <span>crespiinx@gmail.com</span>
-                  </div>
-                  <div className="footer-contact-item">
-                    <span className="footer-icon">📱</span>
-                    <span>605454422</span>
-                  </div>
-                  <div className="footer-contact-item">
-                    <a
-                      href="https://www.linkedin.com/in/daniel-crespo-miguel90"
-                      className="footer-social-link"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <span className="footer-icon">💼</span>
-                      <span>LinkedIn</span>
-                    </a>
-                  </div>
-                </div>
+              <div className="footer-contact-item">
+                <a
+                  href="https://www.linkedin.com/in/daniel-crespo-miguel90"
+                  className="footer-social-link"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <span className="footer-icon">💼</span>
+                  <span>LinkedIn</span>
+                </a>
               </div>
             </div>
           </div>
+
         </div>
+      </div>
+
+      {/* Copyright bar */}
+      <div className="footer-bottom">
+        <p>© 2026 TripSync · Hecho con ❤️ para viajeros</p>
       </div>
     </footer>
   );

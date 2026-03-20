@@ -61,16 +61,14 @@ function GroupDetail() {
         </div>
       </div>
 
-      {/* Separador */}
-      <div className="section-divider"></div>
-
       {/* Invitados */}
       <div className="section-card">
         <h3 className="section-title">Invitados</h3>
         <div className="invitados-list">
           {grupo.invitados && grupo.invitados.length > 0 ? (
             grupo.invitados.map((email, index) => (
-              <div key={index} className="invitado-item">
+              <div key={index} className="invitado-chip">
+                <span className="invitado-avatar">{email.charAt(0).toUpperCase()}</span>
                 <span className="invitado-email">{email}</span>
               </div>
             ))
@@ -91,7 +89,7 @@ function GroupDetail() {
                 onChange={(e) => setNuevoInvitado(e.target.value)}
               />
               <button className="btn-primary" onClick={handleAddInvitadoLocal}>
-                Añadir invitado
+                Añadir
               </button>
             </div>
           </div>

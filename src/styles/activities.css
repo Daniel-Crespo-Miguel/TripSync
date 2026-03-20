@@ -15,42 +15,35 @@
 
 /* Contenedor principal de la página */
 .activities-page {
-  max-width: 1200px;
+  max-width: 900px;
   margin: 0 auto;
   padding: 2rem;
-  background-color: var(--bg-light);
+  background-color: #f5f6f8;
   min-height: calc(100vh - 140px);
 }
 
 /* Cabecera de la página */
 .activities-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
+  text-align: center;
   margin-bottom: 2rem;
   padding-bottom: 1.5rem;
   border-bottom: 1px solid #E5E7EB;
 }
 
-.activities-title-section {
-  flex: 1;
-  text-align: left;
-}
-
 .activities-title {
-  font-size: 2.5rem;
+  font-size: 2rem;
   font-weight: 700;
   color: var(--primary-color);
-  margin: 0 0 0.5rem 0;
-  line-height: 1.2;
-  text-align: left;
+  margin: 0 0 0.4rem 0;
+  text-align: center;
 }
 
 .activities-subtitle {
-  font-size: 1.125rem;
+  font-size: 0.9rem;
+  font-weight: 400;
   color: var(--text-secondary);
   margin: 0;
-  text-align: left;
+  text-align: center;
 }
 
 .activities-actions {
@@ -64,7 +57,7 @@
   background: var(--white);
   border-radius: 16px;
   padding: 2rem;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
   border: 1px solid #E5E7EB;
   margin-bottom: 3rem;
 }
@@ -132,23 +125,56 @@
   justify-content: flex-end;
 }
 
+/* Form label — uppercase small gray */
+.act-form-label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  margin-bottom: 0.4rem;
+}
+
 .btn-add-activity {
-  padding: 0.75rem 2rem;
+  display: block;
+  width: 100%;
+  padding: 0.75rem 1rem;
   font-size: 1rem;
   font-weight: 600;
   border-radius: 8px;
   border: none;
   cursor: pointer;
-  transition: all 0.3s ease;
-  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  transition: all 0.2s ease;
+  background-color: #0e9ea7;
   color: var(--white);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
 }
 
 .btn-add-activity:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(2, 139, 199, 0.3);
+  background-color: #0b8a92;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(14, 158, 167, 0.3);
+}
+
+/* Toggle button for OSM suggestions panel */
+.btn-suggest-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 1rem;
+  border-radius: 20px;
+  border: 1px solid #0e9ea7;
+  background: transparent;
+  color: #0e9ea7;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-suggest-toggle:hover {
+  background: #0e9ea7;
+  color: white;
 }
 
 /* Layout interno de la sección OSM (apila los elementos verticalmente) */
@@ -163,8 +189,9 @@
   background: var(--white);
   border-radius: 16px;
   padding: 2rem;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
   border: 1px solid #E5E7EB;
+  border-left: 4px solid #0e9ea7;
   margin-bottom: 3rem;
 }
 
@@ -237,7 +264,7 @@
   background: var(--white);
   border-radius: 16px;
   padding: 2rem;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
   border: 1px solid #E5E7EB;
 }
 
@@ -499,6 +526,10 @@
   gap: 0.5rem;
 }
 
+.search-controls > div:last-child {
+  justify-content: flex-end;
+}
+
 .search-label {
   font-size: 0.875rem;
   font-weight: 600;
@@ -539,6 +570,201 @@
 .search-btn:hover {
   transform: translateY(-2px);
   box-shadow: 0 8px 25px rgba(2, 139, 199, 0.3);
+}
+
+/* ── Selected Activities Section ── */
+.activities-selected-section {
+  background: var(--white);
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  border: 1px solid #E5E7EB;
+  margin-bottom: 3rem;
+}
+
+.activities-selected-header {
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #F3F4F6;
+}
+
+.activities-selected-title {
+  font-size: 1.375rem;
+  font-weight: 700;
+  color: var(--primary-color);
+  margin: 0 0 0.25rem 0;
+}
+
+.activities-selected-subtitle {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+/* ── Activity Card ── */
+.act-card {
+  background: var(--white);
+  border-radius: 14px;
+  border: 1px solid #E5E7EB;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.act-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.09);
+  border-color: #0e9ea7;
+}
+
+.act-card-body {
+  padding: 1.25rem 1.25rem 1rem;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 0.75rem;
+}
+
+.act-card-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--primary-color);
+  margin: 0;
+  line-height: 1.35;
+  text-align: left;
+}
+
+/* Metadata chips — date + location */
+.act-card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.act-meta-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  background: #F3F4F6;
+  border-radius: 999px;
+  padding: 0.2rem 0.65rem;
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+/* Vote count badge */
+.act-votes-badge {
+  display: inline-block;
+  background: #EFF6FF;
+  color: #1D4ED8;
+  border-radius: 999px;
+  padding: 0.3rem 0.75rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  align-self: flex-start;
+}
+
+.act-votes-badge--voted {
+  background: #D1FAE5;
+  color: #065F46;
+}
+
+/* Footer: proposed-by + action buttons — pinned at bottom */
+.act-card-footer {
+  margin-top: auto;
+  padding-top: 0.75rem;
+  border-top: 1px solid #F3F4F6;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.act-proposed-by {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.act-card-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+/* Base button shared between vote and outline */
+.act-btn {
+  display: block;
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: center;
+}
+
+.act-btn-vote {
+  background-color: #0e9ea7;
+  color: white;
+  border: 2px solid #0e9ea7;
+}
+
+.act-btn-vote:hover {
+  background-color: #0b8a92;
+  border-color: #0b8a92;
+}
+
+.act-btn-vote--active {
+  background-color: #10B981;
+  border-color: #10B981;
+}
+
+.act-btn-vote--active:hover {
+  background-color: #059669;
+  border-color: #059669;
+}
+
+.act-btn-outline {
+  background-color: transparent;
+  color: #0e9ea7;
+  border: 2px solid #0e9ea7;
+}
+
+.act-btn-outline:hover {
+  background-color: #0e9ea7;
+  color: white;
+}
+
+/* Delete — small and discrete */
+.act-btn-delete {
+  background: none;
+  border: none;
+  color: #9CA3AF;
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 0.2rem 0;
+  text-align: left;
+  transition: color 0.2s ease;
+}
+
+.act-btn-delete:hover {
+  color: #EF4444;
+}
+
+/* In-itinerary badge */
+.act-in-itinerary-badge {
+  display: block;
+  text-align: center;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #10B981;
+  padding: 0.4rem 0;
 }
 
 /* Responsive Design */

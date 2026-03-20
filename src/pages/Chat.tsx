@@ -108,17 +108,18 @@ function Chat() {
   return (
     <div className="chat-page">
       <div className="chat-header">
-        <h2 className="chat-title">Chat del grupo</h2>
-        <button className="btn-back" onClick={() => navigate(`/grupo/${id}`)}>
-          ← Volver al grupo
-        </button>
+        <h1 className="chat-title">Chat del grupo</h1>
+        <p className="chat-subtitle">Habla con tu grupo en tiempo real</p>
       </div>
 
       <div className="chat-messages">
         {loading ? (
           <div className="loading-message">Cargando mensajes...</div>
         ) : messages.length === 0 ? (
-          <div className="empty-messages">No hay mensajes aún.</div>
+          <div className="empty-messages">
+            <div className="empty-messages-icon">💬</div>
+            <p className="empty-messages-text">Aún no hay mensajes. ¡Sé el primero en escribir!</p>
+          </div>
         ) : (
           messages.map((m) => (
             <div key={m.id} className="message-bubble">
