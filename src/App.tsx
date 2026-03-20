@@ -11,6 +11,7 @@ import Itinerary from "./pages/Itinerary";
 import Chat from "./pages/Chat";
 import Weather from "./pages/Weather";
 import Transport from './pages/Transport';
+import Feedback from './pages/Feedback';
 import GroupTabs from './components/GroupTabs';
 import { GroupProvider } from './contexts/GroupContext';
 import Header from './components/Header';
@@ -42,6 +43,7 @@ function App() {
               <Route path="chat" element={<Chat />} />
               <Route path="clima" element={<Weather />} />
               <Route path="transporte" element={<Transport />} />
+              <Route path="feedback" element={<Feedback />} />
             </Route>
           </Routes>
         </main>

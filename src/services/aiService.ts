@@ -34,14 +34,14 @@ function mockSuggestions(): AISuggestion[] {
       id: "mock-2",
       title: "Ruta gastronómica",
       description: "Prueba los platos típicos de la zona visitando mercados y restaurantes locales. Ideal para los amantes de la cocina.",
-      category: "Gastronomy",
+      category: "Gastronomía",
       recommendedDay: "Día 2",
     },
     {
       id: "mock-3",
       title: "Excursión a la naturaleza",
       description: "Senderismo por los alrededores con vistas panorámicas. Perfecta para desconectar y disfrutar del paisaje.",
-      category: "Nature",
+      category: "Naturaleza",
       recommendedDay: "Día 3",
     },
   ];
