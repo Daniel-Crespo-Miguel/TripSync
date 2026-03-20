@@ -17,6 +17,7 @@ function GroupTabs() {
     if (path.includes('/clima')) return 'clima';
     if (path.includes('/transporte')) return 'transporte';
     if (path.includes('/gastos')) return 'gastos';
+    if (path.includes('/feedback')) return 'feedback';
     return 'overview'; // Por defecto
   };
 
@@ -118,11 +119,17 @@ function GroupTabs() {
             >
               Clima
             </Link>
-            <Link 
-              to={`/grupo/${id}/transporte`} 
+            <Link
+              to={`/grupo/${id}/transporte`}
               className={`tab-item ${activeTab === 'transporte' ? 'tab-active' : ''}`}
             >
               Transporte
+            </Link>
+            <Link
+              to={`/grupo/${id}/feedback`}
+              className={`tab-item ${activeTab === 'feedback' ? 'tab-active' : ''}`}
+            >
+              💬 Feedback
             </Link>
           </nav>
         </div>

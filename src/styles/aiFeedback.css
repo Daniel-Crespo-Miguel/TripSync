@@ -1,0 +1,55 @@
+.feedback-form {
+  max-width: 600px;
+}
+
+.feedback-form__textarea {
+  resize: vertical;
+  min-height: 120px;
+}
+
+.feedback-result {
+  margin-top: 1.5rem;
+  border-radius: 0.75rem;
+  padding: 1.25rem;
+  border: 1px solid transparent;
+}
+
+.feedback-result--positivo {
+  background: #d1e7dd;
+  border-color: #a3cfbb;
+  color: #0a3622;
+}
+
+.feedback-result--neutral {
+  background: #fff3cd;
+  border-color: #ffe69c;
+  color: #664d03;
+}
+
+.feedback-result--negativo {
+  background: #f8d7da;
+  border-color: #f1aeb5;
+  color: #58151c;
+}
+
+.feedback-result__header {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 0.5rem;
+}
+
+.feedback-result__icon {
+  font-size: 1.4rem;
+}
+
+.feedback-result__label {
+  font-weight: 700;
+  font-size: 1rem;
+  text-transform: capitalize;
+}
+
+.feedback-result__summary {
+  font-size: 0.9rem;
+  margin: 0;
+}
