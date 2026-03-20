@@ -42,6 +42,8 @@ type Grupo = {
   activities: Activity[];
   itinerary: ItineraryItem[];
   createdBy: string;
+  startDate?: { seconds: number };
+  endDate?: { seconds: number };
 };
 
 type GeoResult = {
@@ -78,6 +80,8 @@ function ItineraryModal({
   time,
   onDateChange,
   onTimeChange,
+  minDate,
+  maxDate,
 }: {
   show: boolean;
   onClose: () => void;
@@ -87,6 +91,8 @@ function ItineraryModal({
   time: string;
   onDateChange: (date: string) => void;
   onTimeChange: (time: string) => void;
+  minDate?: string;
+  maxDate?: string;
 }) {
   if (!show || !activity) return null;
 
@@ -154,6 +160,8 @@ function ItineraryModal({
               className="form-control"
               value={date}
               onChange={(e) => onDateChange(e.target.value)}
+              min={minDate}
+              max={maxDate}
             />
           </div>
           <div className="mb-3">
@@ -256,6 +264,8 @@ function Activities() {
         activities: Array.isArray(data.activities) ? data.activities : [],
         itinerary: Array.isArray(data.itinerary) ? data.itinerary : [],
         createdBy: data.createdBy ?? "",
+        startDate: data.startDate,
+        endDate: data.endDate,
       });
     };
 
@@ -284,6 +294,8 @@ function Activities() {
         activities: Array.isArray(data.activities) ? data.activities : [],
         itinerary: Array.isArray(data.itinerary) ? data.itinerary : [],
         createdBy: data.createdBy ?? "",
+        startDate: data.startDate,
+        endDate: data.endDate,
       });
     });
 
@@ -292,6 +304,13 @@ function Activities() {
 
   const userEmail = auth.currentUser?.email ?? null;
   const userUid = auth.currentUser?.uid ?? null;
+
+  const tripMinDate = grupo?.startDate
+    ? new Date(grupo.startDate.seconds * 1000).toISOString().split("T")[0]
+    : undefined;
+  const tripMaxDate = grupo?.endDate
+    ? new Date(grupo.endDate.seconds * 1000).toISOString().split("T")[0]
+    : undefined;
 
   const activitiesSorted = useMemo(() => {
     const list = grupo?.activities ?? [];
@@ -768,6 +787,8 @@ function Activities() {
               className="form-control"
               value={date}
               onChange={(e) => setDate(e.target.value)}
+              min={tripMinDate}
+              max={tripMaxDate}
             />
           </div>
           <div className="col-12 col-md-6">
@@ -1217,6 +1238,8 @@ function Activities() {
         time={itineraryTime}
         onDateChange={setItineraryDate}
         onTimeChange={setItineraryTime}
+        minDate={tripMinDate}
+        maxDate={tripMaxDate}
       />
     </div>
   );

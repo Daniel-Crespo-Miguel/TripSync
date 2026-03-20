@@ -18,7 +18,9 @@ type Grupo = {
   name: string;
   destination?: string;
   itinerary: ItineraryItem[];
-  createdBy: string; 
+  createdBy: string;
+  startDate?: { seconds: number };
+  endDate?: { seconds: number };
 };
 
 // Modal para editar actividad
@@ -35,6 +37,8 @@ function EditActivityModal({
   onTimeChange,
   onTitleChange,
   onNotesChange,
+  minDate,
+  maxDate,
 }: {
   show: boolean;
   onClose: () => void;
@@ -48,6 +52,8 @@ function EditActivityModal({
   onTimeChange: (time: string) => void;
   onTitleChange: (title: string) => void;
   onNotesChange: (notes: string) => void;
+  minDate?: string;
+  maxDate?: string;
 }) {
   if (!show || !item) return null;
 
@@ -110,6 +116,8 @@ function EditActivityModal({
               className="form-control"
               value={date}
               onChange={(e) => onDateChange(e.target.value)}
+              min={minDate}
+              max={maxDate}
               style={{
                 borderRadius: '8px',
                 border: '2px solid #E5E7EB',
@@ -284,6 +292,8 @@ function Itinerary() {
         destination: data.destination,
         itinerary: Array.isArray(data.itinerary) ? data.itinerary : [],
         createdBy: data.createdBy ?? "",
+        startDate: data.startDate,
+        endDate: data.endDate,
       });
     };
 
@@ -302,6 +312,8 @@ function Itinerary() {
         destination: data.destination,
         itinerary: Array.isArray(data.itinerary) ? data.itinerary : [],
         createdBy: data.createdBy ?? "",
+        startDate: data.startDate,
+        endDate: data.endDate,
       });
     });
 
@@ -310,6 +322,13 @@ function Itinerary() {
 
   const userEmail = auth.currentUser?.email ?? null;
   const userUid = auth.currentUser?.uid ?? null;
+
+  const tripMinDate = grupo?.startDate
+    ? new Date(grupo.startDate.seconds * 1000).toISOString().split("T")[0]
+    : undefined;
+  const tripMaxDate = grupo?.endDate
+    ? new Date(grupo.endDate.seconds * 1000).toISOString().split("T")[0]
+    : undefined;
 
   const itemsSorted = useMemo(() => {
     const list = grupo?.itinerary ?? [];
@@ -534,6 +553,8 @@ function Itinerary() {
               className="form-input"
               value={date}
               onChange={(e) => setDate(e.target.value)}
+              min={tripMinDate}
+              max={tripMaxDate}
               required
             />
           </div>
@@ -695,6 +716,8 @@ function Itinerary() {
         onTimeChange={setEditTime}
         onTitleChange={setEditTitle}
         onNotesChange={setEditNotes}
+        minDate={tripMinDate}
+        maxDate={tripMaxDate}
       />
     </div>
   );
