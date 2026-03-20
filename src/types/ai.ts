@@ -14,3 +14,13 @@ export type SentimentResult = {
 export type AIWhitelistConfig = {
   emails: string[];
 };
+
+export type AISuggestionsPayload = {
+  destination: string;
+  dates: string;
+  groupId: string;
+  participantCount: number;
+  existingActivities: string[];
+  weatherSummary?: string;
+  userPrompt?: string;
+};

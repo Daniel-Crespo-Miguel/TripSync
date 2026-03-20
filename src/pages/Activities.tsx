@@ -792,6 +792,8 @@ function Activities() {
           groupId={id!}
           destination={grupo.destination ?? ""}
           userEmail={userEmail}
+          participantCount={grupo.invitados?.length ?? 0}
+          existingActivities={(grupo.activities ?? []).map((a) => a.title)}
         />
       )}
 
