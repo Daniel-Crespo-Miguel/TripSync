@@ -820,7 +820,7 @@ function Activities() {
 
       {/* Sección de sugerencias con filtros visuales */}
       <div className="suggestions-section">
-        <div className="suggestions-grid">
+        <div className="suggestions-layout">
           <div className="col-12">
             <h5 className="mb-1">Sugerir actividades</h5>
             <div className="text-muted small mb-2">
