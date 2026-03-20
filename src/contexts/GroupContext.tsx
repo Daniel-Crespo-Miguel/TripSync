@@ -95,7 +95,9 @@ export const GroupProvider: React.FC<GroupProviderProps> = ({ children }) => {
 
       setGrupo((prev) => ({
         ...prev!,
-        invitados: [...(prev?.invitados || []), email.trim()],
+        invitados: prev?.invitados.includes(email.trim())
+          ? prev.invitados
+          : [...(prev?.invitados || []), email.trim()],
       }));
     } catch (err) {
       console.error("Error adding invitado:", err);

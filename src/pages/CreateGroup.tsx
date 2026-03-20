@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { db, auth } from "../firebase/firebaseConfig";
 import { collection, addDoc, Timestamp } from "firebase/firestore";
-import { onAuthStateChanged } from "firebase/auth";
 import "../styles/create-group.css";
 
 type GeoResult = {
@@ -168,37 +167,36 @@ function CreateGroup() {
       return;
     }
 
-    onAuthStateChanged(auth, async (user) => {
-      if (!user) {
-        navigate("/login");
-        return;
-      }
+    const user = auth.currentUser;
+    if (!user) {
+      navigate("/login");
+      return;
+    }
 
-      try {
-        await addDoc(collection(db, "grupos"), {
-          name: name.trim(),
-          destination: selectedDestinationLabel || formatPlaceLabel(selectedDestination),
-          destinationLat: selectedDestination.latitude,
-          destinationLon: selectedDestination.longitude,
+    try {
+      await addDoc(collection(db, "grupos"), {
+        name: name.trim(),
+        destination: selectedDestinationLabel || formatPlaceLabel(selectedDestination),
+        destinationLat: selectedDestination.latitude,
+        destinationLon: selectedDestination.longitude,
 
-          startDate: Timestamp.fromDate(new Date(startDate)),
-          endDate: Timestamp.fromDate(new Date(endDate)),
-          createdBy: user.uid,
-          createdByEmail: user.email,
-          createdAt: Timestamp.now(),
-          invitados: [user.email],
+        startDate: Timestamp.fromDate(new Date(startDate)),
+        endDate: Timestamp.fromDate(new Date(endDate)),
+        createdBy: user.uid,
+        createdByEmail: user.email,
+        createdAt: Timestamp.now(),
+        invitados: [user.email],
 
-          gastos: [],
-          activities: [],
-          itinerary: [],
-        });
+        gastos: [],
+        activities: [],
+        itinerary: [],
+      });
 
-        navigate("/dashboard");
-      } catch (error) {
-        console.error("Error al crear el grupo:", error);
-        setFormError("No se pudo crear el grupo. Inténtalo de nuevo.");
-      }
-    });
+      navigate("/dashboard");
+    } catch (error) {
+      console.error("Error al crear el grupo:", error);
+      setFormError("No se pudo crear el grupo. Inténtalo de nuevo.");
+    }
   };
 
   return (
