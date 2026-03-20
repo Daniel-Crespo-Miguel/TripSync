@@ -9,6 +9,7 @@ import {
   updateDoc,
 } from "firebase/firestore";
 import "../styles/activities.css";
+import AISuggestionsPanel from "../components/AISuggestionsPanel";
 
 type Activity = {
   id: string;
@@ -784,6 +785,15 @@ function Activities() {
           Añadir actividad
         </button>
       </form>
+
+      {/* Sugerencias con IA */}
+      {userEmail && (
+        <AISuggestionsPanel
+          groupId={id!}
+          destination={grupo.destination ?? ""}
+          userEmail={userEmail}
+        />
+      )}
 
       {/* Sección de sugerencias con filtros visuales */}
       <div className="suggestions-section">
