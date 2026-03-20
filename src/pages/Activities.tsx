@@ -793,6 +793,8 @@ function Activities() {
           userEmail={userEmail}
           participantCount={grupo.invitados?.length ?? 0}
           existingActivities={(grupo.activities ?? []).map((a) => a.title)}
+          startDate={grupo.startDate}
+          endDate={grupo.endDate}
         />
       )}
 

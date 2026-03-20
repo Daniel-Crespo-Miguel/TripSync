@@ -8,6 +8,13 @@
   flex-direction: column;
 }
 
+/* Unified layout container */
+.ts-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
 /* Header del viaje */
 .group-header {
   background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
@@ -52,6 +59,7 @@
   z-index: 2;
 }
 
+
 .group-title-section {
   margin-bottom: 1.5rem;
   text-align: center;
@@ -62,7 +70,7 @@
   font-weight: 800;
   margin: 0 0 0.5rem 0;
   line-height: 1.2;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.6);
   text-align: center;
 }
 
@@ -70,10 +78,12 @@
   font-size: 1rem;
   opacity: 0.9;
   text-align: center;
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.5);
 }
 
 .group-creator {
   font-weight: 500;
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.5);
 }
 
 /* Trip countdown / status badge */
@@ -137,10 +147,12 @@
 }
 
 .group-info-card {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
   padding: 1.5rem;
   border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   text-align: center;
   transition: all 0.3s ease;
 }
@@ -168,37 +180,38 @@
 
 /* Sistema de Tabs */
 .tabs-container {
-  background: #f8f9fa;
+  background: #ffffff;
   border-bottom: 1px solid #E5E7EB;
   position: sticky;
   top: 0;
   z-index: 100;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   margin-top: 0;
-  min-height: 56px;
+  min-height: 80px;
 }
 
 .tabs-bar {
   display: flex;
-  align-items: center;
-  padding: 0 0.75rem;
+  align-items: stretch;
+  min-height: 80px;
+  gap: 0.75rem;
 }
 
 .btn-tab-back {
   display: flex;
   align-items: center;
-  padding: 6px 14px;
+  align-self: center;
+  padding: 8px 16px;
   background: rgba(14, 158, 167, 0.12);
   border: 1px solid rgba(14, 158, 167, 0.3);
-  border-radius: 20px;
+  border-radius: 8px;
   color: #0e9ea7;
-  font-size: 0.82rem;
+  font-size: 0.85rem;
   font-weight: 600;
   cursor: pointer;
   white-space: nowrap;
   transition: background 0.2s ease;
   flex-shrink: 0;
-  margin-right: 1.5rem;
 }
 
 .btn-tab-back:hover {
@@ -206,58 +219,116 @@
   color: #0e9ea7;
 }
 
-.tabs-nav {
-  display: flex;
-  justify-content: center;
-  gap: 0;
-  padding: 0;
-  margin: 0;
-  list-style: none;
-  overflow-x: auto;
-  white-space: nowrap;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
+/* Carousel wrapper */
+.tabs-carousel-wrapper {
+  position: relative;
   flex: 1;
-  border-left: 1.5px solid #D1D5DB;
+  display: flex;
+  align-items: stretch;
+  gap: 6px;
+  min-width: 0;
 }
 
-.tabs-nav::-webkit-scrollbar {
+/* Arrow buttons */
+.tabs-arrow {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 1px solid #E5E7EB;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+  color: #0B3C5D;
+  cursor: pointer;
+  flex-shrink: 0;
+  align-self: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+.tabs-arrow:hover {
+  border-color: #0e9ea7;
+  color: #0e9ea7;
+}
+
+.tabs-arrow--hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Scroll area */
+.tabs-scroll-area {
+  width: 900px;
+  max-width: 900px;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+  display: flex;
+  align-items: stretch;
+  flex-shrink: 1;
+}
+
+.tabs-scroll-area::-webkit-scrollbar {
   display: none;
 }
 
-.tab-item {
+.tabs-nav {
+  display: flex;
+  gap: 4px;
+  padding: 8px;
+  margin: 0;
+  list-style: none;
+  width: max-content;
+  background: rgba(14, 158, 167, 0.06);
+  border-radius: 12px;
+  align-items: center;
   flex: 1;
-  padding: 16px 20px;
-  text-decoration: none;
-  color: #333;
-  font-weight: 500;
-  font-size: 0.95rem;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  border-bottom: 3px solid transparent;
-  transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
-  white-space: nowrap;
-  position: relative;
-  text-align: center;
-  background: #f8f9fa;
-  border-right: 1px solid #E5E7EB;
 }
 
-.tab-item:last-child {
-  border-right: none;
+.tab-item {
+  width: 180px;
+  flex-shrink: 0;
+  padding: 12px 16px;
+  text-decoration: none;
+  color: #0B3C5D;
+  font-weight: 500;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  transition: color 0.2s ease, background-color 0.2s ease;
+  white-space: nowrap;
+  text-align: center;
+  background: transparent;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+
+.tab-item-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.tab-item-label {
+  line-height: 1;
 }
 
 .tab-item:hover {
   color: #0e9ea7;
-  background-color: #f0f1f3;
+  background-color: rgba(14, 158, 167, 0.10);
 }
 
 .tab-active {
-  color: #0e9ea7;
-  border-bottom-color: #0e9ea7;
-  border-bottom-width: 3px;
-  background-color: #ffffff;
-  font-weight: 700;
+  color: #ffffff;
+  background-color: #0e9ea7;
+  font-weight: 600;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(14, 158, 167, 0.35);
 }
 
 /* Contenido de las tabs */
@@ -271,6 +342,10 @@
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+  background-color: #f5f6f8;
 }
 
 .section-card {
@@ -522,16 +597,16 @@
     font-size: 1.75rem;
   }
   
-  .tabs-nav {
-    padding-bottom: 0.5rem;
-    flex-wrap: wrap;
-  }
-  
   .tab-item {
-    padding: 0.75rem 1rem;
-    font-size: 0.75rem;
-    flex: 1 1 calc(50% - 0.5rem);
-    min-width: 120px;
+    width: 130px;
+    padding: 10px 12px;
+    font-size: 0.7rem;
+  }
+
+  .tabs-arrow {
+    width: 30px;
+    height: 30px;
+    font-size: 0.6rem;
   }
   
   .section-card {
