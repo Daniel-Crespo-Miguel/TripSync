@@ -4,9 +4,22 @@
 
 .ai-suggestions-panel__trigger {
   display: flex;
-  align-items: center;
-  gap: 1rem;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.ai-suggestions-panel__prompt-row {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
   flex-wrap: wrap;
+}
+
+.ai-suggestions-panel__prompt {
+  flex: 1;
+  min-width: 220px;
+  font-size: 0.875rem;
+  resize: none;
 }
 
 .ai-suggestions-panel__btn {
@@ -14,6 +27,7 @@
   align-items: center;
   gap: 0.4rem;
   font-weight: 500;
+  white-space: nowrap;
 }
 
 .ai-suggestions-panel__no-dest {

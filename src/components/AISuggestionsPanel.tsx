@@ -10,17 +10,39 @@ type Props = {
   groupId: string;
   destination: string;
   userEmail: string;
+  participantCount: number;
+  existingActivities: string[];
+  weatherSummary?: string;
 };
 
-export default function AISuggestionsPanel({ groupId, destination, userEmail }: Props) {
+export default function AISuggestionsPanel({
+  groupId,
+  destination,
+  userEmail,
+  participantCount,
+  existingActivities,
+  weatherSummary,
+}: Props) {
   const { suggestions, loading, error, getSuggestions, clear } = useAISuggestions();
   const [addingId, setAddingId] = useState<string | null>(null);
   const [addedIds, setAddedIds] = useState<Set<string>>(new Set());
   const [open, setOpen] = useState(false);
+  const [userPrompt, setUserPrompt] = useState("");
 
   const handleGenerate = async () => {
     setOpen(true);
-    await getSuggestions(destination, "", groupId, userEmail);
+    await getSuggestions(
+      {
+        destination,
+        dates: "",
+        groupId,
+        participantCount,
+        existingActivities,
+        weatherSummary,
+        userPrompt: userPrompt.trim() || undefined,
+      },
+      userEmail
+    );
   };
 
   const handleAdd = async (suggestion: AISuggestion) => {
@@ -60,15 +82,26 @@ export default function AISuggestionsPanel({ groupId, destination, userEmail }: 
   return (
     <div className="ai-suggestions-panel">
       <div className="ai-suggestions-panel__trigger">
-        <button
-          className="btn btn-outline-primary ai-suggestions-panel__btn"
-          type="button"
-          onClick={handleGenerate}
-          disabled={loading || !destination}
-          title={!destination ? "El grupo no tiene destino definido" : undefined}
-        >
-          ✨ Generar sugerencias con IA
-        </button>
+        <div className="ai-suggestions-panel__prompt-row">
+          <textarea
+            className="form-control ai-suggestions-panel__prompt"
+            placeholder="Opcional: describe las preferencias del grupo, ej: &quot;somos familias con niños, nos gustan las actividades culturales&quot;"
+            value={userPrompt}
+            onChange={(e) => setUserPrompt(e.target.value)}
+            disabled={loading}
+            rows={2}
+            maxLength={300}
+          />
+          <button
+            className="btn btn-outline-primary ai-suggestions-panel__btn"
+            type="button"
+            onClick={handleGenerate}
+            disabled={loading || !destination}
+            title={!destination ? "El grupo no tiene destino definido" : undefined}
+          >
+            ✨ Generar sugerencias con IA
+          </button>
+        </div>
         {!destination && (
           <p className="ai-suggestions-panel__no-dest">
             Define un destino en el grupo para usar esta función.

@@ -1,6 +1,6 @@
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "../firebase/firebaseConfig";
-import { AISuggestion, SentimentResult } from "../types/ai";
+import { AISuggestion, AISuggestionsPayload, SentimentResult } from "../types/ai";
 
 const WEBHOOK_URL = import.meta.env.VITE_N8N_WEBHOOK_URL as string | undefined;
 const WEBHOOK_SECRET = import.meta.env.VITE_WEBHOOK_SECRET as string | undefined;
@@ -57,9 +57,7 @@ function mockSentiment(): SentimentResult {
 // --- Feature 1: AI Activity Suggestions ---
 
 export async function fetchAISuggestions(
-  destination: string,
-  dates: string,
-  groupId: string
+  payload: AISuggestionsPayload
 ): Promise<AISuggestion[]> {
   if (!WEBHOOK_URL) {
     console.warn("[aiService] VITE_N8N_WEBHOOK_URL not set — using mock data");
@@ -72,7 +70,7 @@ export async function fetchAISuggestions(
       "Content-Type": "application/json",
       ...(WEBHOOK_SECRET ? { "x-webhook-secret": WEBHOOK_SECRET } : {}),
     },
-    body: JSON.stringify({ destination, dates, groupId }),
+    body: JSON.stringify(payload),
   });
 
   if (!response.ok) {
