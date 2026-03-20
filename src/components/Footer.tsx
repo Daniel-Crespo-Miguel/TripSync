@@ -33,6 +33,10 @@ const Footer: React.FC = () => {
     goHomeAndThen(() => scrollToId(sectionId));
   };
 
+  const isHome = location.pathname === "/";
+
+  if (isHome) return null;
+
   return (
     <footer className="footer">
       <div className="footer-top-accent" />
