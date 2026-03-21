@@ -26,73 +26,50 @@ const Header: React.FC = () => {
     }
   };
 
-  const handleNavClick = (hash: string) => {
-    if (location.pathname === '/') {
-      // Si estamos en home, hacer scroll suave al hash
-      const element = document.getElementById(hash.replace('#', ''));
-      if (element) {
-        element.scrollIntoView({ behavior: 'smooth' });
+  const handleNavClick = (sectionId: string | null) => {
+    const scrollTo = () => {
+      if (sectionId === null) {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else {
+        document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth' });
       }
+    };
+
+    if (location.pathname === '/') {
+      scrollTo();
     } else {
-      // Si no estamos en home, navegar a home con el hash
-      navigate(`/${hash}`);
+      navigate('/');
+      setTimeout(scrollTo, 100);
     }
   };
 
   const isAuthPage = location.pathname === '/login' || location.pathname === '/register';
 
   return (
-    <header className={`header ${isAuthPage ? 'header--transparent' : location.pathname === '/' ? 'header--sticky' : 'header--static'}`}>
+    <header className={`header${isAuthPage ? ' header--transparent' : ''}`}>
       <div className="header-container">
         {/* Logo a la izquierda */}
         <div className="logo-container">
-          <img 
-            src={logoTripSync} 
-            alt="TripSync Logo" 
+          <img
+            src={logoTripSync}
+            alt="TripSync Logo"
             className="logo-image"
-            onClick={() => navigate('/')}
+            onClick={() => handleNavClick(null)}
             style={{ cursor: 'pointer' }}
           />
         </div>
-        
+
         {/* Navegación en el centro */}
         <nav className="nav-center">
           <ul className="nav-links">
             <li>
-              <a 
-                href="/" 
-                className="nav-link active"
-                onClick={(e) => {
-                  e.preventDefault();
-                  navigate('/');
-                }}
-              >
-                Inicio
-              </a>
+              <button className="nav-link" onClick={() => handleNavClick(null)}>Inicio</button>
             </li>
             <li>
-              <a 
-                href="#sobre-web" 
-                className="nav-link"
-                onClick={(e) => {
-                  e.preventDefault();
-                  handleNavClick('#sobre-web');
-                }}
-              >
-                Sobre la web
-              </a>
+              <button className="nav-link" onClick={() => handleNavClick('sobre-web')}>Sobre la web</button>
             </li>
             <li>
-              <a 
-                href="#banner-seccion" 
-                className="nav-link"
-                onClick={(e) => {
-                  e.preventDefault();
-                  handleNavClick('#banner-seccion');
-                }}
-              >
-                Qué ofrece
-              </a>
+              <button className="nav-link" onClick={() => handleNavClick('que-ofrece')}>Qué ofrece</button>
             </li>
           </ul>
         </nav>
@@ -101,13 +78,13 @@ const Header: React.FC = () => {
         <div className="user-actions">
           {user ? (
             <>
-              <button 
+              <button
                 className="btn-header btn-secondary-header"
                 onClick={() => navigate('/dashboard')}
               >
                 Mi panel
               </button>
-              <button 
+              <button
                 className="btn-header btn-primary-header"
                 onClick={handleLogout}
               >
@@ -116,13 +93,13 @@ const Header: React.FC = () => {
             </>
           ) : (
             <>
-              <button 
+              <button
                 className="btn-header btn-secondary-header"
                 onClick={() => navigate('/login')}
               >
                 Iniciar sesión
               </button>
-              <button 
+              <button
                 className="btn-header btn-cta-header"
                 onClick={() => navigate('/register')}
               >
