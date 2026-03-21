@@ -31,20 +31,9 @@ body {
 
 /* Header global */
 .header {
-  z-index: 1000;
+  position: relative;
   background-color: var(--white);
   border-bottom: 1px solid #E5E7EB;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-}
-
-.header--sticky {
-  position: sticky;
-  top: 0;
-}
-
-.header--static {
-  position: static;
 }
 
 .header-container {
@@ -93,6 +82,10 @@ body {
 
 .nav-link {
   text-decoration: none;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
   color: var(--text-primary);
   font-weight: 500;
   font-size: 1rem;

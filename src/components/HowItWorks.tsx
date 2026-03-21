@@ -69,7 +69,7 @@ function HowItWorks() {
   const current = steps.find((s) => s.id === activeStep)!;
 
   return (
-    <section className="how-it-works">
+    <section className="how-it-works" id="sobre-web">
       <div className="how-it-works__inner">
         <h2 className="how-it-works__heading">¿Cómo funciona TripSync?</h2>
         <p className="how-it-works__subheading">De la idea al viaje perfecto, en pocos pasos</p>
