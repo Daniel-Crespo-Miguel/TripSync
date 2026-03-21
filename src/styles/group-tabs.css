@@ -261,13 +261,12 @@
 
 /* Scroll area */
 .tabs-scroll-area {
-  width: 900px;
-  max-width: 900px;
+  flex: 1;
+  min-width: 0;
   overflow-x: auto;
   scroll-behavior: smooth;
   display: flex;
   align-items: stretch;
-  flex-shrink: 1;
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
@@ -286,7 +285,7 @@
   background: rgba(14, 158, 167, 0.06);
   border-radius: 12px;
   align-items: center;
-  flex: 1;
+  flex-shrink: 0;
 }
 
 .tab-item {
@@ -595,11 +594,28 @@
   .group-header {
     padding: 1.5rem 0;
   }
-  
+
   .group-title {
     font-size: 1.75rem;
   }
-  
+
+  .tabs-bar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    min-height: unset;
+    padding: 0.5rem 0;
+  }
+
+  .btn-tab-back {
+    align-self: center;
+    margin: 0 auto 0.25rem auto;
+  }
+
+  .tabs-carousel-wrapper {
+    width: 100%;
+  }
+
   .tab-item {
     width: 130px;
     padding: 10px 12px;

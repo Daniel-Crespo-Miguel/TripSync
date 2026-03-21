@@ -107,20 +107,15 @@ function GroupTabs() {
   const checkArrows = () => {
     const el = scrollRef.current;
     if (!el) return;
-    setCanScrollLeft(el.scrollLeft > 0);
+setCanScrollLeft(el.scrollLeft > 0);
     setCanScrollRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 1);
   };
 
   useEffect(() => {
-    const el = scrollRef.current;
-    if (!el) return;
-    // Delay to ensure layout is fully computed before measuring scrollWidth
     const timer = setTimeout(checkArrows, 50);
-    el.addEventListener('scroll', checkArrows, { passive: true });
     window.addEventListener('resize', checkArrows, { passive: true });
     return () => {
       clearTimeout(timer);
-      el.removeEventListener('scroll', checkArrows);
       window.removeEventListener('resize', checkArrows);
     };
   }, [activeTab]);
@@ -268,7 +263,7 @@ function GroupTabs() {
               >
                 ◀
               </button>
-              <div className="tabs-scroll-area" ref={scrollRef}>
+              <div className="tabs-scroll-area" ref={scrollRef} onScroll={checkArrows}>
                 <nav className="tabs-nav">
                   {TABS.map((tab, index) => (
                     <Link
