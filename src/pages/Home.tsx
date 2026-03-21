@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { auth } from "../firebase/firebaseConfig";
 import { onAuthStateChanged, User } from "firebase/auth";
 import bannerImg from "../assets/Banner_Home.png";
+import HowItWorks from "../components/HowItWorks";
 
 function Home() {
   const [user, setUser] = React.useState<User | null>(null);
@@ -43,76 +44,7 @@ function Home() {
         </div>
       </section>
 
-      {/* Sección "Sobre la web" */}
-      <section className="section" id="sobre-web">
-        <h2 className="section-title">¿Qué puedes hacer con TripSync?</h2>
-        <p className="section-subtitle">
-          Una plataforma completa para organizar cada aspecto de tus viajes en
-          grupo, desde la planificación hasta el regreso a casa.
-        </p>
-
-        <div className="features-grid">
-          <div className="feature-card">
-            <div className="feature-icon-center">✈️</div>
-            <h3 className="feature-title">Organización de Grupos</h3>
-            <p className="feature-description">
-              Crea grupos de viaje, invita a amigos o familiares y mantén a
-              todos informados en un solo lugar. Control total para el
-              organizador y participación activa para todos los miembros.
-            </p>
-          </div>
-
-          <div className="feature-card">
-            <div className="feature-icon-center">💰</div>
-            <h3 className="feature-title">Gestión de Gastos</h3>
-            <p className="feature-description">
-              Sistema tipo Tricount para gestionar gastos compartidos. Registra
-              gastos, asigna participantes y calcula automáticamente los
-              balances. Olvídate de las cuentas complicadas.
-            </p>
-          </div>
-
-          <div className="feature-card">
-            <div className="feature-icon-center">🎯</div>
-            <h3 className="feature-title">Actividades y Votaciones</h3>
-            <p className="feature-description">
-              Propón actividades, permite que todos voten o se apunten, y
-              descubre sugerencias automáticas basadas en tu destino. Planifica
-              el itinerario de forma democrática y divertida.
-            </p>
-          </div>
-
-          <div className="feature-card">
-            <div className="feature-icon-center">📅</div>
-            <h3 className="feature-title">Itinerario por Días</h3>
-            <p className="feature-description">
-              Organiza tu viaje día a día con horarios específicos. Añade
-              actividades, notas y detalles importantes para cada momento del
-              viaje.
-            </p>
-          </div>
-
-          <div className="feature-card">
-            <div className="feature-icon-center">🌤️</div>
-            <h3 className="feature-title">Clima del Destino</h3>
-            <p className="feature-description">
-              Previsión meteorológica detallada para tu destino usando
-              Open-Meteo. Planifica tu equipaje y actividades según el clima
-              esperado.
-            </p>
-          </div>
-
-          <div className="feature-card">
-            <div className="feature-icon-center">💬</div>
-            <h3 className="feature-title">Chat en Tiempo Real</h3>
-            <p className="feature-description">
-              Comunicación instantánea entre los miembros del grupo. Coordina
-              cambios, comparte información y mantente en contacto durante todo
-              el viaje.
-            </p>
-          </div>
-        </div>
-      </section>
+      <HowItWorks />
 
       {/* Sección IA */}
       <section className="ai-section">

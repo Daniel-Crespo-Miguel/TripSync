@@ -1,0 +1,239 @@
+.how-it-works {
+  background: white;
+  padding: 5rem 2rem;
+  width: 100%;
+}
+
+.how-it-works__inner {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.how-it-works__heading {
+  text-align: center;
+  color: #0B3C5D;
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem;
+}
+
+.how-it-works__subheading {
+  text-align: center;
+  color: #6B7280;
+  font-size: 1rem;
+  margin: 0 0 3.5rem;
+}
+
+/* Desktop two-column layout */
+.hiw-layout {
+  display: flex;
+  gap: 3rem;
+  align-items: flex-start;
+}
+
+/* ── LEFT: Timeline ── */
+.hiw-timeline {
+  flex: 0 0 35%;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding-left: 1.25rem;
+}
+
+.hiw-timeline__line {
+  position: absolute;
+  left: calc(1.25rem + 19px);
+  top: 20px;
+  bottom: 20px;
+  width: 2px;
+  background: linear-gradient(to bottom, #14B8C4, rgba(20, 184, 196, 0.15));
+  pointer-events: none;
+}
+
+.hiw-node {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  padding: 0.7rem 0;
+  cursor: pointer;
+  position: relative;
+  z-index: 1;
+}
+
+.hiw-node__circle {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  font-weight: 700;
+  background: #f1f5f9;
+  border: 2px solid rgba(20, 184, 196, 0.3);
+  color: #9CA3AF;
+  transition: all 0.25s ease;
+}
+
+.hiw-node__label {
+  font-size: 0.9rem;
+  color: #9CA3AF;
+  font-weight: 500;
+  transition: all 0.25s ease;
+}
+
+/* Hover on inactive */
+.hiw-node:not(.hiw-node--active):hover .hiw-node__circle {
+  border-color: #14B8C4;
+}
+
+.hiw-node:not(.hiw-node--active):hover .hiw-node__label {
+  color: #0B3C5D;
+}
+
+/* Active node */
+.hiw-node--active .hiw-node__circle {
+  background: #14B8C4;
+  border-color: #14B8C4;
+  color: white;
+  box-shadow: 0 0 16px rgba(20, 184, 196, 0.5);
+}
+
+.hiw-node--active .hiw-node__label {
+  color: #0B3C5D;
+  font-weight: 600;
+}
+
+/* ── RIGHT: Content card ── */
+.hiw-card {
+  flex: 1;
+  background: #f8fafc;
+  border: 1px solid rgba(14, 158, 167, 0.20);
+  border-radius: 20px;
+  padding: 2.5rem;
+  min-height: 280px;
+  opacity: 1;
+  transition: opacity 0.2s ease;
+}
+
+.hiw-card--fading {
+  opacity: 0;
+}
+
+.hiw-card__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: rgba(14, 158, 167, 0.12);
+  border: 1px solid rgba(14, 158, 167, 0.25);
+  color: #0e9ea7;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 20px;
+  padding: 0.25rem 0.8rem;
+  margin-bottom: 1.25rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.hiw-card__icon {
+  font-size: 0.9rem;
+  line-height: 1;
+}
+
+.hiw-card__title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #0B3C5D;
+  margin: 0 0 0.75rem;
+  line-height: 1.3;
+}
+
+.hiw-card__description {
+  font-size: 0.95rem;
+  color: #4B5563;
+  margin: 0 0 1.25rem;
+  line-height: 1.6;
+}
+
+.hiw-card__bullets {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.hiw-card__bullet {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: #4B5563;
+}
+
+.hiw-card__bullet-prefix {
+  color: #0e9ea7;
+  font-weight: 700;
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+/* ── Mobile ── */
+.hiw-mobile-nav {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .hiw-mobile-nav {
+    display: flex;
+    justify-content: center;
+    gap: 0.6rem;
+    margin-bottom: 1.75rem;
+  }
+
+  .hiw-mobile-node {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 2px solid rgba(20, 184, 196, 0.3);
+    background: #f1f5f9;
+    color: #9CA3AF;
+    font-size: 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+  }
+
+  .hiw-mobile-node--active {
+    background: #14B8C4;
+    border-color: #14B8C4;
+    color: white;
+    box-shadow: 0 0 12px rgba(20, 184, 196, 0.5);
+  }
+
+  .hiw-layout {
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .hiw-timeline {
+    display: none;
+  }
+
+  .hiw-card {
+    padding: 1.75rem;
+    min-height: unset;
+  }
+
+  .how-it-works__heading {
+    font-size: 1.6rem;
+  }
+}
