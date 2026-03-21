@@ -576,11 +576,11 @@ function Itinerary() {
           </div>
         ) : (
           <div className="timeline-container">
-            {grouped.map(([day, items]) => (
+            {grouped.map(([day, items], dayIndex) => (
               <div key={day} className="itinerary-day">
                 <div className="day-header">
                   <div className="day-date">
-                    <span className="date-icon">📅</span>
+                    <span className="day-number-badge">{dayIndex + 1}</span>
                     <span className="date-text">{(() => { const [y,m,d] = day.substring(0,10).split('-').map(Number); return new Date(y, m-1, d).toLocaleDateString('es-ES'); })()}</span>
                   </div>
                   <span className="weekday-text">
@@ -588,66 +588,52 @@ function Itinerary() {
                   </span>
                 </div>
 
-                <div className="timeline">
-                  {items.map((it) => {
-                    const canEdit =
-                      (userUid && grupo.createdBy && userUid === grupo.createdBy) ||
-                      (userEmail && it.createdBy === userEmail);
-                    const canDelete = canEdit;
+                <div className="agenda-list">
+                  {items.length === 0 ? (
+                    <div className="agenda-empty-day">Sin actividades programadas</div>
+                  ) : (
+                    items.map((it) => {
+                      const canEdit =
+                        (userUid && grupo.createdBy && userUid === grupo.createdBy) ||
+                        (userEmail && it.createdBy === userEmail);
+                      const canDelete = canEdit;
 
-                    return (
-                      <div key={it.id} className="timeline-item">
-                        <div className="timeline-marker">
-                          <div className="timeline-dot"></div>
-                          <div className="timeline-line"></div>
-                        </div>
-                        <div className="timeline-content">
-                          <div className="activity-card">
-                            <div className="activity-header">
-                              <div className="activity-time">
-                                {it.time && (
-                                  <span className="time-badge">⏰ {it.time}</span>
-                                )}
-                                <span className="activity-title">{it.title}</span>
-                              </div>
-                              <div className="activity-actions">
-                                {canEdit && (
-                                  <button
-                                    className="action-btn edit-btn"
-                                    onClick={() => handleEditItem(it)}
-                                    title="Editar"
-                                  >
-                                    Editar
-                                  </button>
-                                )}
-                                {canDelete && (
-                                  <button
-                                    className="action-btn delete-btn"
-                                    onClick={() => handleDeleteItem(it.id)}
-                                    title="Eliminar del itinerario"
-                                  >
-                                    Eliminar
-                                  </button>
-                                )}
-                              </div>
-                            </div>
-                            
-                            {it.notes && (
-                              <div className="activity-notes">
-                                {it.notes}
-                              </div>
-                            )}
-
-                            <div className="activity-meta">
-                              <span className="creator-badge">
-                                Añadido por: {it.createdBy.split('@')[0]}
-                              </span>
-                            </div>
+                      return (
+                        <div key={it.id} className="agenda-row">
+                          <div className={`agenda-time${!it.time ? ' agenda-time--empty' : ''}`}>
+                            {it.time ?? "--:--"}
                           </div>
+                          <div className="agenda-divider" />
+                          <div className="agenda-body">
+                            <span className="agenda-title">{it.title}</span>
+                            {it.notes && <p className="agenda-notes">{it.notes}</p>}
+                          </div>
+                          {(canEdit || canDelete) && (
+                            <div className="agenda-actions">
+                              {canEdit && (
+                                <button
+                                  className="agenda-btn"
+                                  onClick={() => handleEditItem(it)}
+                                  title="Editar"
+                                >
+                                  ✏️
+                                </button>
+                              )}
+                              {canDelete && (
+                                <button
+                                  className="agenda-btn agenda-btn--delete"
+                                  onClick={() => handleDeleteItem(it.id)}
+                                  title="Eliminar"
+                                >
+                                  🗑️
+                                </button>
+                              )}
+                            </div>
+                          )}
                         </div>
-                      </div>
-                    );
-                  })}
+                      );
+                    })
+                  )}
                 </div>
               </div>
             ))}
