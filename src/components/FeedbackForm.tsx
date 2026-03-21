@@ -5,6 +5,7 @@ import "../styles/aiFeedback.css";
 type Props = {
   userEmail: string;
   userId: string;
+  groupId: string;
 };
 
 const sentimentConfig = {
@@ -13,14 +14,14 @@ const sentimentConfig = {
   negativo: { icon: "😟", label: "Negativo" },
 };
 
-export default function FeedbackForm({ userEmail, userId }: Props) {
+export default function FeedbackForm({ userEmail, userId, groupId }: Props) {
   const [text, setText] = useState("");
   const { result, loading, error, submitFeedback, clear } = useAIFeedback();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!text.trim()) return;
-    await submitFeedback(text.trim(), userEmail, userId);
+    await submitFeedback(text.trim(), userEmail, userId, groupId);
   };
 
   const handleClear = () => {

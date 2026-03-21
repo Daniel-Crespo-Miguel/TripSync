@@ -1,9 +1,12 @@
+import { useParams } from "react-router-dom";
 import { auth } from "../firebase/firebaseConfig";
 import { useGroup } from "../contexts/GroupContext";
 import FeedbackForm from "../components/FeedbackForm";
+import FeedbackDashboard from "../components/FeedbackDashboard";
 
 function Feedback() {
   const { grupo } = useGroup();
+  const { id } = useParams();
   const user = auth.currentUser;
 
   if (!user || !grupo) {
@@ -20,9 +23,12 @@ function Feedback() {
         </p>
       </div>
 
+      <FeedbackDashboard groupId={id!} />
+
       <FeedbackForm
         userEmail={user.email ?? ""}
         userId={user.uid}
+        groupId={id!}
       />
     </div>
   );

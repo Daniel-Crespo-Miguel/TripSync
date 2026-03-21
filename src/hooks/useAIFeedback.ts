@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { addDoc, collection, Timestamp } from "firebase/firestore";
+import { db } from "../firebase/firebaseConfig";
 import { checkAIWhitelist, fetchSentimentFeedback } from "../services/aiService";
 import { SentimentResult } from "../types/ai";
 
@@ -6,7 +8,7 @@ type UseAIFeedbackResult = {
   result: SentimentResult | null;
   loading: boolean;
   error: string | null;
-  submitFeedback: (text: string, userEmail: string, userId: string) => Promise<void>;
+  submitFeedback: (text: string, userEmail: string, userId: string, groupId: string) => Promise<void>;
   clear: () => void;
 };
 
@@ -15,7 +17,7 @@ export function useAIFeedback(): UseAIFeedbackResult {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  async function submitFeedback(text: string, userEmail: string, userId: string) {
+  async function submitFeedback(text: string, userEmail: string, userId: string, groupId: string) {
     setLoading(true);
     setError(null);
     setResult(null);
@@ -29,6 +31,16 @@ export function useAIFeedback(): UseAIFeedbackResult {
 
       const sentiment = await fetchSentimentFeedback(text, userId);
       setResult(sentiment);
+
+      await addDoc(collection(db, "feedback"), {
+        groupId,
+        userId,
+        userEmail,
+        text,
+        sentiment: sentiment.sentiment,
+        summary: sentiment.summary,
+        createdAt: Timestamp.now(),
+      });
     } catch (e) {
       setError("Error al analizar el feedback. Inténtalo de nuevo.");
       console.error("[useAIFeedback]", e);

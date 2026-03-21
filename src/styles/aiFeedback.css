@@ -1,3 +1,169 @@
+/* ── Feedback Dashboard ── */
+
+.fb-dashboard {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 1.5rem 1.75rem;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.07);
+  border: 1px solid #E5E7EB;
+  margin-bottom: 1.5rem;
+}
+
+.fb-dashboard--empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 2rem;
+  text-align: center;
+  background: #F9FAFB;
+  border: 2px dashed #E5E7EB;
+  box-shadow: none;
+}
+
+.fb-empty-icon {
+  font-size: 2.5rem;
+  opacity: 0.5;
+}
+
+.fb-empty-text {
+  font-size: 0.95rem;
+  color: #6B7280;
+  margin: 0;
+  line-height: 1.6;
+}
+
+/* Counters */
+.fb-counters {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.fb-counter {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 0.875rem 0.5rem;
+  border-radius: 12px;
+  border: 1px solid;
+}
+
+.fb-counter--positivo { background: #ECFDF5; border-color: #A7F3D0; }
+.fb-counter--neutral  { background: #F9FAFB; border-color: #E5E7EB; }
+.fb-counter--negativo { background: #FEF2F2; border-color: #FECACA; }
+
+.fb-counter__icon {
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.fb-counter__num {
+  font-size: 1.75rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.fb-counter--positivo .fb-counter__num { color: #059669; }
+.fb-counter--neutral  .fb-counter__num { color: #6B7280; }
+.fb-counter--negativo .fb-counter__num { color: #DC2626; }
+
+.fb-counter__label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #6B7280;
+}
+
+/* Progress bar */
+.fb-bar {
+  display: flex;
+  height: 10px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: #F3F4F6;
+  margin-bottom: 0.75rem;
+}
+
+.fb-bar__seg { height: 100%; transition: width 0.4s ease; }
+.fb-bar__seg--positivo { background: #10B981; }
+.fb-bar__seg--neutral  { background: #9CA3AF; }
+.fb-bar__seg--negativo { background: #EF4444; }
+
+/* Score */
+.fb-score {
+  font-size: 0.875rem;
+  color: #6B7280;
+  text-align: center;
+  margin: 0 0 1.5rem 0;
+}
+
+.fb-score strong {
+  color: #0B3C5D;
+}
+
+/* List */
+.fb-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.fb-item {
+  background: #F9FAFB;
+  border: 1px solid #E5E7EB;
+  border-radius: 12px;
+  padding: 1rem 1.1rem;
+}
+
+.fb-item__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+  gap: 0.5rem;
+}
+
+.fb-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: capitalize;
+  border: 1px solid transparent;
+}
+
+.fb-pill--positivo { background: #ECFDF5; color: #059669; border-color: #A7F3D0; }
+.fb-pill--neutral  { background: #F9FAFB; color: #6B7280; border-color: #E5E7EB; }
+.fb-pill--negativo { background: #FEF2F2; color: #DC2626; border-color: #FECACA; }
+
+.fb-item__date {
+  font-size: 0.75rem;
+  color: #9CA3AF;
+  white-space: nowrap;
+}
+
+.fb-item__text {
+  font-size: 0.9rem;
+  color: #374151;
+  margin: 0 0 0.4rem 0;
+  line-height: 1.55;
+}
+
+.fb-item__summary {
+  font-size: 0.82rem;
+  color: #6B7280;
+  font-style: italic;
+  margin: 0;
+  line-height: 1.5;
+}
+
 /* ── Feedback page layout ── */
 .feedback-page {
   max-width: 640px;
