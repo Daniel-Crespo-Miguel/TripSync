@@ -1,0 +1,192 @@
+.ai-transport-panel {
+  margin-top: 2rem;
+}
+
+/* Trigger card */
+.ai-transport-panel__card {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  background: linear-gradient(135deg, rgba(14, 158, 167, 0.08) 0%, rgba(14, 158, 167, 0.03) 100%);
+  border: 1px solid rgba(14, 158, 167, 0.20);
+  border-left: 4px solid #0e9ea7;
+  border-radius: 16px;
+  padding: 1.5rem;
+}
+
+.ai-transport-panel__card-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.ai-transport-panel__card-icon {
+  font-size: 1.5rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.ai-transport-panel__card-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #0B3C5D;
+  margin-bottom: 0.2rem;
+}
+
+.ai-transport-panel__card-subtitle {
+  font-size: 0.875rem;
+  color: #6c757d;
+  line-height: 1.4;
+}
+
+.ai-transport-panel__trigger {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.ai-transport-panel__prompt {
+  width: 100%;
+  font-size: 0.875rem;
+  resize: none;
+}
+
+.ai-transport-panel__btn {
+  display: block;
+  width: 100%;
+  background: linear-gradient(135deg, #0e9ea7, #0bc5d0);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 14px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.ai-transport-panel__btn:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
+.ai-transport-panel__btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.ai-transport-panel__no-dest {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #6c757d;
+}
+
+/* Results body */
+.ai-transport-panel__body {
+  margin-top: 1rem;
+  border: 1px solid #dee2e6;
+  border-radius: 0.75rem;
+  padding: 1.25rem;
+  background: #f8f9fa;
+}
+
+.ai-transport-panel__body-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.ai-transport-panel__body-title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.ai-transport-panel__grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+/* Result card */
+.transport-card {
+  background: #fff;
+  border: 1px solid #dee2e6;
+  border-radius: 0.75rem;
+  padding: 1.1rem;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+}
+
+.transport-card__header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.6rem;
+}
+
+.transport-card__icon {
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.transport-card__pill {
+  font-size: 0.72rem;
+  font-weight: 700;
+  border-radius: 999px;
+  padding: 0.2rem 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.transport-card__pill--avion,
+.transport-card__pill--vuelo { background: #DBEAFE; color: #1D4ED8; }
+.transport-card__pill--tren  { background: #FED7AA; color: #C2410C; }
+.transport-card__pill--bus   { background: #BBF7D0; color: #15803D; }
+.transport-card__pill--coche { background: #E9D5FF; color: #7C3AED; }
+.transport-card__pill--ferry { background: #99F6E4; color: #0F766E; }
+.transport-card__pill--other { background: #F1F5F9; color: #475569; }
+
+.transport-card__title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #0B3C5D;
+  margin: 0 0 0.35rem;
+  line-height: 1.3;
+}
+
+.transport-card__description {
+  font-size: 0.84rem;
+  color: #6c757d;
+  margin: 0 0 0.6rem;
+  line-height: 1.5;
+  flex: 1;
+}
+
+.transport-card__chips {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.transport-chip {
+  font-size: 0.78rem;
+  font-weight: 600;
+  background: #f1f3f5;
+  color: #343a40;
+  border-radius: 6px;
+  padding: 0.2rem 0.6rem;
+}
+
+.transport-card__tip {
+  background: #FEFCE8;
+  border: 1px solid #FEF08A;
+  border-radius: 8px;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.85rem;
+  color: #854D0E;
+  margin-top: 0.75rem;
+  line-height: 1.45;
+}

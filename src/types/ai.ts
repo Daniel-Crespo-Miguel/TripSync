@@ -24,3 +24,22 @@ export type AISuggestionsPayload = {
   weatherSummary?: string;
   userPrompt?: string;
 };
+
+export type TransportSuggestion = {
+  id: string;
+  mode: string;        // e.g. "avion", "tren", "bus", "coche"
+  title: string;
+  description: string;
+  estimatedDuration?: string;
+  estimatedCost?: string;
+  tips?: string[];
+};
+
+export type AITransportPayload = {
+  destination: string;
+  originCity: string;
+  dates: string;
+  groupId: string;
+  participantCount: number;
+  userPrompt?: string;
+};
