@@ -11,11 +11,12 @@ function Feedback() {
   }
 
   return (
-    <div className="py-4">
-      <div className="mb-4">
-        <h2 className="h4 mb-1">Feedback del viaje</h2>
-        <p className="text-muted mb-0">
-          Comparte tu opinión sobre el viaje o sobre la aplicación TripSync. La IA analizará el tono de tu mensaje.
+    <div className="feedback-page">
+      <div className="feedback-intro">
+        <div className="feedback-intro-icon">💬</div>
+        <h1 className="feedback-intro-title">¿Cómo valoras el viaje?</h1>
+        <p className="feedback-intro-subtitle">
+          Escribe libremente y nuestra IA analizará el sentimiento de tu mensaje
         </p>
       </div>
 

@@ -227,15 +227,8 @@ function Transport() {
   return (
     <div className="transport-page">
       <div className="transport-header">
-        <h2 className="transport-title">Transporte — {grupo.name}</h2>
-        <div className="transport-actions">
-          <button
-            className="btn btn-secondary"
-            onClick={() => navigate(`/grupo/${id}`)}
-          >
-            Volver al grupo
-          </button>
-        </div>
+        <h1 className="transport-title">Transporte</h1>
+        <p className="transport-subtitle">Organiza los medios de transporte del viaje</p>
       </div>
 
       {/* Bloque superior - Contexto del viaje */}

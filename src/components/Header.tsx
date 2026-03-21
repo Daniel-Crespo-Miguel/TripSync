@@ -40,7 +40,7 @@ const Header: React.FC = () => {
   };
 
   return (
-    <header className="header">
+    <header className={`header ${location.pathname === '/' ? 'header--sticky' : 'header--static'}`}>
       <div className="header-container">
         {/* Logo a la izquierda */}
         <div className="logo-container">

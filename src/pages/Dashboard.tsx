@@ -84,9 +84,9 @@ function Dashboard() {
     const inicio = new Date(grupo.startDate.seconds * 1000);
     const fin = new Date(grupo.endDate.seconds * 1000);
 
-    if (hoy < inicio) return { label: "Próximo", color: "#10B981" };
-    if (hoy >= inicio && hoy <= fin) return { label: "En curso", color: "#F59E0B" };
-    return { label: "Finalizado", color: "#6B7280" };
+    if (hoy < inicio) return { label: "Próximo", statusClass: "badge--proximo" };
+    if (hoy >= inicio && hoy <= fin) return { label: "En curso", statusClass: "badge--encurso" };
+    return { label: "Finalizado", statusClass: "badge--finalizado" };
   };
 
   const formatDate = (dateObj: { seconds: number; nanoseconds: number }) => {
@@ -134,41 +134,15 @@ function Dashboard() {
             {grupos.map((grupo) => {
               const estado = getEstadoViaje(grupo);
               return (
-                <div 
+                <div
                   key={grupo.id}
                   className="trip-card"
-                  onClick={() => navigate(`/grupo/${grupo.id}`)}
                 >
                   <div className="trip-card-content">
-                    <div className="trip-header">
-                      <h3 className="trip-name">{grupo.name}</h3>
-                      <span 
-                        className="trip-status-badge"
-                        style={{ backgroundColor: estado.color }}
-                      >
-                        {estado.label}
-                      </span>
-                    </div>
-                    
-                    <div className="trip-destination">
-                      <span className="destination-text">{grupo.destination}</span>
-                    </div>
-
-                    <div className="trip-dates">
-                      <span className="dates-label">Fechas:</span>
-                      <span className="dates-value">
-                        {formatDate(grupo.startDate)} - {formatDate(grupo.endDate)}
-                      </span>
-                    </div>
-
-                    <div className="trip-actions">
-                      <span className="action-text">Ver detalles</span>
-                      <span className="action-arrow">→</span>
-                    </div>
-
                     {user && user.uid === grupo.createdBy && (
-                      <button 
-                        className="btn-delete-group"
+                      <button
+                        className="btn-card-icon btn-card-delete"
+                        title="Eliminar viaje"
                         onClick={(e) => {
                           e.stopPropagation();
                           if (window.confirm('¿Estás seguro de que quieres eliminar este viaje? Esta acción no se puede deshacer.')) {
@@ -176,13 +150,14 @@ function Dashboard() {
                           }
                         }}
                       >
-                        Eliminar viaje
+                        🗑️
                       </button>
                     )}
 
                     {user && user.uid !== grupo.createdBy && (
-                      <button 
-                        className="btn-leave-group"
+                      <button
+                        className="btn-card-icon btn-card-leave"
+                        title="Abandonar viaje"
                         onClick={(e) => {
                           e.stopPropagation();
                           if (window.confirm('¿Estás seguro de que quieres abandonar este viaje?')) {
@@ -190,9 +165,32 @@ function Dashboard() {
                           }
                         }}
                       >
-                        Abandonar viaje
+                        🚪
                       </button>
                     )}
+
+                    <div className="trip-header">
+                      <h3 className="trip-name">{grupo.name}</h3>
+                      <span className={`trip-status-badge ${estado.statusClass}`}>
+                        {estado.label}
+                      </span>
+                    </div>
+
+                    <div className="trip-destination">
+                      <span className="destination-icon">📍</span>
+                      <span className="destination-text">{grupo.destination}</span>
+                    </div>
+
+                    <div className="trip-dates">
+                      <span className="dates-label">📅 Fechas</span>
+                      <span className="dates-value">
+                        {formatDate(grupo.startDate)} – {formatDate(grupo.endDate)}
+                      </span>
+                    </div>
+
+                    <button className="btn-view-details" onClick={() => navigate(`/grupo/${grupo.id}`)}>
+                      Ver detalles →
+                    </button>
                   </div>
                 </div>
               );

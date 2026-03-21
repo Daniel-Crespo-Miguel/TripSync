@@ -2,6 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { auth } from "../firebase/firebaseConfig";
 import { onAuthStateChanged, User } from "firebase/auth";
+import bannerImg from "../assets/Banner_Home.png";
 
 function Home() {
   const [user, setUser] = React.useState<User | null>(null);
@@ -128,24 +129,69 @@ function Home() {
         </div>
       </section>
 
+      {/* Sección IA */}
+      <section className="ai-section">
+        <div className="ai-section__inner">
+          <div className="ai-section__left">
+            <span className="ai-badge">✨ IMPULSADO POR IA</span>
+            <h2 className="ai-section__title">
+              Tu viaje, pensado por inteligencia artificial
+            </h2>
+            <p className="ai-section__subtitle">
+              TripSync conecta con Claude AI para analizar tu destino, fechas, clima
+              y preferencias del grupo. El resultado: sugerencias de actividades
+              únicas, pensadas exactamente para vosotros.
+            </p>
+            <ul className="ai-features-list">
+              <li>🗺️ Actividades personalizadas según destino y clima</li>
+              <li>👥 Adaptadas al tamaño y preferencias de tu grupo</li>
+              <li>🚆 Sugerencias de transporte inteligentes (próximamente)</li>
+            </ul>
+          </div>
+
+          <div className="ai-section__right">
+            <div className="ai-mock-card">
+              <div className="ai-mock-card__header">✨ Sugerencias para Madrid</div>
+              <div className="ai-mock-suggestion">
+                <span className="ai-mock-pill ai-mock-pill--cultural">Cultural</span>
+                <span className="ai-mock-title">Visita al Museo del Prado</span>
+              </div>
+              <div className="ai-mock-suggestion">
+                <span className="ai-mock-pill ai-mock-pill--gastro">Gastronomía</span>
+                <span className="ai-mock-title">Ruta de tapas por La Latina</span>
+              </div>
+              <div className="ai-mock-suggestion">
+                <span className="ai-mock-pill ai-mock-pill--nature">Naturaleza</span>
+                <span className="ai-mock-title">Retiro Park morning walk</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Nuevo Banner Visual */}
       <section className="banner-section" id="banner-seccion">
-        <div className="banner-container">
-          <div className="banner-content">
-            <h2 className="banner-title">
-              Viaja sin preocupaciones, disfruta sin complicaciones
-            </h2>
-            <p className="banner-subtitle">
-              Deja que TripSync se encargue de la organización mientras tú te
-              centras en crear recuerdos inolvidables con las personas que más
-              te importan.
-            </p>
-            <button
-              className="btn btn-primary banner-cta"
-              onClick={handleStart}
+        <img src={bannerImg} alt="" className="banner-bg-img" />
+        <div className="banner-content">
+          <h2 className="banner-title">
+            Viaja sin preocupaciones, disfruta sin complicaciones
+          </h2>
+          <button
+            className="btn btn-primary banner-cta"
+            onClick={handleStart}
+          >
+            Empieza a planificar tu viaje
+          </button>
+          <div className="banner-contact-strip">
+            <a href="mailto:crespiinx@gmail.com">crespiinx@gmail.com</a>
+            {" · "}
+            <a
+              href="https://www.linkedin.com/in/daniel-crespo-miguel90"
+              target="_blank"
+              rel="noopener noreferrer"
             >
-              Empieza a planificar tu viaje
-            </button>
+              LinkedIn
+            </a>
           </div>
         </div>
       </section>

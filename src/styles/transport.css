@@ -24,19 +24,26 @@
 
 /* Cabecera de la página */
 .transport-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  text-align: center;
   margin-bottom: 2rem;
   padding-bottom: 1.5rem;
   border-bottom: 1px solid #E5E7EB;
 }
 
 .transport-title {
-  font-size: 2.5rem;
+  font-size: 2rem;
   font-weight: 700;
   color: var(--primary-color);
+  margin: 0 0 0.4rem 0;
+  text-align: center;
+}
+
+.transport-subtitle {
+  font-size: 0.9rem;
+  font-weight: 400;
+  color: var(--text-secondary);
   margin: 0;
+  text-align: center;
 }
 
 .transport-actions {

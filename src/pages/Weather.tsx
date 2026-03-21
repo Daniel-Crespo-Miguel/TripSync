@@ -362,39 +362,8 @@ function Weather() {
     <div className="weather-page">
       {/* Cabecera de la página */}
       <div className="weather-header">
-        <div className="weather-title-section">
-          <h1 className="weather-title">Clima</h1>
-          <p className="weather-subtitle">Previsión meteorológica para tu viaje</p>
-        </div>
-        <div className="weather-actions">
-          <button 
-            className="btn btn-secondary" 
-            onClick={() => navigate(`/grupo/${id}`)}
-            style={{
-              padding: '0.75rem 1.5rem',
-              borderRadius: '8px',
-              border: '1px solid #E5E7EB',
-              backgroundColor: 'white',
-              color: 'var(--text-primary)',
-              fontSize: '0.875rem',
-              fontWeight: '600',
-              cursor: 'pointer',
-              transition: 'all 0.3s ease'
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = 'var(--primary-color)';
-              e.currentTarget.style.color = 'white';
-              e.currentTarget.style.borderColor = 'var(--primary-color)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = 'white';
-              e.currentTarget.style.color = 'var(--text-primary)';
-              e.currentTarget.style.borderColor = '#E5E7EB';
-            }}
-          >
-            Volver al grupo
-          </button>
-        </div>
+        <h1 className="weather-title">Clima</h1>
+        <p className="weather-subtitle">Previsión meteorológica para tu viaje</p>
       </div>
 
       {/* Información del viaje */}

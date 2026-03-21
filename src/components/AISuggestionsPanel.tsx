@@ -4,6 +4,7 @@ import { db } from "../firebase/firebaseConfig";
 import { useAISuggestions } from "../hooks/useAISuggestions";
 import { AISuggestion } from "../types/ai";
 import AISuggestionCard from "./AISuggestionCard";
+import { buildWeatherSummary } from "../utils/weatherUtils";
 import "../styles/aiSuggestions.css";
 
 type Props = {
@@ -12,7 +13,8 @@ type Props = {
   userEmail: string;
   participantCount: number;
   existingActivities: string[];
-  weatherSummary?: string;
+  startDate?: { seconds: number } | null;
+  endDate?: { seconds: number } | null;
 };
 
 export default function AISuggestionsPanel({
@@ -21,7 +23,8 @@ export default function AISuggestionsPanel({
   userEmail,
   participantCount,
   existingActivities,
-  weatherSummary,
+  startDate,
+  endDate,
 }: Props) {
   const { suggestions, loading, error, getSuggestions, clear } = useAISuggestions();
   const [addingId, setAddingId] = useState<string | null>(null);
@@ -29,12 +32,23 @@ export default function AISuggestionsPanel({
   const [open, setOpen] = useState(false);
   const [userPrompt, setUserPrompt] = useState("");
 
+  const formatDate = (ts: { seconds: number } | null | undefined): string => {
+    if (!ts?.seconds) return "";
+    return new Date(ts.seconds * 1000).toLocaleDateString("es-ES", {
+      day: "2-digit", month: "2-digit", year: "numeric",
+    });
+  };
+
   const handleGenerate = async () => {
     setOpen(true);
+    const dates = startDate && endDate
+      ? `${formatDate(startDate)} - ${formatDate(endDate)}`
+      : "";
+    const weatherSummary = await buildWeatherSummary(destination, startDate, endDate);
     await getSuggestions(
       {
         destination,
-        dates: "",
+        dates,
         groupId,
         participantCount,
         existingActivities,
@@ -82,18 +96,28 @@ export default function AISuggestionsPanel({
   return (
     <div className="ai-suggestions-panel">
       <div className="ai-suggestions-panel__trigger">
-        <div className="ai-suggestions-panel__prompt-row">
+        <div className="ai-panel-card">
+          <div className="ai-panel-card__header">
+            <span className="ai-panel-card__icon">✨</span>
+            <div>
+              <div className="ai-panel-card__title">Sugerencias con Inteligencia Artificial</div>
+              <div className="ai-panel-card__subtitle">
+                Describe tu grupo y la IA generará actividades personalizadas
+                {destination ? ` para ${destination.split(",")[0].trim()}` : ""}
+              </div>
+            </div>
+          </div>
           <textarea
             className="form-control ai-suggestions-panel__prompt"
-            placeholder="Opcional: describe las preferencias del grupo, ej: &quot;somos familias con niños, nos gustan las actividades culturales&quot;"
+            placeholder="Ej: somos 4 amigos jóvenes, nos encanta la gastronomía y la vida nocturna..."
             value={userPrompt}
             onChange={(e) => setUserPrompt(e.target.value)}
             disabled={loading}
-            rows={2}
+            rows={3}
             maxLength={300}
           />
           <button
-            className="btn btn-outline-primary ai-suggestions-panel__btn"
+            className="ai-suggestions-panel__btn"
             type="button"
             onClick={handleGenerate}
             disabled={loading || !destination}
@@ -101,12 +125,12 @@ export default function AISuggestionsPanel({
           >
             ✨ Generar sugerencias con IA
           </button>
+          {!destination && (
+            <p className="ai-suggestions-panel__no-dest">
+              Define un destino en el grupo para usar esta función.
+            </p>
+          )}
         </div>
-        {!destination && (
-          <p className="ai-suggestions-panel__no-dest">
-            Define un destino en el grupo para usar esta función.
-          </p>
-        )}
       </div>
 
       {open && (
