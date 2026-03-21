@@ -118,6 +118,7 @@ function EditActivityModal({
               onChange={(e) => onDateChange(e.target.value)}
               min={minDate}
               max={maxDate}
+              required
               style={{
                 borderRadius: '8px',
                 border: '2px solid #E5E7EB',
@@ -364,11 +365,6 @@ function Itinerary() {
       return;
     }
 
-    if (!date) {
-      alert("Selecciona una fecha.");
-      return;
-    }
-
     if (!title.trim()) {
       alert("Escribe un título.");
       return;
@@ -427,11 +423,6 @@ function Itinerary() {
 
     const email = auth.currentUser?.email;
     if (!email) return;
-
-    if (!editDate) {
-      alert("Selecciona una fecha.");
-      return;
-    }
 
     if (!editTitle.trim()) {
       alert("Escribe un título.");
@@ -590,10 +581,10 @@ function Itinerary() {
                 <div className="day-header">
                   <div className="day-date">
                     <span className="date-icon">📅</span>
-                    <span className="date-text">{new Date(day).toLocaleDateString()}</span>
+                    <span className="date-text">{(() => { const [y,m,d] = day.substring(0,10).split('-').map(Number); return new Date(y, m-1, d).toLocaleDateString('es-ES'); })()}</span>
                   </div>
                   <span className="weekday-text">
-                    {new Date(day).toLocaleDateString('es-ES', { weekday: 'long' })}
+                    {(() => { const [y,m,d] = day.substring(0,10).split('-').map(Number); return new Date(y, m-1, d).toLocaleDateString('es-ES', { weekday: 'long' }); })()}
                   </span>
                 </div>
 

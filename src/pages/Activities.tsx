@@ -82,6 +82,7 @@ function ItineraryModal({
   onTimeChange,
   minDate,
   maxDate,
+  dateError,
 }: {
   show: boolean;
   onClose: () => void;
@@ -93,6 +94,7 @@ function ItineraryModal({
   onTimeChange: (time: string) => void;
   minDate?: string;
   maxDate?: string;
+  dateError?: string;
 }) {
   if (!show || !activity) return null;
 
@@ -157,12 +159,17 @@ function ItineraryModal({
             <label className="form-label">Fecha</label>
             <input
               type="date"
-              className="form-control"
+              className={`form-control${dateError ? " is-invalid" : ""}`}
               value={date}
               onChange={(e) => onDateChange(e.target.value)}
               min={minDate}
               max={maxDate}
             />
+            {dateError && (
+              <div className="invalid-feedback" style={{ display: "block" }}>
+                {dateError}
+              </div>
+            )}
           </div>
           <div className="mb-3">
             <label className="form-label">Hora (opcional)</label>
@@ -221,6 +228,7 @@ function Activities() {
     null,
   );
   const [itineraryDate, setItineraryDate] = useState("");
+  const [itineraryDateError, setItineraryDateError] = useState("");
   const [itineraryTime, setItineraryTime] = useState("");
 
   // Filtros de categorías
@@ -677,7 +685,7 @@ function Activities() {
     }
 
     setSelectedActivity(activity);
-    setItineraryDate(activity.date || "");
+    setItineraryDate(activity.date ? activity.date.substring(0, 10) : "");
     setItineraryTime("");
     setShowItineraryModal(true);
   };
@@ -689,9 +697,18 @@ function Activities() {
     if (!email) return;
 
     if (!itineraryDate) {
-      alert("Selecciona una fecha para el itinerario.");
+      setItineraryDateError("Selecciona una fecha para el itinerario.");
       return;
     }
+    if (tripMinDate && itineraryDate < tripMinDate) {
+      setItineraryDateError(`La fecha debe ser a partir del ${new Date(tripMinDate + "T12:00:00").toLocaleDateString("es-ES")}.`);
+      return;
+    }
+    if (tripMaxDate && itineraryDate > tripMaxDate) {
+      setItineraryDateError(`La fecha debe ser antes del ${new Date(tripMaxDate + "T12:00:00").toLocaleDateString("es-ES")}.`);
+      return;
+    }
+    setItineraryDateError("");
 
     const newItem: ItineraryItem = {
       id: crypto.randomUUID(),
@@ -1182,15 +1199,17 @@ function Activities() {
           setSelectedActivity(null);
           setItineraryDate("");
           setItineraryTime("");
+          setItineraryDateError("");
         }}
         onConfirm={handleConfirmAddToItinerary}
         activity={selectedActivity}
         date={itineraryDate}
         time={itineraryTime}
-        onDateChange={setItineraryDate}
+        onDateChange={(v) => { setItineraryDate(v); setItineraryDateError(""); }}
         onTimeChange={setItineraryTime}
         minDate={tripMinDate}
         maxDate={tripMaxDate}
+        dateError={itineraryDateError}
       />
     </div>
   );
