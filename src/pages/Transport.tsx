@@ -3,12 +3,14 @@ import { useNavigate, useParams } from "react-router-dom";
 import { auth, db } from "../firebase/firebaseConfig";
 import { doc, getDoc, onSnapshot } from "firebase/firestore";
 import "../styles/transport.css";
+import AITransportPanel from "../components/AITransportPanel";
 
 type Grupo = {
   name: string;
   destination?: string;
   startDate?: { seconds: number; nanoseconds: number };
   endDate?: { seconds: number; nanoseconds: number };
+  invitados?: string[];
 };
 
 function toISODate(ts?: { seconds: number }) {
@@ -126,6 +128,7 @@ function Transport() {
   const navigate = useNavigate();
 
   const [grupo, setGrupo] = useState<Grupo | null>(null);
+  const [userEmail, setUserEmail] = useState("");
 
   // Estados directos (sin lógica de formulario)
   const [origin, setOrigin] = useState("");
@@ -141,6 +144,7 @@ function Transport() {
 
     const unsubAuth = auth.onAuthStateChanged((u) => {
       if (!u) navigate("/");
+      else setUserEmail(u.email ?? "");
     });
 
     return () => unsubAuth();
@@ -163,6 +167,7 @@ function Transport() {
         destination: data.destination ?? "",
         startDate: data.startDate,
         endDate: data.endDate,
+        invitados: data.invitados ?? [],
       };
       setGrupo(g);
 
@@ -185,6 +190,7 @@ function Transport() {
         destination: data.destination ?? "",
         startDate: data.startDate,
         endDate: data.endDate,
+        invitados: data.invitados ?? [],
       };
       setGrupo(g);
 
@@ -289,6 +295,16 @@ function Transport() {
           </small>
         </div>
       </div>
+
+      {/* Sugerencias IA */}
+      <AITransportPanel
+        groupId={id!}
+        destination={normalized.d}
+        originCity={normalized.o}
+        dates={[normalized.dep, normalized.ret].filter(Boolean).join(" → ")}
+        participantCount={(grupo.invitados?.length ?? 0) + 1}
+        userEmail={userEmail}
+      />
 
       {/* Bloque principal - Comparativa de medios de transporte */}
       <div className="comparison-section">

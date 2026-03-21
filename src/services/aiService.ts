@@ -1,6 +1,6 @@
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "../firebase/firebaseConfig";
-import { AISuggestion, AISuggestionsPayload, SentimentResult } from "../types/ai";
+import { AISuggestion, AISuggestionsPayload, AITransportPayload, SentimentResult, TransportSuggestion } from "../types/ai";
 
 const WEBHOOK_URL = import.meta.env.VITE_N8N_WEBHOOK_URL as string | undefined;
 const WEBHOOK_SECRET = import.meta.env.VITE_WEBHOOK_SECRET as string | undefined;
@@ -79,6 +79,67 @@ export async function fetchAISuggestions(
 
   const data = await response.json();
   return data as AISuggestion[];
+}
+
+// --- Feature 3: AI Transport Suggestions ---
+
+function mockTransport(): TransportSuggestion[] {
+  return [
+    {
+      id: "mock-transport-1",
+      mode: "avion",
+      title: "Vuelo directo — la opción más rápida",
+      description: "Para este destino el vuelo suele ser la opción más eficiente en tiempo. Reserva con antelación para conseguir mejores precios.",
+      estimatedDuration: "1–3 h",
+      estimatedCost: "€€",
+      tips: ["Compara en Google Flights y Skyscanner", "Evita equipaje facturado si puedes"],
+    },
+    {
+      id: "mock-transport-2",
+      mode: "tren",
+      title: "Tren de alta velocidad — comodidad y puntualidad",
+      description: "Opción muy cómoda para grupos, con buenas conexiones ferroviarias. Permite llevar más equipaje sin coste adicional.",
+      estimatedDuration: "2–5 h",
+      estimatedCost: "€€",
+      tips: ["Reserva billetes de grupo en Renfe o Trainline", "Los billetes anticipados son bastante más baratos"],
+    },
+    {
+      id: "mock-transport-3",
+      mode: "coche",
+      title: "Coche compartido — flexibilidad total",
+      description: "Ideal si el grupo es reducido y quiere libertad de horarios. El coste se reparte entre los pasajeros.",
+      estimatedDuration: "Variable",
+      estimatedCost: "€–€€€",
+      tips: ["Consulta peajes en Google Maps", "Compara con alquiler de vehículo si nadie tiene coche"],
+    },
+  ];
+}
+
+export async function fetchAITransport(
+  payload: AITransportPayload
+): Promise<TransportSuggestion[]> {
+  const transportWebhookUrl = import.meta.env.VITE_N8N_TRANSPORT_URL as string | undefined;
+
+  if (!transportWebhookUrl) {
+    console.warn("[aiService] VITE_N8N_TRANSPORT_URL not set — using mock data");
+    return mockTransport();
+  }
+
+  const response = await fetch(transportWebhookUrl, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      ...(WEBHOOK_SECRET ? { "x-webhook-secret": WEBHOOK_SECRET } : {}),
+    },
+    body: JSON.stringify(payload),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Webhook error: ${response.status} ${response.statusText}`);
+  }
+
+  const data = await response.json();
+  return (data.suggestions ?? data) as TransportSuggestion[];
 }
 
 // --- Feature 2: Sentiment Feedback ---
