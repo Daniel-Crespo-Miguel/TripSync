@@ -114,9 +114,15 @@ function GroupTabs() {
   useEffect(() => {
     const el = scrollRef.current;
     if (!el) return;
-    checkArrows();
-    el.addEventListener('scroll', checkArrows);
-    return () => el.removeEventListener('scroll', checkArrows);
+    // Delay to ensure layout is fully computed before measuring scrollWidth
+    const timer = setTimeout(checkArrows, 50);
+    el.addEventListener('scroll', checkArrows, { passive: true });
+    window.addEventListener('resize', checkArrows, { passive: true });
+    return () => {
+      clearTimeout(timer);
+      el.removeEventListener('scroll', checkArrows);
+      window.removeEventListener('resize', checkArrows);
+    };
   }, [activeTab]);
 
   const handleScrollLeft = () => scrollRef.current?.scrollBy({ left: -180, behavior: 'smooth' });

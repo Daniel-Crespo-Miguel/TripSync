@@ -231,8 +231,8 @@
 
 /* Arrow buttons */
 .tabs-arrow {
-  width: 36px;
-  height: 36px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   background: #ffffff;
   border: 1px solid #E5E7EB;
@@ -246,6 +246,7 @@
   justify-content: center;
   font-size: 0.7rem;
   transition: border-color 0.2s ease, color 0.2s ease;
+  touch-action: manipulation;
 }
 
 .tabs-arrow:hover {
@@ -262,11 +263,13 @@
 .tabs-scroll-area {
   width: 900px;
   max-width: 900px;
-  overflow-x: hidden;
+  overflow-x: auto;
   scroll-behavior: smooth;
   display: flex;
   align-items: stretch;
   flex-shrink: 1;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
 .tabs-scroll-area::-webkit-scrollbar {
