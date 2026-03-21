@@ -39,8 +39,10 @@ const Header: React.FC = () => {
     }
   };
 
+  const isAuthPage = location.pathname === '/login' || location.pathname === '/register';
+
   return (
-    <header className={`header ${location.pathname === '/' ? 'header--sticky' : 'header--static'}`}>
+    <header className={`header ${isAuthPage ? 'header--transparent' : location.pathname === '/' ? 'header--sticky' : 'header--static'}`}>
       <div className="header-container">
         {/* Logo a la izquierda */}
         <div className="logo-container">
