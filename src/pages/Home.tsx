@@ -27,34 +27,19 @@ function Home() {
     <div>
       {/* Hero Section */}
       <section className="hero">
-        <div className="hero-container">
-          <div className="hero-content">
-            <div className="hero-text">
-              <h1 className="hero-title">
-                Organizar viajes en grupo no debería ser un caos
-              </h1>
-              <p className="hero-subtitle">
-                Centraliza decisiones, gastos y planificación en un solo lugar. 
-                Deja de perder tiempo en mensajes y hojas de cálculo.
-              </p>
-              <div className="hero-cta">
-                <button
-                  className="btn btn-primary"
-                  onClick={handleStart}
-                >
-                  {user ? "Empezar a organizar" : "Empezar a organizar"}
-                </button>
-                {!user && (
-                  <button
-                    className="btn btn-secondary"
-                    onClick={() => navigate("/login")}
-                  >
-                    Iniciar sesión
-                  </button>
-                )}
-              </div>
-            </div>
-          </div>
+        <div className="hero-overlay" />
+        <div className="hero-card">
+          <span className="hero-badge">Planifica · Colabora · Viaja</span>
+          <h1 className="hero-title">
+            Organizar viajes en grupo no debería ser un caos
+          </h1>
+          <p className="hero-subtitle">
+            Centraliza decisiones, gastos y planificación en un solo lugar.
+            Deja de perder tiempo en mensajes y hojas de cálculo.
+          </p>
+          <button className="hero-btn" onClick={handleStart}>
+            Empezar a organizar
+          </button>
         </div>
       </section>
 
