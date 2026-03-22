@@ -12,6 +12,7 @@ interface Grupo {
   startDate: { seconds: number; nanoseconds: number };
   endDate: { seconds: number; nanoseconds: number };
   createdBy: string;
+  heroImageUrl?: string;
 }
 
 function Dashboard() {
@@ -39,6 +40,7 @@ function Dashboard() {
         startDate: d.data().startDate,
         endDate: d.data().endDate,
         createdBy: d.data().createdBy,
+        heroImageUrl: d.data().heroImageUrl ?? undefined,
       }));
 
       // Ordenar por fecha de inicio (más cercano primero)
@@ -133,10 +135,18 @@ function Dashboard() {
           <div className="trips-grid">
             {grupos.map((grupo) => {
               const estado = getEstadoViaje(grupo);
+              const heroStyle = grupo.heroImageUrl
+                ? {
+                    backgroundImage: `linear-gradient(rgba(0,0,0,0.45), rgba(0,0,0,0.55)), url(${grupo.heroImageUrl})`,
+                    backgroundSize: "cover",
+                    backgroundPosition: "center",
+                  }
+                : undefined;
               return (
                 <div
                   key={grupo.id}
-                  className="trip-card"
+                  className={`trip-card${grupo.heroImageUrl ? " trip-card--hero" : ""}`}
+                  style={heroStyle}
                 >
                   <div className="trip-card-content">
                     {user && user.uid === grupo.createdBy && (

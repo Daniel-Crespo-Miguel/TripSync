@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useGroup } from "../contexts/GroupContext";
 import { useLocation, useParams, Link, Outlet, useNavigate } from "react-router-dom";
+import { db } from "../firebase/firebaseConfig";
+import { doc, updateDoc } from "firebase/firestore";
 import "../styles/group-tabs.css";
 
 const ICONS: Record<string, React.ReactElement> = {
@@ -144,7 +146,12 @@ setCanScrollLeft(el.scrollLeft > 0);
       .then((r) => (r.ok ? r.json() : null))
       .then((data) => {
         const url = data?.results?.[0]?.urls?.full ?? data?.results?.[0]?.urls?.regular;
-        if (url) setHeroPhoto(url);
+        if (url) {
+          setHeroPhoto(url);
+          if (!grupo.heroImageUrl) {
+            updateDoc(doc(db, "grupos", id!), { heroImageUrl: url }).catch(() => {});
+          }
+        }
       })
       .catch(() => {});
   }, [grupo?.destination]);
