@@ -212,7 +212,14 @@ function Activities() {
       const va = a.votes?.length ?? 0;
       const vb = b.votes?.length ?? 0;
       if (vb !== va) return vb - va;
-      return (b.createdAt ?? "").localeCompare(a.createdAt ?? "");
+      const toMs = (val: unknown): number => {
+        if (!val) return 0;
+        if (typeof val === "object" && "toMillis" in (val as object))
+          return (val as { toMillis: () => number }).toMillis();
+        if (typeof val === "string") return new Date(val).getTime();
+        return 0;
+      };
+      return toMs(b.createdAt) - toMs(a.createdAt);
     });
   }, [activities]);
 
@@ -544,6 +551,7 @@ function Activities() {
       {userEmail && (
         <AISuggestionsPanel
           groupId={id!}
+          tramoId={tramoActivo?.id ?? ""}
           destination={destination}
           userEmail={userEmail}
           participantCount={grupo.invitados?.length ?? 0}

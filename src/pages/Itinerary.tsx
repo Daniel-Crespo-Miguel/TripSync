@@ -299,6 +299,7 @@ function Itinerary() {
       {userEmail && (
         <AIItineraryPanel
           groupId={id!}
+          tramoId={tramoActivo?.id ?? ""}
           destination={destination}
           userEmail={userEmail}
           participantCount={(grupo.invitados?.length ?? 0) + 1}

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { arrayUnion, doc, updateDoc } from "firebase/firestore";
+import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { db } from "../firebase/firebaseConfig";
 import { useAISuggestions } from "../hooks/useAISuggestions";
 import { AISuggestion } from "../types/ai";
@@ -9,6 +9,7 @@ import "../styles/aiSuggestions.css";
 
 type Props = {
   groupId: string;
+  tramoId: string;
   destination: string;
   userEmail: string;
   participantCount: number;
@@ -19,6 +20,7 @@ type Props = {
 
 export default function AISuggestionsPanel({
   groupId,
+  tramoId,
   destination,
   userEmail,
   participantCount,
@@ -64,18 +66,13 @@ export default function AISuggestionsPanel({
     setAddingId(suggestion.id);
 
     try {
-      const newActivity = {
-        id: crypto.randomUUID(),
+      await addDoc(collection(db, "grupos", groupId, "tramos", tramoId, "actividades"), {
         title: suggestion.title,
         description: `${suggestion.description}${suggestion.recommendedDay ? ` · ${suggestion.recommendedDay}` : ""}`,
         location: destination || undefined,
         createdBy: userEmail,
-        createdAt: new Date().toISOString(),
+        createdAt: serverTimestamp(),
         votes: [],
-      };
-
-      await updateDoc(doc(db, "grupos", groupId), {
-        activities: arrayUnion(newActivity),
       });
 
       setAddedIds((prev) => new Set(prev).add(suggestion.id));

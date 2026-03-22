@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { db } from "../firebase/firebaseConfig";
 import { useAIItinerary } from "../hooks/useAIItinerary";
 import { ItineraryDay } from "../types/ai";
@@ -7,6 +7,7 @@ import "../styles/aiItinerary.css";
 
 interface Props {
   groupId: string;
+  tramoId: string;
   destination: string;
   userEmail: string;
   participantCount: number;
@@ -23,6 +24,7 @@ const makeKey = (dayDate: string, actIdx: number) => `${dayDate}::${actIdx}`;
 
 export default function AIItineraryPanel({
   groupId,
+  tramoId,
   destination,
   userEmail,
   participantCount,
@@ -96,30 +98,29 @@ export default function AIItineraryPanel({
     if (selectedCount === 0 || saving) return;
     setSaving(true);
     try {
-      const newItems: object[] = [];
+      const col = collection(db, "grupos", groupId, "tramos", tramoId, "itinerario");
+      const writes: Promise<unknown>[] = [];
       days.forEach((day) => {
         day.activities.forEach((act, idx) => {
           if (!selectedKeys.has(makeKey(day.date, idx))) return;
-          newItems.push({
-            id: crypto.randomUUID(),
-            date: day.date,
-            time: act.time || undefined,
-            title: act.title,
-            notes: act.notes
-              ? `${act.description} — ${act.notes}`
-              : act.description || undefined,
-            createdBy: userEmail,
-            createdAt: new Date().toISOString(),
-          });
+          writes.push(
+            addDoc(col, {
+              date: day.date,
+              time: act.time || undefined,
+              title: act.title,
+              notes: act.notes
+                ? `${act.description} — ${act.notes}`
+                : act.description || undefined,
+              createdBy: userEmail,
+              createdAt: serverTimestamp(),
+            })
+          );
         });
       });
 
-      const ref = doc(db, "grupos", groupId);
-      const snap = await getDoc(ref);
-      const current: object[] = snap.data()?.itinerary ?? [];
-      await updateDoc(ref, { itinerary: [...current, ...newItems] });
+      await Promise.all(writes);
 
-      const count = newItems.length;
+      const count = writes.length;
       clear();
       setUserPrompt("");
       setSelectedKeys(new Set());
