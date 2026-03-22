@@ -5,6 +5,7 @@ import { db, auth } from "../firebase/firebaseConfig";
 import { onAuthStateChanged, User } from "firebase/auth";
 
 interface Grupo {
+  id: string;
   name: string;
   destination: string;
   startDate: { seconds: number };
@@ -12,6 +13,7 @@ interface Grupo {
   createdByEmail: string;
   createdBy: string;
   invitados: string[];
+  heroImageUrl?: string;
 }
 
 interface GroupContextType {
@@ -68,7 +70,7 @@ export const GroupProvider: React.FC<GroupProviderProps> = ({ children }) => {
         const docSnap = await getDoc(docRef);
 
         if (docSnap.exists()) {
-          setGrupo(docSnap.data() as Grupo);
+          setGrupo({ id: docSnap.id, ...docSnap.data() } as Grupo);
         } else {
           navigate("/");
         }
