@@ -43,6 +43,10 @@
   100% { transform: scale(1.6);  opacity: 0; }
 }
 
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
 .tramo-fab:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(13, 191, 135, 0.55);
@@ -85,15 +89,9 @@
 .tramo-panel-row {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  padding: 0.75rem;
   border-radius: 10px;
-  border: none;
-  background: transparent;
-  width: 100%;
-  text-align: left;
-  cursor: pointer;
   transition: background 0.15s ease;
+  position: relative;
 }
 
 .tramo-panel-row:hover {
@@ -106,6 +104,121 @@
 
 .tramo-panel-row--active:hover {
   background: rgba(29, 191, 135, 0.25);
+}
+
+.tramo-panel-row-main {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem;
+  border-radius: 10px;
+  border: none;
+  background: transparent;
+  flex: 1;
+  min-width: 0;
+  text-align: left;
+  cursor: pointer;
+}
+
+/* Edit/delete action buttons — hidden until row hover */
+.tramo-row-actions {
+  display: flex;
+  gap: 2px;
+  padding-right: 0.4rem;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+  flex-shrink: 0;
+}
+
+.tramo-panel-row:hover .tramo-row-actions {
+  opacity: 1;
+}
+
+.tramo-row-btn {
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  transition: background 0.15s ease;
+  padding: 0;
+}
+
+.tramo-row-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.tramo-row-btn--edit:hover:not(:disabled) {
+  background: rgba(29, 191, 135, 0.25);
+}
+
+.tramo-row-btn--delete:hover:not(:disabled) {
+  background: rgba(239, 68, 68, 0.25);
+}
+
+/* Inline edit form */
+.tramo-edit-form {
+  padding: 0.6rem 0.75rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/* Inline delete confirm */
+.tramo-delete-confirm {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.5rem 0.75rem;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  border-radius: 8px;
+  margin-top: 2px;
+  flex-wrap: wrap;
+}
+
+.tramo-delete-confirm-text {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.75);
+  flex: 1;
+  min-width: 120px;
+}
+
+.tramo-delete-confirm-actions {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.tramo-delete-btn {
+  padding: 0.3rem 0.75rem;
+  border-radius: 6px;
+  border: none;
+  background: #ef4444;
+  color: white;
+  font-size: 0.82rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s ease;
+}
+
+.tramo-delete-btn:hover:not(:disabled) {
+  background: #dc2626;
+}
+
+.tramo-delete-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .tramo-panel-pill {
@@ -395,9 +508,14 @@
     font-size: 10px;
   }
 
-  .tramo-panel-row {
+  .tramo-panel-row-main {
     gap: 13px;
     padding: 0.6rem;
+  }
+
+  .tramo-row-actions {
+    opacity: 1;
+    padding-right: 0.3rem;
   }
 
   .tramo-panel-pill {
@@ -442,4 +560,239 @@
   .tramo-cancel-btn {
     flex: 1;
   }
+}
+
+/* ── AI Tramo Suggestions ── */
+
+.tramo-ai-btn {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem;
+  border-radius: 10px;
+  border: none;
+  background: transparent;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  font-size: 18px;
+  font-family: inherit;
+  color: #1DBF87;
+  transition: background 0.15s ease;
+}
+
+.tramo-ai-btn:hover {
+  background: rgba(29, 191, 135, 0.1);
+}
+
+.tramo-ai-btn-pill {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(29, 191, 135, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+  color: #1DBF87;
+}
+
+.tramo-ai-form {
+  margin-top: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.tramo-ai-form-label {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.5);
+  letter-spacing: 0.04em;
+}
+
+.tramo-ai-textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.5rem 0.7rem;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.08);
+  color: white;
+  font-size: 13px;
+  font-family: inherit;
+  resize: none;
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+.tramo-ai-textarea::placeholder {
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.tramo-ai-textarea:focus {
+  border-color: #1DBF87;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.tramo-ai-generate-btn {
+  width: 100%;
+  padding: 0.55rem 1rem;
+  border-radius: 8px;
+  border: none;
+  background: #1DBF87;
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+}
+
+.tramo-ai-generate-btn:hover:not(:disabled) {
+  background: #17a876;
+}
+
+.tramo-ai-generate-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.tramo-ai-error {
+  font-size: 12px;
+  color: #fca5a5;
+  margin-top: 0.25rem;
+}
+
+.tramo-ai-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
+}
+
+.tramo-ai-card {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.tramo-ai-card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.tramo-ai-card-dest {
+  font-size: 15px;
+  font-weight: 500;
+  color: white;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tramo-ai-nuevo-pill {
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #04342C;
+  background: #1DBF87;
+  border-radius: 4px;
+  padding: 2px 6px;
+  flex-shrink: 0;
+}
+
+.tramo-ai-card-desc {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.55);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.tramo-ai-card-days {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.15rem;
+}
+
+.tramo-ai-days-label {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.tramo-ai-days-input {
+  width: 52px;
+  padding: 0.2rem 0.4rem;
+  border-radius: 5px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  font-size: 13px;
+  font-family: inherit;
+  text-align: center;
+  outline: none;
+}
+
+.tramo-ai-days-input:focus {
+  border-color: #1DBF87;
+}
+
+.tramo-ai-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-top: 0.25rem;
+}
+
+.tramo-ai-confirm-btn {
+  width: 100%;
+  padding: 0.55rem 1rem;
+  border-radius: 8px;
+  border: none;
+  background: #1DBF87;
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.tramo-ai-confirm-btn:hover:not(:disabled) {
+  background: #17a876;
+}
+
+.tramo-ai-confirm-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.tramo-ai-cancel-link {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 12px;
+  font-family: inherit;
+  cursor: pointer;
+  text-align: center;
+  padding: 0.2rem;
+  transition: color 0.15s ease;
+}
+
+.tramo-ai-cancel-link:hover {
+  color: rgba(255, 255, 255, 0.7);
 }

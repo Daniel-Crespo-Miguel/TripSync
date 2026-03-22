@@ -1,6 +1,6 @@
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "../firebase/firebaseConfig";
-import { AISuggestion, AISuggestionsPayload, AIItineraryPayload, AITransportPayload, ItineraryDay, SentimentResult, TransportSuggestion } from "../types/ai";
+import { AISuggestion, AISuggestionsPayload, AIItineraryPayload, AITramoSuggestion, AITransportPayload, ItineraryDay, SentimentResult, TransportSuggestion } from "../types/ai";
 
 const WEBHOOK_URL = import.meta.env.VITE_N8N_WEBHOOK_URL as string | undefined;
 const WEBHOOK_SECRET = import.meta.env.VITE_WEBHOOK_SECRET as string | undefined;
@@ -240,4 +240,46 @@ export async function fetchSentimentFeedback(
 
   const data = await response.json();
   return data as SentimentResult;
+}
+
+// --- Feature 5: AI Tramo Suggestions ---
+
+function mockTramoSuggestions(): AITramoSuggestion[] {
+  console.warn("[aiService] VITE_N8N_TRAMOS_URL not set — using mock tramo data");
+  return [
+    { destination: "Barcelona, Cataluña, España", days: 3, description: "Ciudad cosmopolita con arquitectura modernista, playa y gastronomía mediterránea.", order: 1, isNew: true },
+    { destination: "Valencia, Comunidad Valenciana, España", days: 2, description: "Cuna de la paella, con un centro histórico vibrante y playas tranquilas.", order: 2, isNew: true },
+    { destination: "Sevilla, Andalucía, España", days: 3, description: "Flamenco, tapas y el barrio de Santa Cruz en la capital andaluza.", order: 3, isNew: true },
+  ];
+}
+
+export async function getAITramoSuggestions(params: {
+  destination: string;
+  totalDays: number;
+  startDate: string;
+  userPrompt: string;
+  existingTramos: { destination: string; days: number; order: number }[];
+}): Promise<AITramoSuggestion[]> {
+  const tramosWebhookUrl = import.meta.env.VITE_N8N_TRAMOS_URL as string | undefined;
+
+  if (!tramosWebhookUrl) {
+    return mockTramoSuggestions();
+  }
+
+  const response = await fetch(tramosWebhookUrl, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      ...(WEBHOOK_SECRET ? { "x-webhook-secret": WEBHOOK_SECRET } : {}),
+    },
+    body: JSON.stringify(params),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Webhook error: ${response.status} ${response.statusText}`);
+  }
+
+  const data = await response.json();
+  const tramos = data.tramos ?? data;
+  return Array.isArray(tramos) ? tramos : [];
 }

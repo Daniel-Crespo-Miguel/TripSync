@@ -65,3 +65,11 @@ export type AIItineraryPayload = {
   userPrompt: string;
   existingActivities: string[];
 };
+
+export type AITramoSuggestion = {
+  destination: string;
+  days: number;
+  description: string;
+  order: number;
+  isNew: boolean;
+};
