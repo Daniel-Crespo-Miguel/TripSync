@@ -64,6 +64,12 @@ const ICONS: Record<string, React.ReactElement> = {
       <path d="M12 10c0-.83.67-1.5 1.5-1.5S15 9.17 15 10c0 1.17-1.5 2.5-1.5 2.5S12 11.17 12 10z" fill="currentColor" stroke="none"/>
     </svg>
   ),
+  documentos: (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+      <polyline points="14 2 14 8 20 8"/>
+    </svg>
+  ),
 };
 
 
@@ -74,6 +80,7 @@ const TABS = [
   { key: 'actividades', label: 'Actividades',path: (id: string) => `/grupo/${id}/actividades` },
   { key: 'gastos',      label: 'Gastos',     path: (id: string) => `/grupo/${id}/gastos` },
   { key: 'chat',        label: 'Chat',       path: (id: string) => `/grupo/${id}/chat` },
+  { key: 'documentos',  label: 'Documentos', path: (id: string) => `/grupo/${id}/documentos` },
   { key: 'clima',       label: 'Clima',      path: (id: string) => `/grupo/${id}/clima` },
   { key: 'transporte',  label: 'Transporte', path: (id: string) => `/grupo/${id}/transporte` },
   { key: 'feedback',    label: 'Feedback',   path: (id: string) => `/grupo/${id}/feedback` },
@@ -90,6 +97,7 @@ function GroupTabs() {
     if (path.includes('/actividades')) return 'actividades';
     if (path.includes('/itinerario')) return 'itinerario';
     if (path.includes('/chat')) return 'chat';
+    if (path.includes('/documentos')) return 'documentos';
     if (path.includes('/clima')) return 'clima';
     if (path.includes('/transporte')) return 'transporte';
     if (path.includes('/gastos')) return 'gastos';
