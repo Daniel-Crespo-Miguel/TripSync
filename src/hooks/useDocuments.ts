@@ -64,8 +64,7 @@ export function useDocuments(groupId: string, userEmail: string) {
     setUploading(true);
     setError(null);
     try {
-      console.log("groupId:", groupId);
-      if (!groupId) throw new Error("groupId is required");
+if (!groupId) throw new Error("groupId is required");
       const base64 = await fileToBase64(file);
       const extracted = await extractWithAI(base64);
       const storageUrl = await uploadPdfToSupabase(groupId, file);

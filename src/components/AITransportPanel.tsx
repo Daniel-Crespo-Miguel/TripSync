@@ -86,7 +86,7 @@ function AITransportPanel({ groupId, destination, originCity, dates, participant
           </div>
 
           {error && (
-            <div className="alert alert-warning mt-2">{error}</div>
+            <div className="ai-error">⚠️ {error}</div>
           )}
 
           {!error && suggestions.length === 0 && (

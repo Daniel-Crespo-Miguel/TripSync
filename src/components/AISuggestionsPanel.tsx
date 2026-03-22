@@ -155,7 +155,7 @@ export default function AISuggestionsPanel({
           )}
 
           {error && (
-            <div className="alert alert-warning mb-0">{error}</div>
+            <div className="ai-error">⚠️ {error}</div>
           )}
 
           {!loading && !error && suggestions.length > 0 && (

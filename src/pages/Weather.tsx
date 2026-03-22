@@ -322,7 +322,12 @@ function Weather() {
     }
   }, []);
 
-  if (!grupo) return <div className="weather-loading">Cargando clima...</div>;
+  if (!grupo) return (
+    <div className="ts-loading-block">
+      <span className="ts-spinner" />
+      Cargando clima...
+    </div>
+  );
 
   const startLabel = startEnd ? startEnd.start.toLocaleDateString() : "—";
   const endLabel = startEnd ? startEnd.end.toLocaleDateString() : "—";
@@ -427,7 +432,10 @@ function Weather() {
         )}
 
         {loadingWeather ? (
-          <div className="weather-loading">Cargando previsión...</div>
+          <div className="ts-loading-block">
+            <span className="ts-spinner" />
+            Cargando previsión...
+          </div>
         ) : rows.length === 0 ? (
           <div className="weather-empty">
             <div className="empty-icon">🌤️</div>

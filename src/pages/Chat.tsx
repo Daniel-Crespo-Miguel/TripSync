@@ -114,7 +114,10 @@ function Chat() {
 
       <div className="chat-messages">
         {loading ? (
-          <div className="loading-message">Cargando mensajes...</div>
+          <div className="ts-loading-block">
+            <span className="ts-spinner" />
+            Cargando mensajes...
+          </div>
         ) : messages.length === 0 ? (
           <div className="empty-messages">
             <div className="empty-messages-icon">💬</div>

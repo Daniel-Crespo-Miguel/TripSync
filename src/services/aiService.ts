@@ -200,7 +200,6 @@ export async function fetchAIItinerary(
   }
 
   const text = await response.text();
-  console.log("[fetchAIItinerary] raw response:", text);
   if (!text || text.trim() === "") return [];
   let data: any;
   try {

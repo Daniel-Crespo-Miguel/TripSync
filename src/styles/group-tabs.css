@@ -636,10 +636,6 @@
     gap: 1.5rem;
   }
   
-  .actions-bar {
-    padding: 1.5rem 0 2rem 0;
-  }
-  
   .info-label {
     font-size: 0.75rem;
   }
@@ -745,7 +741,7 @@
     color: #fff;
   }
   
-  .tabs-container, .actions-bar {
+  .tabs-container {
     display: none;
   }
   
