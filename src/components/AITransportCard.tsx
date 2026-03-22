@@ -38,19 +38,19 @@ function AITransportCard({ suggestion }: Props) {
   const firstTip: string | undefined = suggestion.tips?.[0] ?? (suggestion as any).tip;
 
   return (
-    <div className="transport-card">
-      <div className="transport-card__header">
-        <span className="transport-card__icon">{icon}</span>
-        <span className={`transport-card__pill transport-card__pill--${pillClass}`}>{label}</span>
+    <div className="ai-transport-card">
+      <div className="ai-transport-card__header">
+        <span className="ai-transport-card__icon">{icon}</span>
+        <span className={`ai-transport-card__pill ai-transport-card__pill--${pillClass}`}>{label}</span>
       </div>
-      <p className="transport-card__title">{title}</p>
-      <p className="transport-card__description">{description}</p>
-      <div className="transport-card__chips">
-        {duration && <span className="transport-chip">⏱ {duration}</span>}
-        {cost && <span className="transport-chip">💶 {cost}</span>}
+      <p className="ai-transport-card__title">{title}</p>
+      <p className="ai-transport-card__description">{description}</p>
+      <div className="ai-transport-card__chips">
+        {duration && <span className="ai-transport-chip">⏱ {duration}</span>}
+        {cost && <span className="ai-transport-chip">💶 {cost}</span>}
       </div>
       {firstTip && (
-        <div className="transport-card__tip">💡 {firstTip}</div>
+        <div className="ai-transport-card__tip">💡 {firstTip}</div>
       )}
     </div>
   );

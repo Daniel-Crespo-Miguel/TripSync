@@ -110,7 +110,7 @@
 }
 
 /* Result card */
-.transport-card {
+.ai-transport-card {
   background: #fff;
   border: 1px solid #dee2e6;
   border-radius: 0.75rem;
@@ -120,19 +120,19 @@
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
 }
 
-.transport-card__header {
+.ai-transport-card__header {
   display: flex;
   align-items: center;
   gap: 0.5rem;
   margin-bottom: 0.6rem;
 }
 
-.transport-card__icon {
+.ai-transport-card__icon {
   font-size: 1.5rem;
   line-height: 1;
 }
 
-.transport-card__pill {
+.ai-transport-card__pill {
   font-size: 0.72rem;
   font-weight: 700;
   border-radius: 999px;
@@ -141,15 +141,15 @@
   letter-spacing: 0.03em;
 }
 
-.transport-card__pill--avion,
-.transport-card__pill--vuelo { background: #DBEAFE; color: #1D4ED8; }
-.transport-card__pill--tren  { background: #FED7AA; color: #C2410C; }
-.transport-card__pill--bus   { background: #BBF7D0; color: #15803D; }
-.transport-card__pill--coche { background: #E9D5FF; color: #7C3AED; }
-.transport-card__pill--ferry { background: #99F6E4; color: #0F766E; }
-.transport-card__pill--other { background: #F1F5F9; color: #475569; }
+.ai-transport-card__pill--avion,
+.ai-transport-card__pill--vuelo { background: #DBEAFE; color: #1D4ED8; }
+.ai-transport-card__pill--tren  { background: #FED7AA; color: #C2410C; }
+.ai-transport-card__pill--bus   { background: #BBF7D0; color: #15803D; }
+.ai-transport-card__pill--coche { background: #E9D5FF; color: #7C3AED; }
+.ai-transport-card__pill--ferry { background: #99F6E4; color: #0F766E; }
+.ai-transport-card__pill--other { background: #F1F5F9; color: #475569; }
 
-.transport-card__title {
+.ai-transport-card__title {
   font-size: 0.95rem;
   font-weight: 700;
   color: #0B3C5D;
@@ -157,7 +157,7 @@
   line-height: 1.3;
 }
 
-.transport-card__description {
+.ai-transport-card__description {
   font-size: 0.84rem;
   color: #6c757d;
   margin: 0 0 0.6rem;
@@ -165,13 +165,13 @@
   flex: 1;
 }
 
-.transport-card__chips {
+.ai-transport-card__chips {
   display: flex;
   gap: 0.4rem;
   flex-wrap: wrap;
 }
 
-.transport-chip {
+.ai-transport-chip {
   font-size: 0.78rem;
   font-weight: 600;
   background: #f1f3f5;
@@ -180,7 +180,7 @@
   padding: 0.2rem 0.6rem;
 }
 
-.transport-card__tip {
+.ai-transport-card__tip {
   background: #FEFCE8;
   border: 1px solid #FEF08A;
   border-radius: 8px;
