@@ -313,7 +313,7 @@ function TramoSelector() {
     try {
       const existingTramos = tramos.map((t) => ({
         destination: t.destination,
-        days: daysBetween(t.startDate.seconds, t.endDate.seconds),
+        days: Math.min(daysBetween(t.startDate.seconds, t.endDate.seconds), 60),
         order: t.order,
       }));
       const results = await getAITramoSuggestions({
@@ -339,17 +339,16 @@ function TramoSelector() {
   const handleCreateAITramos = async () => {
     setAISaving(true);
     try {
-      const lastEnd = tramos.length > 0
-        ? tramos[tramos.length - 1].endDate.seconds
-        : grupo.startDate.seconds;
-
-      let cursorSec = lastEnd;
+      let cursorSec = grupo.startDate.seconds;
       const maxOrder = tramos.length > 0 ? Math.max(...tramos.map((t) => t.order)) : 0;
 
       const writes = aiSuggestions.map((s, i) => {
         const days = aiDays[i] ?? s.days;
         const startSec = cursorSec;
-        const endSec = startSec + days * 86400;
+        const isLast = i === aiSuggestions.length - 1;
+        const endSec = isLast
+          ? grupo.endDate.seconds
+          : startSec + days * 86400;
         cursorSec = endSec;
         return addDoc(collection(db, "grupos", grupo.id, "tramos"), {
           destination: s.destination,
