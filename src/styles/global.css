@@ -734,6 +734,32 @@ body {
   }
 }
 
+/* Global loading spinner */
+@keyframes ts-spin {
+  to { transform: rotate(360deg); }
+}
+
+.ts-spinner {
+  width: 28px;
+  height: 28px;
+  border: 3px solid rgba(14, 158, 167, 0.2);
+  border-top-color: #0e9ea7;
+  border-radius: 50%;
+  animation: ts-spin 0.7s linear infinite;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.ts-loading-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 2.5rem 1rem;
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+}
+
 /* Footer */
 .footer {
   background-color: #f8f9fa;

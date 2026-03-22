@@ -2,6 +2,15 @@
   margin-top: 2rem;
 }
 
+.ai-error {
+  background: #FEF2F2;
+  border: 1px solid #FECACA;
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  color: #DC2626;
+  font-size: 0.875rem;
+}
+
 /* Trigger card */
 .ai-transport-panel__card {
   display: flex;
