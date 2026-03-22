@@ -438,14 +438,20 @@ function TramoSelector() {
       const startDate = { seconds: Math.floor(new Date(editStart + "T12:00:00").getTime() / 1000), nanoseconds: 0 };
       const endDate = { seconds: Math.floor(new Date(editEnd + "T12:00:00").getTime() / 1000), nanoseconds: 0 };
 
-      const updateData: Record<string, unknown> = { startDate, endDate };
       if (editSelectedDest) {
-        updateData.destination = editSelectedDestLabel;
-        updateData.destinationLat = editSelectedDest.latitude;
-        updateData.destinationLon = editSelectedDest.longitude;
+        await updateDoc(doc(db, "grupos", grupo.id, "tramos", tramoId), {
+          destination: editSelectedDestLabel,
+          destinationLat: editSelectedDest.latitude,
+          destinationLon: editSelectedDest.longitude,
+          startDate,
+          endDate,
+        });
+      } else {
+        await updateDoc(doc(db, "grupos", grupo.id, "tramos", tramoId), {
+          startDate,
+          endDate,
+        });
       }
-
-      await updateDoc(doc(db, "grupos", grupo.id, "tramos", tramoId), updateData);
       resetEdit();
     } catch (err) {
       console.error("Error updating tramo:", err);
