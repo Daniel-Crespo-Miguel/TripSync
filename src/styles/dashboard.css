@@ -405,6 +405,38 @@
   }
 }
 
+/* Trip card with hero image */
+.trip-card--hero {
+  border-color: transparent;
+}
+
+.trip-card--hero .trip-name {
+  color: #fff;
+}
+
+.trip-card--hero .trip-destination {
+  background-color: rgba(0, 0, 0, 0.35);
+}
+
+.trip-card--hero .destination-text {
+  color: #fff;
+}
+
+.trip-card--hero .trip-dates {
+  background-color: rgba(0, 0, 0, 0.35);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.trip-card--hero .dates-label,
+.trip-card--hero .dates-value {
+  color: #fff;
+}
+
+.trip-card--hero .btn-card-icon {
+  background: rgba(0, 0, 0, 0.5);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
 /* Animaciones adicionales */
 @keyframes fadeIn {
   from {
