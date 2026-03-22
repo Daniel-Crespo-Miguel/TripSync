@@ -1,27 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { auth, db } from "../firebase/firebaseConfig";
-import { doc, getDoc, onSnapshot } from "firebase/firestore";
+import { useGroup } from "../contexts/GroupContext";
 import "../styles/weather.css";
-
-type Grupo = {
-  name: string;
-  destination?: string;
-  destinationLat?: number;
-  destinationLon?: number;
-  startDate?: { seconds: number; nanoseconds: number };
-  endDate?: { seconds: number; nanoseconds: number };
-  createdBy?: string;
-  invitados?: string[];
-};
-
-type GeoResult = {
-  name: string;
-  latitude: number;
-  longitude: number;
-  country?: string;
-  admin1?: string;
-};
 
 type DailyUnits = {
   time?: string;
@@ -70,12 +49,10 @@ function fromFirestoreTimestamp(ts?: { seconds: number }) {
 }
 
 function formatDestinationForSearch(dest: string) {
-  // "Cuenca, Castilla-La Mancha, España" -> "Cuenca"
   return dest.split(",")[0]?.trim() || dest.trim();
 }
 
 function weatherCodeToText(code?: number) {
-  // Mapeo simple (suficiente para MVP)
   const c = code ?? -1;
   if (c === 0) return "Despejado";
   if (c === 1 || c === 2) return "Poco nublado";
@@ -119,10 +96,10 @@ async function geocodeByOpenMeteo(dest: string) {
   if (!res.ok) return null;
 
   const json = await res.json();
-  const r: GeoResult | undefined = Array.isArray(json?.results) ? json.results[0] : undefined;
+  const r = Array.isArray(json?.results) ? json.results[0] : undefined;
   if (!r || typeof r.latitude !== "number" || typeof r.longitude !== "number") return null;
 
-  return { lat: r.latitude, lon: r.longitude };
+  return { lat: r.latitude as number, lon: r.longitude as number };
 }
 
 async function fetchForecast(lat: number, lon: number, start: string, end: string) {
@@ -138,15 +115,13 @@ async function fetchForecast(lat: number, lon: number, start: string, end: strin
   const res = await fetch(url);
   const text = await res.text().catch(() => "");
 
-  // ✅ Si viene 400/500, Open-Meteo muchas veces responde JSON igualmente
   if (!res.ok) {
     let reason: string | undefined;
-
     try {
       const maybeJson = JSON.parse(text);
       reason = maybeJson?.reason;
     } catch {
-      // no pasa nada si no es JSON
+      // not JSON
     }
 
     const range = parseAllowedRange(reason || text);
@@ -157,13 +132,9 @@ async function fetchForecast(lat: number, lon: number, start: string, end: strin
       );
     }
 
-    // fallback: error técnico si no es rango
-    throw new Error(
-      `No se pudo cargar la previsión (${res.status}).`
-    );
+    throw new Error(`No se pudo cargar la previsión (${res.status}).`);
   }
 
-  // ✅ Si res.ok, parseamos normal
   const json = (JSON.parse(text) as ForecastResponse) ?? {};
 
   if (json?.error) {
@@ -181,89 +152,31 @@ async function fetchForecast(lat: number, lon: number, start: string, end: strin
 }
 
 function Weather() {
-  const { id } = useParams();
-  const navigate = useNavigate();
-
-  const [grupo, setGrupo] = useState<Grupo | null>(null);
+  const { grupo, tramoActivo } = useGroup();
 
   const [loadingWeather, setLoadingWeather] = useState(false);
   const [error, setError] = useState("");
-
   const [rows, setRows] = useState<Row[]>([]);
   const [units, setUnits] = useState<DailyUnits | null>(null);
   const [showTechnical, setShowTechnical] = useState(false);
 
-  // --- Cargar grupo ---
-  useEffect(() => {
-    if (!id) {
-      navigate("/");
-      return;
-    }
-
-    const fetchGrupo = async () => {
-      const ref = doc(db, "grupos", id);
-      const snap = await getDoc(ref);
-      if (!snap.exists()) {
-        navigate("/");
-        return;
-      }
-
-      const data = snap.data() as any;
-      setGrupo({
-        name: data.name ?? "Grupo",
-        destination: data.destination ?? "",
-        destinationLat: typeof data.destinationLat === "number" ? data.destinationLat : undefined,
-        destinationLon: typeof data.destinationLon === "number" ? data.destinationLon : undefined,
-        startDate: data.startDate,
-        endDate: data.endDate,
-        createdBy: data.createdBy,
-        invitados: Array.isArray(data.invitados) ? data.invitados : [],
-      });
-    };
-
-    fetchGrupo();
-  }, [id, navigate]);
-
-  // Tiempo real (opcional pero consistente con el resto)
-  useEffect(() => {
-    if (!id) return;
-
-    const unsub = onSnapshot(doc(db, "grupos", id), (snap) => {
-      if (!snap.exists()) return;
-      const data = snap.data() as any;
-
-      setGrupo({
-        name: data.name ?? "Grupo",
-        destination: data.destination ?? "",
-        destinationLat: typeof data.destinationLat === "number" ? data.destinationLat : undefined,
-        destinationLon: typeof data.destinationLon === "number" ? data.destinationLon : undefined,
-        startDate: data.startDate,
-        endDate: data.endDate,
-        createdBy: data.createdBy,
-        invitados: Array.isArray(data.invitados) ? data.invitados : [],
-      });
-    });
-
-    return () => unsub();
-  }, [id]);
+  // Use active tramo data when available, fall back to group root
+  const destination = tramoActivo?.destination ?? grupo?.destination ?? "";
+  const startDateTs = tramoActivo?.startDate ?? grupo?.startDate;
+  const endDateTs = tramoActivo?.endDate ?? grupo?.endDate;
 
   const startEnd = useMemo(() => {
-    const start = fromFirestoreTimestamp(grupo?.startDate || undefined);
-    const end = fromFirestoreTimestamp(grupo?.endDate || undefined);
-
+    const start = fromFirestoreTimestamp(startDateTs);
+    const end = fromFirestoreTimestamp(endDateTs);
     if (!start || !end) return null;
-
-    // si end < start por cualquier motivo, lo corregimos
     const s = start <= end ? start : end;
     const e = start <= end ? end : start;
-
     return { start: s, end: e };
-  }, [grupo?.startDate, grupo?.endDate]);
+  }, [startDateTs, endDateTs]);
 
-  // --- Cargar clima ---
   useEffect(() => {
     const run = async () => {
-      if (!grupo?.destination?.trim()) return;
+      if (!destination.trim()) return;
       if (!startEnd) return;
 
       setLoadingWeather(true);
@@ -272,22 +185,13 @@ function Weather() {
       setUnits(null);
 
       try {
-        // ✅ 1) Usar coords guardadas si existen
-        let lat = grupo.destinationLat;
-        let lon = grupo.destinationLon;
-
-        // 🟡 2) Fallback geocoding si el grupo es antiguo y no tiene coords
-        if (typeof lat !== "number" || typeof lon !== "number") {
-          const geo = await geocodeByOpenMeteo(grupo.destination);
-          if (!geo) throw new Error("No se encontró el destino. Prueba a ser más específico.");
-          lat = geo.lat;
-          lon = geo.lon;
-        }
+        const geo = await geocodeByOpenMeteo(destination);
+        if (!geo) throw new Error("No se encontró el destino. Prueba a ser más específico.");
 
         const startISO = toISODate(startEnd.start);
         const endISO = toISODate(startEnd.end);
 
-        const data = await fetchForecast(lat, lon, startISO, endISO);
+        const data = await fetchForecast(geo.lat, geo.lon, startISO, endISO);
 
         setUnits(data.daily_units ?? null);
 
@@ -304,35 +208,28 @@ function Weather() {
         }));
 
         setRows(out);
-      } catch (e: any) {
-        setError(e?.message ?? "Error cargando la previsión.");
+      } catch (e: unknown) {
+        setError(e instanceof Error ? e.message : "Error cargando la previsión.");
       } finally {
         setLoadingWeather(false);
       }
     };
 
     run();
-  }, [grupo?.destination, grupo?.destinationLat, grupo?.destinationLon, startEnd]);
+  }, [destination, startEnd]);
 
-  // Seguridad simple: si no hay sesión, que vuelva (como el resto de páginas)
-  useEffect(() => {
-    if (!auth.currentUser) {
-      // no forzamos mucho, pero evitamos páginas sin login
-      // si prefieres mantenerlo abierto, elimina este efecto
-    }
-  }, []);
-
-  if (!grupo) return (
-    <div className="ts-loading-block">
-      <span className="ts-spinner" />
-      Cargando clima...
-    </div>
-  );
+  if (!grupo) {
+    return (
+      <div className="ts-loading-block">
+        <span className="ts-spinner" />
+        Cargando clima...
+      </div>
+    );
+  }
 
   const startLabel = startEnd ? startEnd.start.toLocaleDateString() : "—";
   const endLabel = startEnd ? startEnd.end.toLocaleDateString() : "—";
 
-  // Cálculos para el resumen general
   const tempMin = rows.length > 0 ? Math.min(...rows.map(r => r.tmin ?? Infinity)) : null;
   const tempMax = rows.length > 0 ? Math.max(...rows.map(r => r.tmax ?? -Infinity)) : null;
   const daysWithRain = rows.filter(r => (r.prcp ?? 0) > 0).length;
@@ -340,7 +237,6 @@ function Weather() {
     return (current.wind ?? 0) > (prev.wind ?? 0) ? current : prev;
   }, rows[0] || null);
 
-  // Función para obtener icono de clima
   const getWeatherIcon = (code?: number) => {
     if (code === 0) return "☀️";
     if (code === 1 || code === 2) return "🌤️";
@@ -352,7 +248,6 @@ function Weather() {
     return "🌤️";
   };
 
-  // Función para obtener clase de icono según clima
   const getWeatherIconClass = (code?: number) => {
     if (code === 0) return "weather-icon-sun";
     if (code === 1 || code === 2 || code === 3) return "weather-icon-cloud";
@@ -365,18 +260,16 @@ function Weather() {
 
   return (
     <div className="weather-page">
-      {/* Cabecera de la página */}
       <div className="weather-header">
         <h1 className="weather-title">Clima</h1>
         <p className="weather-subtitle">Previsión meteorológica para tu viaje</p>
       </div>
 
-      {/* Información del viaje */}
       <div className="weather-trip-info">
         <div className="trip-info-grid">
           <div className="trip-info-item">
             <span className="trip-info-label">Destino</span>
-            <span className="trip-info-value">{grupo.destination || "—"}</span>
+            <span className="trip-info-value">{destination || "—"}</span>
           </div>
           <div className="trip-info-item">
             <span className="trip-info-label">Fechas del viaje</span>
@@ -385,7 +278,6 @@ function Weather() {
         </div>
       </div>
 
-      {/* Resumen general del clima */}
       {rows.length > 0 && (
         <div className="weather-summary">
           <h2 className="summary-title">Resumen general del viaje</h2>
@@ -397,13 +289,11 @@ function Weather() {
                 {tempMin != null ? Math.round(tempMin) : "—"}° / {tempMax != null ? Math.round(tempMax) : "—"}°
               </div>
             </div>
-            
             <div className="summary-card">
               <div className="summary-icon">🌧️</div>
               <div className="summary-label">Días con lluvia</div>
               <div className="summary-value">{daysWithRain}</div>
             </div>
-            
             <div className="summary-card">
               <div className="summary-icon">💨</div>
               <div className="summary-label">Día más ventoso</div>
@@ -411,7 +301,6 @@ function Weather() {
                 {windiestDay ? `${Math.round(windiestDay.wind ?? 0)} km/h` : "—"}
               </div>
             </div>
-            
             <div className="summary-card">
               <div className="summary-icon">📅</div>
               <div className="summary-label">Total de días</div>
@@ -421,15 +310,10 @@ function Weather() {
         </div>
       )}
 
-      {/* Sección principal de pronóstico */}
       <div className="weather-main">
         <h2 className="forecast-title">Previsión diaria</h2>
 
-        {error && (
-          <div className="weather-error">
-            {error}
-          </div>
-        )}
+        {error && <div className="weather-error">{error}</div>}
 
         {loadingWeather ? (
           <div className="ts-loading-block">
@@ -448,23 +332,21 @@ function Weather() {
               {rows.map((r) => (
                 <div key={r.day} className="forecast-card">
                   <div className="forecast-day">
-                    <div className="forecast-date">{new Date(r.day).toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'short' })}</div>
+                    <div className="forecast-date">
+                      {new Date(r.day).toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'short' })}
+                    </div>
                     <div className={`forecast-weather-icon ${getWeatherIconClass(r.code)}`}>
                       {getWeatherIcon(r.code)}
                     </div>
                   </div>
-                  
+
                   <div className="forecast-weather-text">{weatherCodeToText(r.code)}</div>
-                  
+
                   <div className="forecast-temps">
-                    <div className="temp-min">
-                      {r.tmin != null ? `${Math.round(r.tmin)}°` : "—"}
-                    </div>
-                    <div className="temp-max">
-                      {r.tmax != null ? `${Math.round(r.tmax)}°` : "—"}
-                    </div>
+                    <div className="temp-min">{r.tmin != null ? `${Math.round(r.tmin)}°` : "—"}</div>
+                    <div className="temp-max">{r.tmax != null ? `${Math.round(r.tmax)}°` : "—"}</div>
                   </div>
-                  
+
                   <div className="forecast-details">
                     <div className="forecast-detail-item">
                       <span>Precip.</span>
@@ -479,9 +361,8 @@ function Weather() {
               ))}
             </div>
 
-            {/* Botón de detalles técnicos */}
             <div className="details-toggle">
-              <button 
+              <button
                 className="btn-details"
                 onClick={() => setShowTechnical(!showTechnical)}
               >
@@ -490,7 +371,6 @@ function Weather() {
               </button>
             </div>
 
-            {/* Sección de detalles técnicos */}
             <div className={`technical-details ${showTechnical ? 'show' : ''}`}>
               <h3 className="technical-title">Detalles técnicos (Open-Meteo)</h3>
               <div className="technical-grid">
@@ -524,4 +404,3 @@ function Weather() {
 }
 
 export default Weather;
- 

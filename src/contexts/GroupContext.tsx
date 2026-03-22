@@ -3,8 +3,9 @@ import { useParams, useNavigate } from "react-router-dom";
 import { doc, getDoc } from "firebase/firestore";
 import { db, auth } from "../firebase/firebaseConfig";
 import { onAuthStateChanged, User } from "firebase/auth";
+import { useTramos, Tramo } from "../hooks/useTramos";
 
-interface Grupo {
+export interface Grupo {
   id: string;
   name: string;
   destination: string;
@@ -22,6 +23,9 @@ interface GroupContextType {
   loading: boolean;
   error: string | null;
   handleAddInvitado: (email: string) => Promise<void>;
+  tramos: Tramo[];
+  tramoActivo: Tramo | null;
+  setTramoActivo: (tramo: Tramo) => void;
 }
 
 const GroupContext = createContext<GroupContextType | undefined>(undefined);
@@ -46,6 +50,10 @@ export const GroupProvider: React.FC<GroupProviderProps> = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const { tramos, tramoActivo, setTramoActivo: setTramoActivoRaw } = useTramos(id);
+
+  const setTramoActivo = (tramo: Tramo) => setTramoActivoRaw(tramo);
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       if (!currentUser) {
@@ -61,10 +69,10 @@ export const GroupProvider: React.FC<GroupProviderProps> = ({ children }) => {
   useEffect(() => {
     const fetchGrupo = async () => {
       if (!id) return;
-      
+
       setLoading(true);
       setError(null);
-      
+
       try {
         const docRef = doc(db, "grupos", id);
         const docSnap = await getDoc(docRef);
@@ -113,6 +121,9 @@ export const GroupProvider: React.FC<GroupProviderProps> = ({ children }) => {
     loading,
     error,
     handleAddInvitado,
+    tramos,
+    tramoActivo,
+    setTramoActivo,
   };
 
   return (

@@ -3,6 +3,7 @@ import { useGroup } from "../contexts/GroupContext";
 import { useLocation, useParams, Link, Outlet, useNavigate } from "react-router-dom";
 import { db } from "../firebase/firebaseConfig";
 import { doc, updateDoc } from "firebase/firestore";
+import TramoSelector from "./TramoSelector";
 import "../styles/group-tabs.css";
 
 const ICONS: Record<string, React.ReactElement> = {
@@ -72,8 +73,6 @@ const ICONS: Record<string, React.ReactElement> = {
   ),
 };
 
-
-
 const TABS = [
   { key: 'overview',    label: 'General',    path: (id: string) => `/grupo/${id}` },
   { key: 'itinerario',  label: 'Itinerario', path: (id: string) => `/grupo/${id}/itinerario` },
@@ -87,7 +86,7 @@ const TABS = [
 ];
 
 function GroupTabs() {
-  const { grupo, loading, error } = useGroup();
+  const { grupo, loading, error, tramoActivo } = useGroup();
   const location = useLocation();
   const { id } = useParams();
   const navigate = useNavigate();
@@ -117,7 +116,7 @@ function GroupTabs() {
   const checkArrows = () => {
     const el = scrollRef.current;
     if (!el) return;
-setCanScrollLeft(el.scrollLeft > 0);
+    setCanScrollLeft(el.scrollLeft > 0);
     setCanScrollRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 1);
   };
 
@@ -143,11 +142,20 @@ setCanScrollLeft(el.scrollLeft > 0);
     el.scrollTo({ left: tabOffset - (el.clientWidth - tabWidth) / 2, behavior: 'smooth' });
   };
 
+  // Destination to display — prefer active tramo, fall back to group root
+  const displayDestination = tramoActivo?.destination ?? grupo?.destination ?? "";
+  const displayStartDate = tramoActivo?.startDate ?? grupo?.startDate;
+  const displayEndDate = tramoActivo?.endDate ?? grupo?.endDate;
+
   useEffect(() => {
-    if (!grupo?.destination) return;
+    if (!displayDestination) return;
     const key = import.meta.env.VITE_UNSPLASH_ACCESS_KEY;
     if (!key) return;
-    const dest = grupo.destination.split(",")[0].trim();
+
+    setHeroPhoto(null);
+    setPhotoLoaded(false);
+
+    const dest = displayDestination.split(",")[0].trim();
     fetch(
       `https://api.unsplash.com/search/photos?query=${encodeURIComponent(dest)}&per_page=1&orientation=landscape&w=1600&client_id=${key}`
     )
@@ -156,13 +164,19 @@ setCanScrollLeft(el.scrollLeft > 0);
         const url = data?.results?.[0]?.urls?.full ?? data?.results?.[0]?.urls?.regular;
         if (url) {
           setHeroPhoto(url);
-          if (!grupo.heroImageUrl) {
-            updateDoc(doc(db, "grupos", id!), { heroImageUrl: url }).catch(() => {});
+          // Persist heroImageUrl to tramo doc if not set
+          if (tramoActivo && !tramoActivo.heroImageUrl && id) {
+            updateDoc(
+              doc(db, "grupos", id, "tramos", tramoActivo.id),
+              { heroImageUrl: url }
+            ).catch(() => {});
+          } else if (!tramoActivo && grupo && !grupo.heroImageUrl && id) {
+            updateDoc(doc(db, "grupos", id), { heroImageUrl: url }).catch(() => {});
           }
         }
       })
       .catch(() => {});
-  }, [grupo?.destination]);
+  }, [displayDestination, tramoActivo?.id]);
 
   if (loading) {
     return (
@@ -184,20 +198,25 @@ setCanScrollLeft(el.scrollLeft > 0);
     );
   }
 
-  const fechaInicio = new Date(grupo.startDate.seconds * 1000).toLocaleDateString();
-  const fechaFin = new Date(grupo.endDate.seconds * 1000).toLocaleDateString();
+  const fechaInicio = displayStartDate
+    ? new Date(displayStartDate.seconds * 1000).toLocaleDateString()
+    : "—";
+  const fechaFin = displayEndDate
+    ? new Date(displayEndDate.seconds * 1000).toLocaleDateString()
+    : "—";
 
   const now = new Date();
-  const startMs = grupo.startDate.seconds * 1000;
-  const endMs = grupo.endDate.seconds * 1000;
+  const startMs = displayStartDate ? displayStartDate.seconds * 1000 : 0;
+  const endMs = displayEndDate ? displayEndDate.seconds * 1000 : 0;
   const daysUntil = Math.ceil((startMs - now.getTime()) / (1000 * 60 * 60 * 24));
   const tripStatus =
-    now.getTime() < startMs
+    !startMs
+      ? ""
+      : now.getTime() < startMs
       ? `✈️ Faltan ${daysUntil} días`
       : now.getTime() <= endMs
       ? "🌍 ¡Viaje en curso!"
       : "✅ Viaje finalizado";
-
 
   const heroStyle = heroPhoto
     ? {
@@ -223,20 +242,29 @@ setCanScrollLeft(el.scrollLeft > 0);
         className={`group-header${photoLoaded ? " group-header--photo" : ""}`}
         style={heroStyle}
       >
-        <div className="ts-container">
+        <div className="ts-container" style={{ width: "100%" }}>
           <div className="group-header-content">
             <div className="group-title-section">
               <h1 className="group-title">{grupo.name}</h1>
               <div className="group-meta">
                 <span className="group-creator">Creado por: {grupo.createdByEmail}</span>
               </div>
-              <span className="hero-status-badge">{tripStatus}</span>
+              {tripStatus && <span className="hero-status-badge">{tripStatus}</span>}
             </div>
 
             <div className="group-info-grid">
               <div className="group-info-card">
-                <div className="info-label">Destino</div>
-                <div className="info-value">{grupo.destination}</div>
+                <div className="info-label">
+                  {tramoActivo ? `Tramo ${tramoActivo.order}` : "Destino"}
+                </div>
+                <div className="info-value">
+                  {displayDestination.split(",")[0] || "—"}
+                </div>
+                {tramoActivo && (
+                  <div style={{ fontSize: "0.75rem", opacity: 0.65, color: "white", marginTop: "0.35rem" }}>
+                    {new Date(tramoActivo.startDate.seconds * 1000).toLocaleDateString()} – {new Date(tramoActivo.endDate.seconds * 1000).toLocaleDateString()}
+                  </div>
+                )}
               </div>
               <div className="group-info-card">
                 <div className="info-label">Fechas</div>
@@ -260,6 +288,7 @@ setCanScrollLeft(el.scrollLeft > 0);
               </div>
             </div>
           </div>
+
         </div>
       </div>
 
@@ -309,6 +338,9 @@ setCanScrollLeft(el.scrollLeft > 0);
       <div className="tab-content">
         <Outlet />
       </div>
+
+      {/* FAB — tramo selector, fixed to viewport */}
+      <TramoSelector />
     </div>
   );
 }

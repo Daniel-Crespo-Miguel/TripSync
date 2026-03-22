@@ -1,0 +1,445 @@
+/* FAB wrapper — fixed to viewport */
+.tramo-fab-wrapper {
+  position: fixed;
+  bottom: 32px;
+  right: 32px;
+  z-index: 1000;
+}
+
+/* FAB button */
+.tramo-fab {
+  position: relative;
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #1DBF87, #0e8f62);
+  border: 4px solid rgba(255, 255, 255, 0.25);
+  box-shadow: 0 6px 24px rgba(13, 191, 135, 0.5);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.tramo-fab::before {
+  content: '';
+  position: absolute;
+  inset: -8px;
+  border-radius: 50%;
+  background: rgba(29, 191, 135, 0.35);
+  animation: tramo-pulse 2s ease-out infinite;
+  z-index: -1;
+}
+
+.tramo-fab--open::before {
+  display: none;
+}
+
+@keyframes tramo-pulse {
+  0%   { transform: scale(0.85); opacity: 0.8; }
+  100% { transform: scale(1.6);  opacity: 0; }
+}
+
+.tramo-fab:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(13, 191, 135, 0.55);
+}
+
+.tramo-fab-label {
+  font-size: 11px;
+  font-weight: 500;
+  color: white;
+  text-align: center;
+  padding: 0 8px;
+  line-height: 1.3;
+}
+
+/* Dropdown panel — anchored above FAB */
+.tramo-panel {
+  position: absolute;
+  bottom: 60px;
+  right: 0;
+  background: rgba(10, 22, 40, 0.92);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 20px;
+  padding: 1.1rem;
+  min-width: 330px;
+  z-index: 100;
+}
+
+.tramo-panel-header {
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.4);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding-bottom: 0.4rem;
+  margin-bottom: 0.5rem;
+}
+
+.tramo-panel-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem;
+  border-radius: 10px;
+  border: none;
+  background: transparent;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.tramo-panel-row:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.tramo-panel-row--active {
+  background: rgba(29, 191, 135, 0.18);
+}
+
+.tramo-panel-row--active:hover {
+  background: rgba(29, 191, 135, 0.25);
+}
+
+.tramo-panel-pill {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  font-weight: 600;
+  flex-shrink: 0;
+  background: rgba(255, 255, 255, 0.12);
+  color: white;
+}
+
+.tramo-panel-pill--active {
+  background: #1DBF87;
+  color: #04342C;
+}
+
+.tramo-panel-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.tramo-panel-dest {
+  font-size: 18px;
+  font-weight: 500;
+  color: white;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tramo-panel-dates {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.tramo-panel-check {
+  color: #1DBF87;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.tramo-panel-divider {
+  border: none;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  margin: 0.75rem 0 0.25rem;
+}
+
+.tramo-panel-add {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem;
+  border-radius: 10px;
+  border: none;
+  background: transparent;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.15s ease;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 18px;
+  font-family: inherit;
+}
+
+.tramo-panel-add:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.tramo-panel-add-pill {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 1.5px dashed rgba(255, 255, 255, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  line-height: 1;
+  color: rgba(255, 255, 255, 0.4);
+  flex-shrink: 0;
+}
+
+/* Add-tramo form (inside panel) */
+.tramo-form {
+  margin-top: 0.5rem;
+  padding: 0.75rem;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Destination field wrapper */
+.tramo-field {
+  position: relative;
+  margin-bottom: 0.5rem;
+}
+
+.tramo-input {
+  padding: 0.4rem 0.7rem;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
+  font-size: 0.85rem;
+  font-family: inherit;
+  min-width: 0;
+}
+
+.tramo-input--full {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.tramo-input::placeholder {
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.tramo-input:focus {
+  outline: none;
+  border-color: #1DBF87;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.tramo-input[type="date"] {
+  color-scheme: dark;
+}
+
+/* Autocomplete dropdown */
+.tramo-suggestions-list {
+  position: absolute;
+  top: calc(100% + 2px);
+  left: 0;
+  right: 0;
+  background: #0d2745;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  overflow: hidden;
+  z-index: 150;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+}
+
+.tramo-suggestion-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 0.5rem 0.75rem;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.82rem;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.15s ease;
+}
+
+.tramo-suggestion-item:last-child {
+  border-bottom: none;
+}
+
+.tramo-suggestion-item:hover {
+  background: rgba(29, 191, 135, 0.2);
+  color: white;
+}
+
+/* Status lines */
+.tramo-dest-searching {
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.55);
+  margin-top: 0.25rem;
+}
+
+.tramo-dest-selected {
+  font-size: 0.78rem;
+  color: #1DBF87;
+  margin-top: 0.25rem;
+}
+
+.tramo-field-error {
+  font-size: 0.78rem;
+  color: #fca5a5;
+  margin-top: 0.25rem;
+}
+
+/* Form-level error */
+.tramo-form-error {
+  font-size: 0.8rem;
+  color: #fca5a5;
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 6px;
+  padding: 0.4rem 0.6rem;
+  margin-bottom: 0.5rem;
+}
+
+/* Date inputs row */
+.tramo-form-dates {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.tramo-form-dates .tramo-input {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.tramo-form-actions {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.tramo-save-btn {
+  padding: 0.4rem 1rem;
+  border-radius: 6px;
+  border: none;
+  background: #1DBF87;
+  color: white;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.2s ease;
+  white-space: nowrap;
+}
+
+.tramo-save-btn:hover:not(:disabled) {
+  background: #17a876;
+}
+
+.tramo-save-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.tramo-cancel-btn {
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: transparent;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.85rem;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.tramo-cancel-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+@media (max-width: 768px) {
+  /* FAB — 15% smaller */
+  .tramo-fab-wrapper {
+    right: 16px;
+    bottom: 24px;
+  }
+
+  .tramo-fab {
+    width: 82px;
+    height: 82px;
+  }
+
+  .tramo-fab-label {
+    font-size: 9px;
+  }
+
+  /* Dropdown panel — 20% smaller */
+  .tramo-panel {
+    right: 0;
+    min-width: 264px;
+    border-radius: 16px;
+    padding: 0.88rem;
+  }
+
+  .tramo-panel-header {
+    font-size: 10px;
+  }
+
+  .tramo-panel-row {
+    gap: 13px;
+    padding: 0.6rem;
+  }
+
+  .tramo-panel-pill {
+    width: 30px;
+    height: 30px;
+    font-size: 12px;
+  }
+
+  .tramo-panel-dest {
+    font-size: 14px;
+  }
+
+  .tramo-panel-dates {
+    font-size: 11px;
+  }
+
+  .tramo-panel-check {
+    font-size: 14px;
+  }
+
+  .tramo-panel-add {
+    gap: 13px;
+    padding: 0.6rem;
+    font-size: 14px;
+  }
+
+  .tramo-panel-add-pill {
+    width: 30px;
+    height: 30px;
+  }
+
+  /* Form */
+  .tramo-form-dates {
+    flex-direction: column;
+  }
+
+  .tramo-form-actions {
+    width: 100%;
+  }
+
+  .tramo-save-btn,
+  .tramo-cancel-btn {
+    flex: 1;
+  }
+}

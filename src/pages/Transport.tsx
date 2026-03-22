@@ -1,17 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { auth, db } from "../firebase/firebaseConfig";
-import { doc, getDoc, onSnapshot } from "firebase/firestore";
+import { useGroup } from "../contexts/GroupContext";
+import { auth } from "../firebase/firebaseConfig";
 import "../styles/transport.css";
 import AITransportPanel from "../components/AITransportPanel";
-
-type Grupo = {
-  name: string;
-  destination?: string;
-  startDate?: { seconds: number; nanoseconds: number };
-  endDate?: { seconds: number; nanoseconds: number };
-  invitados?: string[];
-};
+import { useParams } from "react-router-dom";
 
 function toISODate(ts?: { seconds: number }) {
   if (!ts?.seconds) return "";
@@ -125,94 +117,37 @@ const transportOptions: TransportOption[] = [
 
 function Transport() {
   const { id } = useParams();
-  const navigate = useNavigate();
-
-  const [grupo, setGrupo] = useState<Grupo | null>(null);
+  const { grupo, tramoActivo } = useGroup();
   const [userEmail, setUserEmail] = useState("");
 
-  // Estados directos (sin lógica de formulario)
   const [origin, setOrigin] = useState("");
   const [destination, setDestination] = useState("");
   const [departDate, setDepartDate] = useState("");
   const [returnDate, setReturnDate] = useState("");
 
   useEffect(() => {
-    if (!id) {
-      navigate("/");
-      return;
-    }
-
     const unsubAuth = auth.onAuthStateChanged((u) => {
-      if (!u) navigate("/");
-      else setUserEmail(u.email ?? "");
+      if (u) setUserEmail(u.email ?? "");
     });
-
     return () => unsubAuth();
-  }, [navigate, id]);
+  }, []);
 
+  // Initialise destination and dates from active tramo (or group root)
   useEffect(() => {
-    if (!id) return;
+    const dest = tramoActivo?.destination ?? grupo?.destination ?? "";
+    const d1 = toISODate(tramoActivo?.startDate ?? grupo?.startDate);
+    const d2 = toISODate(tramoActivo?.endDate ?? grupo?.endDate);
 
-    const ref = doc(db, "grupos", id);
-
-    const fetchOnce = async () => {
-      const snap = await getDoc(ref);
-      if (!snap.exists()) {
-        navigate("/");
-        return;
-      }
-      const data = snap.data() as any;
-      const g: Grupo = {
-        name: data.name ?? "Grupo",
-        destination: data.destination ?? "",
-        startDate: data.startDate,
-        endDate: data.endDate,
-        invitados: data.invitados ?? [],
-      };
-      setGrupo(g);
-
-      const d1 = toISODate(g.startDate as any);
-      const d2 = toISODate(g.endDate as any);
-
-      // Inicializar estados directos con los datos del grupo
-      setDestination(String(g.destination ?? ""));
-      setDepartDate(d1);
-      setReturnDate(d2);
-    };
-
-    fetchOnce();
-
-    const unsub = onSnapshot(ref, (snap) => {
-      if (!snap.exists()) return;
-      const data = snap.data() as any;
-      const g: Grupo = {
-        name: data.name ?? "Grupo",
-        destination: data.destination ?? "",
-        startDate: data.startDate,
-        endDate: data.endDate,
-        invitados: data.invitados ?? [],
-      };
-      setGrupo(g);
-
-      const d1 = toISODate(g.startDate as any);
-      const d2 = toISODate(g.endDate as any);
-
-      // Actualizar estados directos
-      setDestination((prev) => (prev ? prev : String(g.destination ?? "")));
-      setDepartDate((prev) => (prev ? prev : d1));
-      setReturnDate((prev) => (prev ? prev : d2));
-    });
-
-    return () => unsub();
-  }, [id, navigate]);
+    setDestination((prev) => (prev ? prev : dest));
+    setDepartDate((prev) => (prev ? prev : d1));
+    setReturnDate((prev) => (prev ? prev : d2));
+  }, [tramoActivo?.id, grupo?.id]);
 
   const normalized = useMemo(() => {
     const o = origin.trim();
     const d = destination.trim();
-
     const dep = departDate.trim();
     const ret = returnDate.trim();
-
     return {
       o,
       d,
@@ -221,13 +156,15 @@ function Transport() {
     };
   }, [origin, destination, departDate, returnDate]);
 
-  // Validar datos obligatorios para enlaces
   const hasRequiredData = !!normalized.o && !!normalized.d;
 
-
-
   if (!grupo) {
-    return <div className="container mt-5">Cargando...</div>;
+    return (
+      <div className="ts-loading-block">
+        <span className="ts-spinner" />
+        Cargando transporte...
+      </div>
+    );
   }
 
   return (
@@ -237,15 +174,12 @@ function Transport() {
         <p className="transport-subtitle">Organiza los medios de transporte del viaje</p>
       </div>
 
-      {/* Bloque superior - Contexto del viaje */}
       <div className="context-section">
         <h5 className="context-title">Contexto del viaje</h5>
-        
+
         <div className="context-grid">
           <div className="context-control">
-            <label className="context-label">
-              Origen (editable)
-            </label>
+            <label className="context-label">Origen (editable)</label>
             <input
               className="context-input"
               value={origin}
@@ -296,7 +230,6 @@ function Transport() {
         </div>
       </div>
 
-      {/* Sugerencias IA */}
       <AITransportPanel
         groupId={id!}
         destination={normalized.d}
@@ -306,70 +239,60 @@ function Transport() {
         userEmail={userEmail}
       />
 
-      {/* Bloque principal - Comparativa de medios de transporte */}
       <div className="comparison-section">
         <h5 className="comparison-title">Comparativa de medios de transporte</h5>
-        
-        <div className="comparison-grid">
-          {transportOptions.map((option) => {
-            return (
-              <div key={option.id} className="transport-card">
-                <div className="mb-3">
-                  <span className="transport-icon">
-                    {option.icon}
-                  </span>
-                </div>
-                
-                <h6 className="transport-name">{option.name}</h6>
-                
-                <div className="transport-details">
-                  <div className="detail-row">
-                    <span className="detail-label">Duración:</span>
-                    <span className="detail-value">{option.duration}</span>
-                  </div>
-                  
-                  <div className="detail-row">
-                    <span className="detail-label">Comodidad:</span>
-                    <span className={`badge-comfort ${option.comfort}`}>
-                      {option.comfort}
-                    </span>
-                  </div>
-                  
-                  <div className="detail-row">
-                    <span className="detail-label">Coste estimado:</span>
-                    <span className="detail-value">{option.cost}</span>
-                  </div>
-                  
-                  <p className="transport-description">{option.description}</p>
-                </div>
 
-                <div className="transport-actions">
-                  {option.actions.map((action, index) => (
-                    <a
-                      key={index}
-                      className={`action-btn ${!hasRequiredData ? 'disabled' : ''}`}
-                      href={hasRequiredData ? action.url({
-                        origin: normalized.o,
-                        destination: normalized.d,
-                        departDate: normalized.dep,
-                        returnDate: normalized.ret
-                      }) : undefined}
-                      target="_blank"
-                      rel="noreferrer"
-                      onClick={(e) => {
-                        if (!hasRequiredData) {
-                          e.preventDefault();
-                          alert('Introduce origen y destino para buscar precios y rutas.');
-                        }
-                      }}
-                    >
-                      {action.label}
-                    </a>
-                  ))}
-                </div>
+        <div className="comparison-grid">
+          {transportOptions.map((option) => (
+            <div key={option.id} className="transport-card">
+              <div className="mb-3">
+                <span className="transport-icon">{option.icon}</span>
               </div>
-            );
-          })}
+
+              <h6 className="transport-name">{option.name}</h6>
+
+              <div className="transport-details">
+                <div className="detail-row">
+                  <span className="detail-label">Duración:</span>
+                  <span className="detail-value">{option.duration}</span>
+                </div>
+                <div className="detail-row">
+                  <span className="detail-label">Comodidad:</span>
+                  <span className={`badge-comfort ${option.comfort}`}>{option.comfort}</span>
+                </div>
+                <div className="detail-row">
+                  <span className="detail-label">Coste estimado:</span>
+                  <span className="detail-value">{option.cost}</span>
+                </div>
+                <p className="transport-description">{option.description}</p>
+              </div>
+
+              <div className="transport-actions">
+                {option.actions.map((action, index) => (
+                  <a
+                    key={index}
+                    className={`action-btn ${!hasRequiredData ? 'disabled' : ''}`}
+                    href={hasRequiredData ? action.url({
+                      origin: normalized.o,
+                      destination: normalized.d,
+                      departDate: normalized.dep,
+                      returnDate: normalized.ret,
+                    }) : undefined}
+                    target="_blank"
+                    rel="noreferrer"
+                    onClick={(e) => {
+                      if (!hasRequiredData) {
+                        e.preventDefault();
+                        alert('Introduce origen y destino para buscar precios y rutas.');
+                      }
+                    }}
+                  >
+                    {action.label}
+                  </a>
+                ))}
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </div>
