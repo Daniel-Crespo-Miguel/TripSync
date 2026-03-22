@@ -29,15 +29,6 @@ type Activity = {
   itineraryItemId?: string;
 };
 
-type ItineraryItem = {
-  id: string;
-  date: string;
-  time?: string;
-  title: string;
-  notes?: string;
-  createdBy: string;
-  createdAt: string;
-};
 
 type GeoResult = {
   name: string;
