@@ -30,13 +30,12 @@ function Home() {
       <section className="hero">
         <div className="hero-overlay" />
         <div className="hero-card">
-          <span className="hero-badge">Planifica · Colabora · Viaja</span>
+          <span className="hero-badge">Multi-destino · IA integrada · Colaboración en tiempo real</span>
           <h1 className="hero-title">
             Organizar viajes en grupo no debería ser un caos
           </h1>
           <p className="hero-subtitle">
-            Centraliza decisiones, gastos y planificación en un solo lugar.
-            Deja de perder tiempo en mensajes y hojas de cálculo.
+            Planifica viajes multi-destino con tu grupo, deja que la IA organice los tramos, actividades e itinerario. Todo en un solo lugar.
           </p>
           <button className="hero-btn" onClick={handleStart}>
             Empezar a organizar
@@ -55,31 +54,31 @@ function Home() {
               Tu viaje, pensado por inteligencia artificial
             </h2>
             <p className="ai-section__subtitle">
-              TripSync conecta con Claude AI para analizar tu destino, fechas, clima
-              y preferencias del grupo. El resultado: sugerencias de actividades
-              únicas, pensadas exactamente para vosotros.
+              TripSync integra Claude AI en cada etapa de tu viaje. Desde sugerir cómo dividir tu ruta en tramos hasta generar el itinerario completo día a día, con recomendaciones de transporte y actividades personalizadas para tu grupo.
             </p>
             <ul className="ai-features-list">
-              <li>🗺️ Actividades personalizadas según destino y clima</li>
-              <li>👥 Adaptadas al tamaño y preferencias de tu grupo</li>
-              <li>🚆 Sugerencias de transporte inteligentes (próximamente)</li>
+              <li>🗺️ Sugerencias de tramos: la IA divide tu ruta en destinos con días optimizados</li>
+              <li>📅 Itinerario completo generado día a día con un solo clic</li>
+              <li>🚆 Comparativa de transporte inteligente entre destinos</li>
+              <li>📄 Extracción automática de datos desde PDFs de reservas</li>
+              <li>😊 Análisis de sentimiento en el feedback del grupo</li>
             </ul>
           </div>
 
           <div className="ai-section__right">
             <div className="ai-mock-card">
-              <div className="ai-mock-card__header">✨ Sugerencias para Madrid</div>
+              <div className="ai-mock-card__header">✨ Tramos sugeridos para Escocia</div>
               <div className="ai-mock-suggestion">
-                <span className="ai-mock-pill ai-mock-pill--cultural">Cultural</span>
-                <span className="ai-mock-title">Visita al Museo del Prado</span>
+                <span className="ai-mock-pill ai-mock-pill--cultural">Tramo 1</span>
+                <span className="ai-mock-title">Edimburgo · 3 días — Historia y castillos</span>
               </div>
               <div className="ai-mock-suggestion">
-                <span className="ai-mock-pill ai-mock-pill--gastro">Gastronomía</span>
-                <span className="ai-mock-title">Ruta de tapas por La Latina</span>
+                <span className="ai-mock-pill ai-mock-pill--gastro">Tramo 2</span>
+                <span className="ai-mock-title">Highlands · 4 días — Naturaleza y lochs</span>
               </div>
               <div className="ai-mock-suggestion">
-                <span className="ai-mock-pill ai-mock-pill--nature">Naturaleza</span>
-                <span className="ai-mock-title">Retiro Park morning walk</span>
+                <span className="ai-mock-pill ai-mock-pill--nature">Tramo 3</span>
+                <span className="ai-mock-title">Isla de Skye · 2 días — Paisajes únicos</span>
               </div>
             </div>
           </div>
