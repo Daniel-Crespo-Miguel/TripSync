@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { auth, db } from "../firebase/firebaseConfig";
 import { arrayUnion, doc, getDoc, onSnapshot, updateDoc } from "firebase/firestore";
+import AIItineraryPanel from "../components/AIItineraryPanel";
 import "../styles/itinerary.css";
 
 type ItineraryItem = {
@@ -19,6 +20,7 @@ type Grupo = {
   destination?: string;
   itinerary: ItineraryItem[];
   createdBy: string;
+  invitados?: string[];
   startDate?: { seconds: number };
   endDate?: { seconds: number };
 };
@@ -293,6 +295,7 @@ function Itinerary() {
         destination: data.destination,
         itinerary: Array.isArray(data.itinerary) ? data.itinerary : [],
         createdBy: data.createdBy ?? "",
+        invitados: Array.isArray(data.invitados) ? data.invitados : [],
         startDate: data.startDate,
         endDate: data.endDate,
       });
@@ -313,6 +316,7 @@ function Itinerary() {
         destination: data.destination,
         itinerary: Array.isArray(data.itinerary) ? data.itinerary : [],
         createdBy: data.createdBy ?? "",
+        invitados: Array.isArray(data.invitados) ? data.invitados : [],
         startDate: data.startDate,
         endDate: data.endDate,
       });
@@ -497,6 +501,19 @@ function Itinerary() {
         <h1 className="itinerary-title">Itinerario del viaje</h1>
         <p className="itinerary-subtitle">Organiza las actividades por días y horas</p>
       </div>
+
+      {/* Panel IA: generador de itinerario */}
+      {userEmail && (
+        <AIItineraryPanel
+          groupId={id!}
+          destination={grupo.destination ?? ""}
+          userEmail={userEmail}
+          participantCount={(grupo.invitados?.length ?? 0) + 1}
+          existingItinerary={(grupo.itinerary ?? []).map((i) => i.title)}
+          startDate={grupo.startDate}
+          endDate={grupo.endDate}
+        />
+      )}
 
       {/* Formulario para añadir actividad al itinerario */}
       <form onSubmit={handleAddItem} className="itinerary-form-card">

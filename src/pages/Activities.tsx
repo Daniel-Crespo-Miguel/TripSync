@@ -753,6 +753,19 @@ function Activities() {
         <p className="activities-subtitle">Propuestas del grupo. Vota y decide qué hacer durante el viaje.</p>
       </div>
 
+      {/* Sugerencias con IA */}
+      {userEmail && (
+        <AISuggestionsPanel
+          groupId={id!}
+          destination={grupo.destination ?? ""}
+          userEmail={userEmail}
+          participantCount={grupo.invitados?.length ?? 0}
+          existingActivities={(grupo.activities ?? []).map((a) => a.title)}
+          startDate={grupo.startDate}
+          endDate={grupo.endDate}
+        />
+      )}
+
       <form onSubmit={handleAddActivity} className="activities-form-card">
         <div className="mb-3">
           <label className="act-form-label">Título</label>
@@ -801,19 +814,6 @@ function Activities() {
           Añadir actividad
         </button>
       </form>
-
-      {/* Sugerencias con IA */}
-      {userEmail && (
-        <AISuggestionsPanel
-          groupId={id!}
-          destination={grupo.destination ?? ""}
-          userEmail={userEmail}
-          participantCount={grupo.invitados?.length ?? 0}
-          existingActivities={(grupo.activities ?? []).map((a) => a.title)}
-          startDate={grupo.startDate}
-          endDate={grupo.endDate}
-        />
-      )}
 
       {/* Sección de sugerencias con filtros visuales */}
       <div className="suggestions-section">

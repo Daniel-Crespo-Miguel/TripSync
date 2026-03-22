@@ -43,3 +43,25 @@ export type AITransportPayload = {
   participantCount: number;
   userPrompt?: string;
 };
+
+export type ItineraryActivity = {
+  time: string;
+  title: string;
+  description: string;
+  notes?: string;
+};
+
+export type ItineraryDay = {
+  date: string;
+  dayLabel: string;
+  activities: ItineraryActivity[];
+};
+
+export type AIItineraryPayload = {
+  destination: string;
+  dates: string;
+  groupId: string;
+  participantCount: number;
+  userPrompt: string;
+  existingActivities: string[];
+};
