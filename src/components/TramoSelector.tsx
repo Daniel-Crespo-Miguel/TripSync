@@ -215,6 +215,11 @@ function TramoSelector() {
   const groupEndISO = toISO(grupo.endDate.seconds);
   const groupTotalDays = daysBetween(grupo.startDate.seconds, grupo.endDate.seconds);
 
+  const isInitialPlaceholder =
+    tramos.length === 1 &&
+    tramos[0].startDate.seconds === grupo.startDate.seconds &&
+    tramos[0].endDate.seconds === grupo.endDate.seconds;
+
   // --- Add form handlers ---
 
   const handlePickDest = (r: GeoResult) => {
@@ -337,11 +342,16 @@ function TramoSelector() {
   };
 
   const handleCreateAITramos = async () => {
+    if (!isInitialPlaceholder) {
+      setAIError("Ya tienes tramos definidos. Edítalos manualmente o elimínalos antes de usar esta función.");
+      return;
+    }
+
     setAISaving(true);
     try {
-      let cursorSec = grupo.startDate.seconds;
-      const maxOrder = tramos.length > 0 ? Math.max(...tramos.map((t) => t.order)) : 0;
+      await deleteDoc(doc(db, "grupos", grupo.id, "tramos", tramos[0].id));
 
+      let cursorSec = grupo.startDate.seconds;
       const writes = aiSuggestions.map((s, i) => {
         const days = aiDays[i] ?? s.days;
         const startSec = cursorSec;
@@ -355,7 +365,7 @@ function TramoSelector() {
           startDate: { seconds: startSec, nanoseconds: 0 },
           endDate: { seconds: endSec, nanoseconds: 0 },
           heroImageUrl: null,
-          order: maxOrder + i + 1,
+          order: i + 1,
           createdAt: serverTimestamp(),
         });
       });
@@ -746,20 +756,25 @@ function TramoSelector() {
               {showAIForm && aiSuggestions.length === 0 && (
                 <div className="tramo-ai-form">
                   <span className="tramo-ai-form-label">Describe tu viaje</span>
+                  {!isInitialPlaceholder && (
+                    <div className="tramo-ai-error">
+                      Ya tienes tramos definidos. Edítalos manualmente o elimínalos antes de usar las sugerencias de IA.
+                    </div>
+                  )}
                   <textarea
                     className="tramo-ai-textarea"
                     rows={3}
                     placeholder="Ej: me gusta la naturaleza, quiero evitar ciudades masificadas..."
                     value={aiPrompt}
                     onChange={(e) => setAIPrompt(e.target.value)}
-                    disabled={aiLoading}
+                    disabled={aiLoading || !isInitialPlaceholder}
                   />
                   {aiError && <div className="tramo-ai-error">{aiError}</div>}
                   <button
                     type="button"
                     className="tramo-ai-generate-btn"
                     onClick={handleGenerateAI}
-                    disabled={aiLoading || !aiPrompt.trim()}
+                    disabled={aiLoading || !aiPrompt.trim() || !isInitialPlaceholder}
                   >
                     {aiLoading ? (
                       <>
