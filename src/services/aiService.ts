@@ -12,21 +12,18 @@ function mockSuggestions(): AISuggestion[] {
       title: "Visita al centro histórico",
       description: "Explora las calles y monumentos del casco antiguo a pie. Una experiencia imprescindible para conocer la historia local.",
       category: "Cultural",
-      recommendedDay: "Día 1",
     },
     {
       id: "mock-2",
       title: "Ruta gastronómica",
       description: "Prueba los platos típicos de la zona visitando mercados y restaurantes locales. Ideal para los amantes de la cocina.",
       category: "Gastronomía",
-      recommendedDay: "Día 2",
     },
     {
       id: "mock-3",
       title: "Excursión a la naturaleza",
       description: "Senderismo por los alrededores con vistas panorámicas. Perfecta para desconectar y disfrutar del paisaje.",
       category: "Naturaleza",
-      recommendedDay: "Día 3",
     },
   ];
 }

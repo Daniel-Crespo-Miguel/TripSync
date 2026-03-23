@@ -67,7 +67,7 @@ export default function AISuggestionsPanel({
     try {
       await addDoc(collection(db, "grupos", groupId, "tramos", tramoId, "actividades"), {
         title: suggestion.title,
-        description: `${suggestion.description}${suggestion.recommendedDay ? ` · ${suggestion.recommendedDay}` : ""}`,
+        description: suggestion.description,
         location: destination || undefined,
         createdBy: userEmail,
         createdAt: serverTimestamp(),

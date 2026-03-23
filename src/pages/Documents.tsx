@@ -45,7 +45,9 @@ function Documents() {
   };
 
   const formatDateTime = (date: string, time: string | null) => {
+    if (!date) return "Fecha no detectada";
     const d = new Date(date + "T00:00:00");
+    if (isNaN(d.getTime())) return "Fecha no detectada";
     const formatted = d.toLocaleDateString("es-ES", {
       day: "2-digit",
       month: "long",
@@ -130,11 +132,11 @@ function Documents() {
                       {doc.type}
                     </span>
                   </div>
-                  <div className="doc-item-provider">{doc.provider}</div>
+                  {doc.provider && <div className="doc-item-provider">{doc.provider}</div>}
                   <div className="doc-item-datetime">
                     {formatDateTime(doc.date, doc.time)}
                   </div>
-                  <p className="doc-item-details">{doc.details}</p>
+                  {doc.details && <p className="doc-item-details">{doc.details}</p>}
                 </div>
 
                 <div className="doc-item-actions">
