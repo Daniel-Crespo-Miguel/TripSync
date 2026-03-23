@@ -13,6 +13,7 @@ import Weather from "./pages/Weather";
 import Transport from './pages/Transport';
 import Feedback from './pages/Feedback';
 import Documents from './pages/Documents';
+import JoinGroup from './pages/JoinGroup';
 import GroupTabs from './components/GroupTabs';
 import { GroupProvider } from './contexts/GroupContext';
 import Header from './components/Header';
@@ -30,6 +31,7 @@ function App() {
             <Route path="/register" element={<Register />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/crear-viaje" element={<CreateGroup />} />
+            <Route path="/unirse/:token" element={<JoinGroup />} />
             
             {/* Rutas del grupo con GroupTabs como layout */}
             <Route path="/grupo/:id" element={

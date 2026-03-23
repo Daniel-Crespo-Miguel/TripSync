@@ -1,9 +1,14 @@
 import { useState } from "react";
+import { doc, updateDoc } from "firebase/firestore";
+import { db } from "../firebase/firebaseConfig";
 import { useGroup } from "../contexts/GroupContext";
 
 function GroupDetail() {
   const { grupo, user, handleAddInvitado } = useGroup();
   const [nuevoInvitado, setNuevoInvitado] = useState("");
+  const [shareUrl, setShareUrl] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
+  const [generatingLink, setGeneratingLink] = useState(false);
 
   if (!grupo || !user) {
     return (
@@ -16,6 +21,40 @@ function GroupDetail() {
   const esCreador = grupo.createdBy === user.uid;
   const fechaInicio = new Date(grupo.startDate.seconds * 1000).toLocaleDateString();
   const fechaFin = new Date(grupo.endDate.seconds * 1000).toLocaleDateString();
+
+  const handleShareLink = async () => {
+    if (!grupo) return;
+    setGeneratingLink(true);
+
+    try {
+      let token = grupo.inviteToken;
+
+      if (!token) {
+        token = crypto.randomUUID();
+        await updateDoc(doc(db, "grupos", grupo.id), { inviteToken: token });
+      }
+
+      const url = `${window.location.origin}/unirse/${token}`;
+      setShareUrl(url);
+    } catch (err) {
+      console.error("Error generating invite link:", err);
+    } finally {
+      setGeneratingLink(false);
+    }
+  };
+
+  const handleCopyLink = async () => {
+    if (!shareUrl) return;
+    await navigator.clipboard.writeText(shareUrl);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2500);
+  };
+
+  const handleWhatsApp = () => {
+    if (!shareUrl) return;
+    const text = encodeURIComponent(`¡Únete a nuestro viaje "${grupo?.name}" en TripSync! ${shareUrl}`);
+    window.open(`https://wa.me/?text=${text}`, "_blank");
+  };
 
   const handleAddInvitadoLocal = async () => {
     if (!nuevoInvitado.trim()) return;
@@ -91,6 +130,37 @@ function GroupDetail() {
               <button className="btn-primary" onClick={handleAddInvitadoLocal}>
                 Añadir
               </button>
+            </div>
+
+            <div className="share-link-section">
+              <h4 className="add-invitado-title">Compartir enlace de invitación</h4>
+
+              {!shareUrl ? (
+                <button
+                  className="btn-primary"
+                  onClick={handleShareLink}
+                  disabled={generatingLink}
+                >
+                  {generatingLink ? "Generando..." : "Compartir enlace"}
+                </button>
+              ) : (
+                <div className="share-link-box">
+                  <input
+                    type="text"
+                    className="form-input share-link-input"
+                    value={shareUrl}
+                    readOnly
+                  />
+                  <div className="share-link-actions">
+                    <button className="btn-primary" onClick={handleCopyLink}>
+                      {copied ? "¡Copiado!" : "Copiar enlace"}
+                    </button>
+                    <button className="btn-whatsapp" onClick={handleWhatsApp}>
+                      WhatsApp
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         )}
