@@ -1,12 +1,12 @@
 import { useState } from "react";
-import { checkAIWhitelist, fetchAITransport } from "../services/aiService";
+import { fetchAITransport } from "../services/aiService";
 import { AITransportPayload, TransportSuggestion } from "../types/ai";
 
 type UseAITransportResult = {
   suggestions: TransportSuggestion[];
   loading: boolean;
   error: string | null;
-  getSuggestions: (payload: AITransportPayload, userEmail: string) => Promise<void>;
+  getSuggestions: (payload: AITransportPayload) => Promise<void>;
   clear: () => void;
 };
 
@@ -15,18 +15,12 @@ export function useAITransport(): UseAITransportResult {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  async function getSuggestions(payload: AITransportPayload, userEmail: string) {
+  async function getSuggestions(payload: AITransportPayload) {
     setLoading(true);
     setError(null);
     setSuggestions([]);
 
     try {
-      const allowed = await checkAIWhitelist(userEmail);
-      if (!allowed) {
-        setError("Tu cuenta no tiene acceso a las sugerencias con IA.");
-        return;
-      }
-
       const result = await fetchAITransport(payload);
       setSuggestions(result);
     } catch (e) {

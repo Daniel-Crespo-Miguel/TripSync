@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { addDoc, collection, Timestamp } from "firebase/firestore";
 import { db } from "../firebase/firebaseConfig";
-import { checkAIWhitelist, fetchSentimentFeedback } from "../services/aiService";
+import { fetchSentimentFeedback } from "../services/aiService";
 import { SentimentResult } from "../types/ai";
 
 type UseAIFeedbackResult = {
@@ -23,12 +23,6 @@ export function useAIFeedback(): UseAIFeedbackResult {
     setResult(null);
 
     try {
-      const allowed = await checkAIWhitelist(userEmail);
-      if (!allowed) {
-        setError("Tu cuenta no tiene acceso al análisis de feedback con IA.");
-        return;
-      }
-
       const sentiment = await fetchSentimentFeedback(text, userId);
       setResult(sentiment);
 

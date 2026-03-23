@@ -1,23 +1,7 @@
-import { doc, getDoc } from "firebase/firestore";
-import { db } from "../firebase/firebaseConfig";
 import { AISuggestion, AISuggestionsPayload, AIItineraryPayload, AITramoSuggestion, AITransportPayload, ItineraryDay, SentimentResult, TransportSuggestion } from "../types/ai";
 
 const WEBHOOK_URL = import.meta.env.VITE_N8N_WEBHOOK_URL as string | undefined;
 const WEBHOOK_SECRET = import.meta.env.VITE_WEBHOOK_SECRET as string | undefined;
-
-// --- Whitelist check ---
-
-export async function checkAIWhitelist(email: string): Promise<boolean> {
-  try {
-    const ref = doc(db, "config", "aiWhitelist");
-    const snap = await getDoc(ref);
-    if (!snap.exists()) return false;
-    const emails: string[] = snap.data().emails ?? [];
-    return emails.includes(email);
-  } catch {
-    return false;
-  }
-}
 
 // --- Mock fallbacks ---
 

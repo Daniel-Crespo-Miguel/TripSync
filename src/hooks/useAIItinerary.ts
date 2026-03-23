@@ -1,12 +1,12 @@
 import { useState } from "react";
-import { checkAIWhitelist, fetchAIItinerary } from "../services/aiService";
+import { fetchAIItinerary } from "../services/aiService";
 import { AIItineraryPayload, ItineraryDay } from "../types/ai";
 
 type UseAIItineraryResult = {
   days: ItineraryDay[];
   loading: boolean;
   error: string | null;
-  generate: (payload: AIItineraryPayload, userEmail: string) => Promise<void>;
+  generate: (payload: AIItineraryPayload) => Promise<void>;
   clear: () => void;
 };
 
@@ -15,18 +15,12 @@ export function useAIItinerary(): UseAIItineraryResult {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  async function generate(payload: AIItineraryPayload, userEmail: string) {
+  async function generate(payload: AIItineraryPayload) {
     setLoading(true);
     setError(null);
     setDays([]);
 
     try {
-      const allowed = await checkAIWhitelist(userEmail);
-      if (!allowed) {
-        setError("Tu cuenta no tiene acceso al generador de itinerarios con IA.");
-        return;
-      }
-
       const result = await fetchAIItinerary(payload);
       setDays(result);
     } catch (e) {
