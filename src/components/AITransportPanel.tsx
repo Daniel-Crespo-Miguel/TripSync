@@ -22,8 +22,7 @@ function AITransportPanel({ groupId, destination, originCity, dates, participant
   async function handleRequest() {
     setHasRequested(true);
     await getSuggestions(
-      { destination, originCity, dates, groupId, participantCount, userPrompt: userPrompt.trim() || undefined },
-      userEmail
+      { destination, originCity, dates, groupId, participantCount, userPrompt: userPrompt.trim() || undefined }
     );
   }
 

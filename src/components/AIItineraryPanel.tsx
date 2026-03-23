@@ -63,8 +63,7 @@ export default function AIItineraryPanel({
         participantCount,
         userPrompt: userPrompt.trim(),
         existingActivities: existingItinerary,
-      },
-      userEmail
+      }
     );
   };
 

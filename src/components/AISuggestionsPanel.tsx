@@ -56,8 +56,7 @@ export default function AISuggestionsPanel({
         existingActivities,
         weatherSummary,
         userPrompt: userPrompt.trim() || undefined,
-      },
-      userEmail
+      }
     );
   };
 
