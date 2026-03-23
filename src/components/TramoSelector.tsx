@@ -209,7 +209,6 @@ function TramoSelector() {
   if (!grupo || !user) return null;
 
   const isCreator = user.uid === grupo.createdBy;
-  if (tramos.length <= 1 && !isCreator) return null;
 
   const groupStartISO = toISO(grupo.startDate.seconds);
   const groupEndISO = toISO(grupo.endDate.seconds);
@@ -653,6 +652,12 @@ function TramoSelector() {
               </div>
             );
           })}
+
+          {!isCreator && isInitialPlaceholder && (
+            <div className="tramo-panel-info">
+              El creador del grupo aún no ha dividido el viaje en tramos.
+            </div>
+          )}
 
           {isCreator && (
             <>
