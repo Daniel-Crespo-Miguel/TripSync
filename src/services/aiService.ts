@@ -283,3 +283,40 @@ export async function getAITramoSuggestions(params: {
   const tramos = data.tramos ?? data;
   return Array.isArray(tramos) ? tramos : [];
 }
+
+// --- Feature 6: AI Chat Reply ---
+
+export async function getAIChatReply(params: {
+  message: string;
+  groupName: string;
+  destination: string;
+  startDate: string;
+  endDate: string;
+  participants: string[];
+  tramos: { destination: string; startDate: string; endDate: string; order: number }[];
+  activities: string[];
+  expenses: string[];
+}): Promise<string> {
+  const chatWebhookUrl = import.meta.env.VITE_N8N_CHAT_URL as string | undefined;
+
+  if (!chatWebhookUrl) {
+    console.warn("[aiService] VITE_N8N_CHAT_URL not set — using mock data");
+    return `✨ Soy TripSync IA. [mock] Tu viaje tiene ${params.tramos.length} tramos planificados.`;
+  }
+
+  const response = await fetch(chatWebhookUrl, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      ...(WEBHOOK_SECRET ? { "x-webhook-secret": WEBHOOK_SECRET } : {}),
+    },
+    body: JSON.stringify(params),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Webhook error: ${response.status} ${response.statusText}`);
+  }
+
+  const data = await response.json();
+  return data.reply as string;
+}
