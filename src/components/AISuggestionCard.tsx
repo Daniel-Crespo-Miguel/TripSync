@@ -24,9 +24,6 @@ export default function AISuggestionCard({ suggestion, onAdd, adding, added }: P
       <div className="ai-suggestion-card__header">
         <span className="ai-suggestion-card__icon">{icon}</span>
         <span className="ai-suggestion-card__category">{suggestion.category}</span>
-        {suggestion.recommendedDay && (
-          <span className="ai-suggestion-card__day">{suggestion.recommendedDay}</span>
-        )}
       </div>
       <h5 className="ai-suggestion-card__title">{suggestion.title}</h5>
       <p className="ai-suggestion-card__description">{suggestion.description}</p>

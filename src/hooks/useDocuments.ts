@@ -72,7 +72,7 @@ if (!groupId) throw new Error("groupId is required");
       const colRef = collection(db, "grupos", groupId, "documentos");
       await addDoc(colRef, {
         type: extracted.type,
-        title: extracted.title,
+        title: extracted.title || file.name,
         date: extracted.date,
         time: extracted.time ?? null,
         provider: extracted.provider,
