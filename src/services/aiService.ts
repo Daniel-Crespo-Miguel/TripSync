@@ -189,7 +189,8 @@ export async function fetchAIItinerary(
     console.error("[fetchAIItinerary] Invalid JSON:", text);
     return [];
   }
-  const itinerary = data.itinerary ?? data.days ?? data;
+  const unwrapped = Array.isArray(data) && data[0]?.json ? data[0].json : data;
+  const itinerary = unwrapped.itinerary ?? unwrapped.days ?? unwrapped;
   return Array.isArray(itinerary) ? itinerary : [];
 }
 
