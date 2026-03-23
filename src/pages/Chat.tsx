@@ -174,6 +174,7 @@ function Chat() {
       <div className="chat-header">
         <h1 className="chat-title">Chat del grupo</h1>
         <p className="chat-subtitle">Habla con tu grupo en tiempo real</p>
+        <p className="chat-subtitle" style={{ fontSize: "12px", opacity: 0.6, marginTop: "4px" }}>✨ Pulsa 'Preguntar a la IA' para consultar al asistente — tiene contexto completo de tu viaje y sus respuestas las verá todo el grupo</p>
       </div>
 
       <div className="chat-messages">
