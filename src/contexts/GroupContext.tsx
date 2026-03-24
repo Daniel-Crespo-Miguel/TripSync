@@ -5,6 +5,13 @@ import { db, auth } from "../firebase/firebaseConfig";
 import { onAuthStateChanged, User } from "firebase/auth";
 import { useTramos, Tramo } from "../hooks/useTramos";
 
+export interface Gasto {
+  description: string;
+  amount: number;
+  paidBy: string;
+  date?: string;
+}
+
 export interface Grupo {
   id: string;
   name: string;
@@ -16,6 +23,7 @@ export interface Grupo {
   invitados: string[];
   heroImageUrl?: string;
   inviteToken?: string;
+  gastos?: Gasto[];
 }
 
 interface GroupContextType {

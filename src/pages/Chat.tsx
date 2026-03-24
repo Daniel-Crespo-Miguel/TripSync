@@ -154,7 +154,12 @@ function Chat() {
           order: t.order,
         })),
         activities: [],
-        expenses: [],
+        expenses: (grupo.gastos ?? []).map((g) => ({
+          description: g.description,
+          amount: g.amount,
+          paidBy: g.paidBy,
+          ...(g.date ? { date: g.date } : {}),
+        })),
       });
 
       await updateDoc(doc(db, "grupos", id, "messages", thinkingRef.id), {
