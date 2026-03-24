@@ -167,31 +167,53 @@ export async function fetchAIItinerary(
     return mockItinerary();
   }
 
-  const response = await fetch(itineraryWebhookUrl, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      ...(WEBHOOK_SECRET ? { "x-webhook-secret": WEBHOOK_SECRET } : {}),
-    },
-    body: JSON.stringify(payload),
-  });
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 30_000);
+
+  let response: Response;
+  try {
+    response = await fetch(itineraryWebhookUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        ...(WEBHOOK_SECRET ? { "x-webhook-secret": WEBHOOK_SECRET } : {}),
+      },
+      body: JSON.stringify(payload),
+      signal: controller.signal,
+    });
+  } catch (e: any) {
+    clearTimeout(timeoutId);
+    if (e?.name === "AbortError") {
+      throw new Error("La IA tardó demasiado en responder. Inténtalo de nuevo.");
+    }
+    throw e;
+  }
+  clearTimeout(timeoutId);
 
   if (!response.ok) {
     throw new Error(`Webhook error: ${response.status} ${response.statusText}`);
   }
 
   const text = await response.text();
-  if (!text || text.trim() === "") return [];
+  if (!text || text.trim() === "") {
+    throw new Error("El servidor no devolvió ningún itinerario. Revisa la configuración del webhook.");
+  }
+
   let data: any;
   try {
     data = JSON.parse(text);
   } catch (e) {
     console.error("[fetchAIItinerary] Invalid JSON:", text);
-    return [];
+    throw new Error("La respuesta del servidor no es válida. Inténtalo de nuevo.");
   }
+
   const unwrapped = Array.isArray(data) && data[0]?.json ? data[0].json : data;
   const itinerary = unwrapped.itinerary ?? unwrapped.days ?? unwrapped;
-  return Array.isArray(itinerary) ? itinerary : [];
+  if (!Array.isArray(itinerary)) {
+    console.error("[fetchAIItinerary] Unexpected response shape:", data);
+    throw new Error("Formato de respuesta inesperado. Inténtalo de nuevo.");
+  }
+  return itinerary;
 }
 
 // --- Feature 2: Sentiment Feedback ---
