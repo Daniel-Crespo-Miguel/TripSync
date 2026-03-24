@@ -124,8 +124,7 @@
 .form-input:focus {
   outline: none;
   border-color: var(--primary-color);
-  box-shadow: 0 0 0 3px rgba(11, 60, 93, 0.1);
-  transform: translateY(-1px);
+  box-shadow: 0 0 0 3px rgba(2, 139, 199, 0.2);
 }
 
 .form-input:hover {
@@ -137,6 +136,7 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1.5rem;
+  align-items: start;
 }
 
 /* Texto de ayuda */
@@ -362,11 +362,6 @@
 }
 
 /* Mejoras de accesibilidad */
-.form-input:focus {
-  outline: 3px solid var(--secondary-color);
-  outline-offset: 2px;
-}
-
 .suggestion-item:focus {
   outline: 3px solid var(--secondary-color);
   outline-offset: 2px;
