@@ -94,7 +94,18 @@ export async function extractWithAI(
     .replace(/```\n?/g, "")
     .trim();
 
-  return JSON.parse(cleaned) as AIExtractedData;
+  const validTypes = ["vuelo", "hotel", "tren", "entrada", "restaurante", "otro"] as const;
+  const parsed: unknown = JSON.parse(cleaned);
+  const obj = parsed !== null && typeof parsed === "object" ? (parsed as Record<string, unknown>) : {};
+
+  return {
+    type:     validTypes.includes(obj.type as typeof validTypes[number]) ? (obj.type as AIExtractedData["type"]) : "otro",
+    title:    typeof obj.title    === "string" && obj.title.trim()    ? obj.title.trim()    : "",
+    date:     typeof obj.date     === "string" && obj.date.trim()     ? obj.date.trim()     : "",
+    time:     typeof obj.time     === "string" && obj.time.trim()     ? obj.time.trim()     : null,
+    provider: typeof obj.provider === "string" && obj.provider.trim() ? obj.provider.trim() : "",
+    details:  typeof obj.details  === "string" && obj.details.trim()  ? obj.details.trim()  : "",
+  };
 }
 
 export function fileToBase64(file: File): Promise<string> {

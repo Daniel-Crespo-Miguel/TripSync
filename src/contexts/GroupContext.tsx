@@ -15,6 +15,7 @@ export interface Grupo {
   createdBy: string;
   invitados: string[];
   heroImageUrl?: string;
+  inviteToken?: string;
 }
 
 interface GroupContextType {

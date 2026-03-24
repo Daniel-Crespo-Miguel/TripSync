@@ -277,12 +277,12 @@
 
 .tabs-nav {
   display: flex;
-  gap: 4px;
+  gap: 6px;
   padding: 8px;
   margin: 0;
   list-style: none;
   width: max-content;
-  background: rgba(14, 158, 167, 0.06);
+  background: rgba(14, 158, 167, 0.08);
   border-radius: 12px;
   align-items: center;
   flex-shrink: 0;
@@ -291,7 +291,7 @@
 .tab-item {
   width: 180px;
   flex-shrink: 0;
-  padding: 12px 16px;
+  padding: 14px 20px;
   text-decoration: none;
   color: #0B3C5D;
   font-weight: 500;
@@ -306,7 +306,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 5px;
+  gap: 6px;
 }
 
 .tab-item-icon {
@@ -330,7 +330,7 @@
   background-color: #0e9ea7;
   font-weight: 600;
   border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(14, 158, 167, 0.35);
+  box-shadow: 0 3px 12px rgba(14, 158, 167, 0.45);
 }
 
 /* Contenido de las tabs */
@@ -618,7 +618,7 @@
 
   .tab-item {
     width: 130px;
-    padding: 10px 12px;
+    padding: 10px 14px;
     font-size: 0.7rem;
   }
 
@@ -728,6 +728,58 @@
 .form-input:focus {
   outline: 3px solid var(--secondary-color);
   outline-offset: 2px;
+}
+
+/* Share link section */
+.share-link-section {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #E5E7EB;
+}
+
+.share-link-box {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.share-link-input {
+  font-size: 0.8rem;
+  color: #6B7280;
+  background: #F9FAFB;
+  cursor: text;
+}
+
+.share-link-actions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.btn-whatsapp {
+  background: #25D366;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+
+.btn-whatsapp:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);
+}
+
+@media (max-width: 600px) {
+  .share-link-actions {
+    flex-direction: column;
+  }
 }
 
 /* Mejoras para impresión */

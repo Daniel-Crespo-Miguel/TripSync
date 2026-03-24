@@ -44,7 +44,7 @@ export default function AIItineraryPanel({
     if (!days || !Array.isArray(days) || days.length === 0) return;
     const keys = new Set<string>();
     days.forEach((day) =>
-      day.activities.forEach((_, idx) => keys.add(makeKey(day.date, idx)))
+      (day.activities ?? []).forEach((_, idx) => keys.add(makeKey(day.date, idx)))
     );
     setSelectedKeys(keys);
   }, [days]);
@@ -63,8 +63,7 @@ export default function AIItineraryPanel({
         participantCount,
         userPrompt: userPrompt.trim(),
         existingActivities: existingItinerary,
-      },
-      userEmail
+      }
     );
   };
 

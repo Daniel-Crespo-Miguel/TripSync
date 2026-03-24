@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../firebase/firebaseConfig';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import '../styles/auth.css';
 
 function Login() {
@@ -9,12 +9,18 @@ function Login() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const location = useLocation();
+  const inviteToken = new URLSearchParams(location.search).get("inviteToken");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      navigate('/');
+      if (inviteToken) {
+        navigate(`/unirse/${inviteToken}`);
+      } else {
+        navigate('/');
+      }
     } catch (err: any) {
       setError(err.message);
     }
@@ -55,7 +61,10 @@ function Login() {
 
         <p className="auth-card__footer">
           ¿No tienes cuenta?{' '}
-          <a href="/register" className="auth-card__link">
+          <a
+            href={inviteToken ? `/register?inviteToken=${inviteToken}` : "/register"}
+            className="auth-card__link"
+          >
             Regístrate aquí
           </a>
         </p>

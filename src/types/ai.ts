@@ -11,10 +11,6 @@ export type SentimentResult = {
   summary: string;
 };
 
-export type AIWhitelistConfig = {
-  emails: string[];
-};
-
 export type AISuggestionsPayload = {
   destination: string;
   dates: string;

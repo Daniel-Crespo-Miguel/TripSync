@@ -209,7 +209,6 @@ function TramoSelector() {
   if (!grupo || !user) return null;
 
   const isCreator = user.uid === grupo.createdBy;
-  if (tramos.length <= 1 && !isCreator) return null;
 
   const groupStartISO = toISO(grupo.startDate.seconds);
   const groupEndISO = toISO(grupo.endDate.seconds);
@@ -463,14 +462,20 @@ function TramoSelector() {
       const startDate = { seconds: Math.floor(new Date(editStart + "T12:00:00").getTime() / 1000), nanoseconds: 0 };
       const endDate = { seconds: Math.floor(new Date(editEnd + "T12:00:00").getTime() / 1000), nanoseconds: 0 };
 
-      const updateData: Record<string, unknown> = { startDate, endDate };
       if (editSelectedDest) {
-        updateData.destination = editSelectedDestLabel;
-        updateData.destinationLat = editSelectedDest.latitude;
-        updateData.destinationLon = editSelectedDest.longitude;
+        await updateDoc(doc(db, "grupos", grupo.id, "tramos", tramoId), {
+          destination: editSelectedDestLabel,
+          destinationLat: editSelectedDest.latitude,
+          destinationLon: editSelectedDest.longitude,
+          startDate,
+          endDate,
+        });
+      } else {
+        await updateDoc(doc(db, "grupos", grupo.id, "tramos", tramoId), {
+          startDate,
+          endDate,
+        });
       }
-
-      await updateDoc(doc(db, "grupos", grupo.id, "tramos", tramoId), updateData);
       resetEdit();
     } catch (err) {
       console.error("Error updating tramo:", err);
@@ -663,6 +668,12 @@ function TramoSelector() {
               </div>
             );
           })}
+
+          {!isCreator && isInitialPlaceholder && (
+            <div className="tramo-panel-info">
+              El creador del grupo aún no ha dividido el viaje en tramos.
+            </div>
+          )}
 
           {isCreator && (
             <>

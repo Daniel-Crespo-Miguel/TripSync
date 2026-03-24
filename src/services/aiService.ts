@@ -1,23 +1,7 @@
-import { doc, getDoc } from "firebase/firestore";
-import { db } from "../firebase/firebaseConfig";
 import { AISuggestion, AISuggestionsPayload, AIItineraryPayload, AITramoSuggestion, AITransportPayload, ItineraryDay, SentimentResult, TransportSuggestion } from "../types/ai";
 
 const WEBHOOK_URL = import.meta.env.VITE_N8N_WEBHOOK_URL as string | undefined;
 const WEBHOOK_SECRET = import.meta.env.VITE_WEBHOOK_SECRET as string | undefined;
-
-// --- Whitelist check ---
-
-export async function checkAIWhitelist(email: string): Promise<boolean> {
-  try {
-    const ref = doc(db, "config", "aiWhitelist");
-    const snap = await getDoc(ref);
-    if (!snap.exists()) return false;
-    const emails: string[] = snap.data().emails ?? [];
-    return emails.includes(email);
-  } catch {
-    return false;
-  }
-}
 
 // --- Mock fallbacks ---
 
@@ -28,21 +12,18 @@ function mockSuggestions(): AISuggestion[] {
       title: "Visita al centro histórico",
       description: "Explora las calles y monumentos del casco antiguo a pie. Una experiencia imprescindible para conocer la historia local.",
       category: "Cultural",
-      recommendedDay: "Día 1",
     },
     {
       id: "mock-2",
       title: "Ruta gastronómica",
       description: "Prueba los platos típicos de la zona visitando mercados y restaurantes locales. Ideal para los amantes de la cocina.",
       category: "Gastronomía",
-      recommendedDay: "Día 2",
     },
     {
       id: "mock-3",
       title: "Excursión a la naturaleza",
       description: "Senderismo por los alrededores con vistas panorámicas. Perfecta para desconectar y disfrutar del paisaje.",
       category: "Naturaleza",
-      recommendedDay: "Día 3",
     },
   ];
 }
@@ -208,7 +189,8 @@ export async function fetchAIItinerary(
     console.error("[fetchAIItinerary] Invalid JSON:", text);
     return [];
   }
-  const itinerary = data.itinerary ?? data.days ?? data;
+  const unwrapped = Array.isArray(data) && data[0]?.json ? data[0].json : data;
+  const itinerary = unwrapped.itinerary ?? unwrapped.days ?? unwrapped;
   return Array.isArray(itinerary) ? itinerary : [];
 }
 
@@ -282,4 +264,41 @@ export async function getAITramoSuggestions(params: {
   const data = await response.json();
   const tramos = data.tramos ?? data;
   return Array.isArray(tramos) ? tramos : [];
+}
+
+// --- Feature 6: AI Chat Reply ---
+
+export async function getAIChatReply(params: {
+  message: string;
+  groupName: string;
+  destination: string;
+  startDate: string;
+  endDate: string;
+  participants: string[];
+  tramos: { destination: string; startDate: string; endDate: string; order: number }[];
+  activities: string[];
+  expenses: string[];
+}): Promise<string> {
+  const chatWebhookUrl = import.meta.env.VITE_N8N_CHAT_URL as string | undefined;
+
+  if (!chatWebhookUrl) {
+    console.warn("[aiService] VITE_N8N_CHAT_URL not set — using mock data");
+    return `✨ Soy TripSync IA. [mock] Tu viaje tiene ${params.tramos.length} tramos planificados.`;
+  }
+
+  const response = await fetch(chatWebhookUrl, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      ...(WEBHOOK_SECRET ? { "x-webhook-secret": WEBHOOK_SECRET } : {}),
+    },
+    body: JSON.stringify(params),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Webhook error: ${response.status} ${response.statusText}`);
+  }
+
+  const data = await response.json();
+  return data.reply as string;
 }
