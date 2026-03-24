@@ -351,14 +351,30 @@ function TramoSelector() {
     try {
       await deleteDoc(doc(db, "grupos", grupo.id, "tramos", tramos[0].id));
 
+      // Normalize days so they sum exactly to the trip's total days,
+      // preventing intermediate segments from overflowing past endDate.
+      const tripTotalDays = Math.max(1, Math.round(
+        (grupo.endDate.seconds - grupo.startDate.seconds) / 86400
+      ));
+      const rawDays = aiSuggestions.map((s, i) => Math.max(1, aiDays[i] ?? s.days));
+      const totalRaw = rawDays.reduce((a, b) => a + b, 0);
+      const normalized = rawDays.map((d) =>
+        Math.max(1, Math.round((d / totalRaw) * tripTotalDays))
+      );
+      // Absorb rounding error into the last segment
+      const normalizedSum = normalized.reduce((a, b) => a + b, 0);
+      normalized[normalized.length - 1] = Math.max(
+        1,
+        normalized[normalized.length - 1] + (tripTotalDays - normalizedSum)
+      );
+
       let cursorSec = grupo.startDate.seconds;
       const writes = aiSuggestions.map((s, i) => {
-        const days = aiDays[i] ?? s.days;
         const startSec = cursorSec;
         const isLast = i === aiSuggestions.length - 1;
         const endSec = isLast
           ? grupo.endDate.seconds
-          : startSec + days * 86400;
+          : startSec + normalized[i] * 86400;
         cursorSec = endSec;
         return addDoc(collection(db, "grupos", grupo.id, "tramos"), {
           destination: s.destination,
