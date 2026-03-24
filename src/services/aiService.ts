@@ -299,7 +299,7 @@ export async function getAIChatReply(params: {
   participants: string[];
   tramos: { destination: string; startDate: string; endDate: string; order: number }[];
   activities: string[];
-  expenses: string[];
+  expenses: { description: string; amount: number; paidBy: string; date?: string }[];
 }): Promise<string> {
   const chatWebhookUrl = import.meta.env.VITE_N8N_CHAT_URL as string | undefined;
 
