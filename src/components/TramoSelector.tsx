@@ -74,6 +74,7 @@ function TramoSelector() {
   const [aiSuggestions, setAISuggestions] = useState<AITramoSuggestion[]>([]);
   const [aiDays, setAIDays] = useState<Record<number, number>>({});
   const [aiSaving, setAISaving] = useState(false);
+  const [confirmReplace, setConfirmReplace] = useState(false);
 
   // Edit / delete state
   const [editingTramoId, setEditingTramoId] = useState<string | null>(null);
@@ -308,6 +309,7 @@ function TramoSelector() {
     setAIError(null);
     setAISuggestions([]);
     setAIDays({});
+    setConfirmReplace(false);
   };
 
   const handleGenerateAI = async () => {
@@ -840,17 +842,39 @@ function TramoSelector() {
                     ))}
                   </div>
                   {aiError && <div className="tramo-ai-error">{aiError}</div>}
+
+                  {confirmReplace && (
+                    <div className="tramo-ai-confirm-warning">
+                      Esto reemplazará el tramo principal de <strong>{tramos[0]?.destination.split(",")[0]}</strong> con los tramos sugeridos. Esta acción no se puede deshacer.
+                    </div>
+                  )}
+
                   <div className="tramo-ai-actions">
+                    {!confirmReplace ? (
+                      <button
+                        type="button"
+                        className="tramo-ai-confirm-btn"
+                        onClick={() => setConfirmReplace(true)}
+                        disabled={aiSaving}
+                      >
+                        Crear tramos
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        className="tramo-ai-confirm-btn tramo-ai-confirm-btn--danger"
+                        onClick={handleCreateAITramos}
+                        disabled={aiSaving}
+                      >
+                        {aiSaving ? "Creando tramos..." : "Sí, reemplazar"}
+                      </button>
+                    )}
                     <button
                       type="button"
-                      className="tramo-ai-confirm-btn"
-                      onClick={handleCreateAITramos}
-                      disabled={aiSaving}
+                      className="tramo-ai-cancel-link"
+                      onClick={confirmReplace ? () => setConfirmReplace(false) : resetAI}
                     >
-                      {aiSaving ? "Creando tramos..." : "Crear tramos"}
-                    </button>
-                    <button type="button" className="tramo-ai-cancel-link" onClick={resetAI}>
-                      Cancelar
+                      {confirmReplace ? "Volver" : "Cancelar"}
                     </button>
                   </div>
                 </div>

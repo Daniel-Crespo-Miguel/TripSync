@@ -788,6 +788,24 @@
   cursor: not-allowed;
 }
 
+.tramo-ai-confirm-btn--danger {
+  background: #dc2626;
+}
+
+.tramo-ai-confirm-btn--danger:hover:not(:disabled) {
+  background: #b91c1c;
+}
+
+.tramo-ai-confirm-warning {
+  background: #fef3c7;
+  border: 1px solid #f59e0b;
+  border-radius: 8px;
+  padding: 0.6rem 0.75rem;
+  font-size: 13px;
+  color: #92400e;
+  line-height: 1.4;
+}
+
 .tramo-ai-cancel-link {
   background: none;
   border: none;
