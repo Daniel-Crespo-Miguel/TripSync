@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { collection, addDoc, serverTimestamp, doc, updateDoc, deleteDoc } from "firebase/firestore";
+import { collection, addDoc, writeBatch, serverTimestamp, doc, updateDoc, deleteDoc } from "firebase/firestore";
 import { db } from "../firebase/firebaseConfig";
 import { useGroup } from "../contexts/GroupContext";
 import { getAITramoSuggestions } from "../services/aiService";
@@ -350,7 +350,13 @@ function TramoSelector() {
 
     setAISaving(true);
     try {
-      await deleteDoc(doc(db, "grupos", grupo.id, "tramos", tramos[0].id));
+      // Atomic batch: delete placeholder + create AI tramos in one write.
+      // This prevents the onSnapshot in useTramos from seeing an empty array
+      // between the delete and the creates, which would re-trigger auto-migration
+      // and resurrect the placeholder alongside the new segments.
+      const batch = writeBatch(db);
+
+      batch.delete(doc(db, "grupos", grupo.id, "tramos", tramos[0].id));
 
       // Normalize days so they sum exactly to the trip's total days,
       // preventing intermediate segments from overflowing past endDate.
@@ -370,14 +376,15 @@ function TramoSelector() {
       );
 
       let cursorSec = grupo.startDate.seconds;
-      const writes = aiSuggestions.map((s, i) => {
+      aiSuggestions.forEach((s, i) => {
         const startSec = cursorSec;
         const isLast = i === aiSuggestions.length - 1;
         const endSec = isLast
           ? grupo.endDate.seconds
           : startSec + normalized[i] * 86400;
         cursorSec = endSec;
-        return addDoc(collection(db, "grupos", grupo.id, "tramos"), {
+        const newRef = doc(collection(db, "grupos", grupo.id, "tramos"));
+        batch.set(newRef, {
           destination: s.destination,
           startDate: { seconds: startSec, nanoseconds: 0 },
           endDate: { seconds: endSec, nanoseconds: 0 },
@@ -387,7 +394,7 @@ function TramoSelector() {
         });
       });
 
-      await Promise.all(writes);
+      await batch.commit();
       resetAI();
       setOpen(false);
     } catch (err) {
