@@ -35,68 +35,37 @@ export async function uploadPdfToSupabase(
 }
 
 export async function extractWithAI(
-  base64Data: string
+  base64Data: string,
+  fileName: string
 ): Promise<AIExtractedData> {
-  const apiKey = import.meta.env.VITE_ANTHROPIC_API_KEY;
-  if (!apiKey) throw new Error("VITE_ANTHROPIC_API_KEY no configurada");
+  const webhookUrl = import.meta.env.VITE_N8N_PDF_URL;
+  if (!webhookUrl) throw new Error("VITE_N8N_PDF_URL no configurada");
 
-  const response = await fetch("https://api.anthropic.com/v1/messages", {
+  const webhookSecret = import.meta.env.VITE_WEBHOOK_SECRET;
+
+  const response = await fetch(webhookUrl, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "x-api-key": apiKey,
-      "anthropic-version": "2023-06-01",
-      "anthropic-dangerous-direct-browser-access": "true",
+      "x-webhook-secret": webhookSecret,
     },
     body: JSON.stringify({
-      model: "claude-haiku-4-5-20251001",
-      max_tokens: 1024,
-      messages: [
-        {
-          role: "user",
-          content: [
-            {
-              type: "document",
-              source: {
-                type: "base64",
-                media_type: "application/pdf",
-                data: base64Data,
-              },
-            },
-            {
-              type: "text",
-              text: `Extract the following information from this travel reservation document and respond ONLY with a valid JSON object, no markdown, no explanation:
-{
-  "type": "vuelo|hotel|tren|entrada|restaurante|otro",
-  "title": "brief descriptive name of the reservation",
-  "date": "YYYY-MM-DD",
-  "time": "HH:MM or null if not applicable",
-  "provider": "company or venue name",
-  "details": "one short sentence with key details"
-}`,
-            },
-          ],
-        },
-      ],
+      pdfBase64: base64Data,
+      fileName,
     }),
   });
 
   if (!response.ok) {
     const err = await response.text();
-    throw new Error(`Anthropic API error: ${err}`);
+    throw new Error(`n8n webhook error: ${err}`);
   }
 
   const data = await response.json();
-  const raw: string = data.content?.[0]?.text ?? "";
-
-  const cleaned = raw
-    .replace(/```json\n?/gi, "")
-    .replace(/```\n?/g, "")
-    .trim();
-
   const validTypes = ["vuelo", "hotel", "tren", "entrada", "restaurante", "otro"] as const;
-  const parsed: unknown = JSON.parse(cleaned);
-  const obj = parsed !== null && typeof parsed === "object" ? (parsed as Record<string, unknown>) : {};
+  const obj =
+    data.extracted !== null && typeof data.extracted === "object"
+      ? (data.extracted as Record<string, unknown>)
+      : {};
 
   return {
     type:     validTypes.includes(obj.type as typeof validTypes[number]) ? (obj.type as AIExtractedData["type"]) : "otro",
