@@ -126,6 +126,40 @@
   color: rgba(255, 255, 255, 0.85);
 }
 
+.auth-card__divider {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 1.25rem 0 1rem;
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 0.85rem;
+}
+
+.auth-card__divider::before,
+.auth-card__divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.20);
+}
+
+.auth-card__btn--demo {
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.30);
+}
+
+.auth-card__btn--demo:hover {
+  background: rgba(255, 255, 255, 0.20);
+  opacity: 1;
+}
+
+.auth-card__demo-hint {
+  text-align: center;
+  margin-top: 0.5rem;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.50);
+}
+
 @media (max-width: 480px) {
   .auth-card {
     padding: 2rem 1.5rem;
